@@ -1,14 +1,15 @@
 name: ModelSwarm Experiment Runner
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'competitions/**/experiments/*.yaml'
+      - 'competitions/**/experiments/*.yml'
   workflow_dispatch:
     inputs:
       experiment_id:
         description: "Experiment ID to run (e.g., EXP-014)"
-        required: true
-        type: string
-      agent_id:
-        description: "Agent ID running the experiment"
         required: true
         type: string
       competition_id:
@@ -18,9 +19,46 @@ on:
         default: "s6e8"
 
 jobs:
-  run-experiment:
+  detect-experiments:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    outputs:
+      experiments: ${{ steps.detect.outputs.experiments }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed experiments
+        id: detect
+        run: |
+          # Find experiment configs that changed in this push
+          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E 'competitions/.*/experiments/.*\.ya?ml$' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No experiment changes detected"
+            echo "experiments=[]" >> $GITHUB_OUTPUT
+          else
+            # Build JSON array of experiment IDs
+            EXPS="["
+            for f in $CHANGED; do
+              EXP_ID=$(basename "$f" .yaml)
+              EXP_ID=$(basename "$EXP_ID" .yml)
+              COMP_ID=$(echo "$f" | cut -d'/' -f2)
+              EXPS+="{\"id\":\"$EXP_ID\",\"competition\":\"$COMP_ID\",\"path\":\"$f\"},"
+            done
+            EXPS="${EXPS%,}]"
+            echo "experiments=$EXPS" >> $GITHUB_OUTPUT
+          fi
+
+  run-experiment:
+    needs: detect-experiments
+    if: needs.detect-experiments.outputs.experiments != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        experiment: ${{ fromJson(needs.detect-experiments.outputs.experiments) }}
 
     steps:
       - name: Checkout repository
@@ -37,43 +75,66 @@ jobs:
           pip install -e ".[ml]"
           pip install -r requirements-ml.txt
 
-      - name: Claim experiment
-        id: claim
+      - name: Read experiment config
+        id: config
         run: |
-          python -m modelswarm claim ${{ inputs.experiment_id }} \
-            --agent ${{ inputs.agent_id }} \
-            --api-url ${{ vars.MODELSWARM_API_URL }}
-        continue-on-error: false
+          python -c "
+          import yaml
+          import json
+          with open('${{ matrix.experiment.path }}') as f:
+              config = yaml.safe_load(f)
+          # Output key fields
+          print(f'hypothesis={config.get(\"hypothesis\", \"\")}')
+          print(f'model={config.get(\"model\", \"lightgbm\")}')
+          print(f'features={json.dumps(config.get(\"features\", []))}')
+          echo 'config_json<<EOF'
+          echo '${{ toJson(config) }}'
+          echo 'EOF'
+          "
 
       - name: Run experiment
         id: run
         run: |
           python scripts/run_experiment.py \
-            --experiment-id ${{ inputs.experiment_id }} \
-            --agent-id ${{ inputs.agent_id }} \
-            --competition-id ${{ inputs.competition_id }} \
-            --output-dir agents/${{ inputs.agent_id }}/workspace/artifacts/
+            --config ${{ matrix.experiment.path }} \
+            --output-dir experiments/output/${{ matrix.experiment.id }}/
 
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: exp-${{ inputs.experiment_id }}-artifacts
-          path: agents/${{ inputs.agent_id }}/workspace/artifacts/
-          retention-days: 30
+          name: exp-${{ matrix.experiment.id }}-artifacts
+          path: experiments/output/${{ matrix.experiment.id }}/
+          retention-days: 90
 
-      - name: Complete experiment
+      - name: Record results
         if: success()
         run: |
-          python -m modelswarm complete ${{ inputs.experiment_id }} \
-            --agent ${{ inputs.agent_id }} \
-            --oof ${{ steps.run.outputs.oof_metric }} \
-            --api-url ${{ vars.MODELSWARM_API_URL }}
+          python scripts/record_results.py \
+            --experiment-id ${{ matrix.experiment.id }} \
+            --config ${{ matrix.experiment.path }} \
+            --output-dir experiments/output/${{ matrix.experiment.id }}/
 
-      - name: Fail experiment
-        if: failure()
+      - name: Commit results
+        if: success()
         run: |
-          python -m modelswarm fail ${{ inputs.experiment_id }} \
-            --agent ${{ inputs.agent_id }} \
-            --reason "GitHub Actions workflow failed" \
-            --api-url ${{ vars.MODELSWARM_API_URL }}
+          git config user.name "modelswarm-bot"
+          git config user.email "bot@modelswarm.local"
+          git add competitions/ experiments/output/
+          git diff --quiet && git diff --staged --quiet || git commit -m "exp: ${{ matrix.experiment.id }} results [skip ci]"
+          git push
+
+  on-complete:
+    needs: run-experiment
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update API with results
+        run: |
+          python scripts/sync_results_to_api.py
+        env:
+          MODELSWARM_API_URL: ${{ vars.MODELSWARM_API_URL }}
+          MODELSWARM_API_KEY: ${{ secrets.MODELSWARM_API_KEY }}

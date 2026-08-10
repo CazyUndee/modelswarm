@@ -1,6 +1,6 @@
 [project]
 name = "modelswarm"
-version = "0.2.0"
+version = "0.3.0"
 description = "Autonomous multi-agent ML research platform"
 readme = "README.md"
 license = {text = "MIT"}

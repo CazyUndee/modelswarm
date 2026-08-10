@@ -1,0 +1,72 @@
+# Experiment Configuration
+# This file defines an experiment. When pushed to GitHub, GitHub Actions will run it.
+# Results will be written back to this file under `results`.
+
+experiment_id: EXP-014
+competition: s6e8
+status: queued  # queued, claimed, active, completed, failed
+
+# Research
+hypothesis: "Interaction features (screen_time_x_notifications, sleep_efficiency) with XGBoost 5-fold CV will beat LightGBM baseline"
+phase: 4
+
+# Model configuration
+model:
+  name: xgboost
+  parameters:
+    n_estimators: 1000
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_alpha: 0.1
+    reg_lambda: 0.1
+    early_stopping_rounds: 50
+    eval_metric: auc
+    tree_method: hist
+
+# Features
+features:
+  - screen_time
+  - notifications
+  - sleep_hours
+  - screen_time_x_notifications
+  - sleep_efficiency
+
+# Feature engineering
+feature_engineering:
+  interactions:
+    - [screen_time, notifications]
+  ratios:
+    - name: sleep_efficiency
+      numerator: sleep_hours
+      denominator: screen_time
+
+# Validation
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+  seeds: [42, 123, 7]
+
+# Training
+training:
+  compute: github-actions  # github-actions, local, self-hosted
+  timeout_minutes: 60
+
+# Metadata
+metadata:
+  author: agent-7f3c
+  parent_experiment: EXP-006
+  created_at: "2026-08-10T12:00:00Z"
+
+# Results (filled by GitHub Actions after training)
+results:
+  status: pending
+  oof_metric: null
+  fold_metrics: []
+  public_score: null
+  runtime_seconds: null
+  artifacts: []
+  decision: null
+  reasoning: null

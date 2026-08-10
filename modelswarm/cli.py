@@ -10,11 +10,14 @@ Usage:
     modelswarm next
 """
 
+import json
 import os
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import click
+import yaml
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -43,6 +46,58 @@ def main():
 def get_client() -> Client:
     """Get an initialized client."""
     return Client()
+
+
+def _get_agent_id() -> str:
+    """Get current agent ID from identity."""
+    try:
+        identity = load_identity()
+        return identity["agent_id"]
+    except IdentityNotFoundError:
+        return "unknown"
+
+
+def _now() -> str:
+    """Get current ISO timestamp."""
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _default_model_params(model: str) -> dict:
+    """Get default parameters for a model type."""
+    defaults = {
+        "lightgbm": {
+            "n_estimators": 1000,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "num_leaves": 64,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "reg_alpha": 0.1,
+            "reg_lambda": 0.1,
+            "early_stopping_rounds": 50,
+            "eval_metric": "auc",
+        },
+        "xgboost": {
+            "n_estimators": 1000,
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "reg_alpha": 0.1,
+            "reg_lambda": 0.1,
+            "early_stopping_rounds": 50,
+            "eval_metric": "auc",
+            "tree_method": "hist",
+        },
+        "catboost": {
+            "iterations": 1000,
+            "depth": 6,
+            "learning_rate": 0.05,
+            "early_stopping_rounds": 50,
+            "eval_metric": "AUC",
+        },
+    }
+    return defaults.get(model, {})
 
 
 def git_pull() -> tuple[bool, str]:
@@ -453,6 +508,9 @@ def start():
     console.print(f"  [cyan]modelswarm queue[/cyan] — see claimable experiments")
     console.print(f"  [cyan]modelswarm next[/cyan] — get a suggested experiment")
     console.print(f"  [cyan]modelswarm data <id>[/cyan] — check data status")
+    console.print(f"  [cyan]modelswarm create-experiment[/cyan] — design new experiment")
+    console.print(f"  [cyan]modelswarm run <id>[/cyan] — train via GitHub Actions")
+    console.print(f"  [cyan]modelswarm results <id>[/cyan] — check training results")
     console.print(f"  [cyan]modelswarm pull[/cyan] — pull latest from GitHub")
 
 
@@ -641,6 +699,44 @@ def claim(experiment_id):
 
 @main.command()
 @click.argument("experiment_id")
+@click.option("--watch", is_flag=True, help="Watch for results after triggering")
+def run(experiment_id, watch):
+    """Run an experiment via GitHub Actions.
+
+    Pushes the experiment config to GitHub, which triggers the
+    experiment-runner workflow. Training happens on GitHub Actions,
+    not locally.
+    """
+    config_path = Path(f"competitions/s6e8/experiments/{experiment_id}.yaml")
+
+    if not config_path.exists():
+        console.print(f"[red]Config not found: {config_path}[/red]")
+        console.print(f"[dim]Create it first: modelswarm create-experiment[/dim]")
+        return
+
+    # Update config status
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+    config["status"] = "claimed"
+    with open(config_path, "w") as f:
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+
+    # Push to trigger GitHub Actions
+    console.print(f"[bold]Pushing {experiment_id} to GitHub Actions...[/bold]")
+    subprocess.run(["git", "add", str(config_path)], check=True)
+    subprocess.run(["git", "commit", "-m", f"exp: run {experiment_id}"], check=True)
+    success, msg = git_push()
+
+    if success:
+        console.print(f"[green]✅ Training triggered on GitHub Actions![/green]")
+        console.print(f"[dim]Results will appear in experiments/output/{experiment_id}/[/dim]")
+        console.print(f"[dim]Check status: modelswarm status[/dim]")
+    else:
+        console.print(f"[red]Push failed: {msg}[/red]")
+
+
+@main.command()
+@click.argument("experiment_id")
 @click.option("--oof", type=float, help="OOF metric score")
 @click.option("--decision", type=click.Choice(["promoted", "rejected", "failed", "inconclusive"]))
 @click.option("--reasoning", default="", help="Reasoning for the decision")
@@ -671,29 +767,119 @@ def fail(experiment_id, reason):
 
 @main.command()
 @click.option("--hypothesis", required=True, help="Experiment hypothesis")
-@click.option("--model", required=True, help="Model to use")
+@click.option("--model", required=True, help="Model to use (lightgbm, xgboost, catboost)")
 @click.option("--phase", type=int, help="Research phase")
-@click.option("--features", help="Comma-separated feature list")
-@click.option("--config", help="JSON configuration string")
-def create_experiment(hypothesis, model, phase, features, config):
-    """Create a new experiment."""
+@click.option("--features", required=True, help="Comma-separated feature list")
+@click.option("--competition", default="s6e8", help="Competition ID")
+@click.option("--parent", help="Parent experiment ID")
+@click.option("--auto-push", is_flag=True, help="Auto-push to GitHub to trigger training")
+def create_experiment(hypothesis, model, phase, features, competition, parent, auto_push):
+    """Create a new experiment config and push to GitHub for training."""
     client = get_client()
-    kwargs = {"hypothesis": hypothesis, "model": model}
+
+    # Create experiment in API
+    kwargs = {"hypothesis": hypothesis, "model": model, "competition_id": competition}
     if phase:
         kwargs["phase"] = phase
     if features:
         kwargs["features"] = [f.strip() for f in features.split(",")]
-    if config:
-        import json
-        kwargs["configuration"] = json.loads(config)
+    if parent:
+        kwargs["parent_experiment_id"] = parent
 
     result = client.create_experiment(**kwargs)
     exp_id = result["experiment_id"]
+
+    # Write experiment config YAML
+    config = {
+        "experiment_id": exp_id,
+        "competition": competition,
+        "status": "queued",
+        "hypothesis": hypothesis,
+        "phase": phase or 4,
+        "model": {
+            "name": model,
+            "parameters": _default_model_params(model),
+        },
+        "features": kwargs.get("features", []),
+        "validation": {
+            "strategy": "stratified_kfold",
+            "n_folds": 5,
+            "random_state": 42,
+        },
+        "training": {
+            "compute": "github-actions",
+            "timeout_minutes": 60,
+        },
+        "metadata": {
+            "author": _get_agent_id(),
+            "parent_experiment": parent,
+            "created_at": _now(),
+        },
+        "results": {
+            "status": "pending",
+            "oof_metric": None,
+            "fold_metrics": [],
+        },
+    }
+
+    config_path = Path(f"competitions/{competition}/experiments/{exp_id}.yaml")
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(config_path, "w") as f:
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+
     console.print(f"[green]Created {exp_id}![/green]")
-    console.print(f"[dim]Claim it: modelswarm claim {exp_id}[/dim]")
+    console.print(f"[dim]Config: {config_path}[/dim]")
+
+    if auto_push:
+        console.print("[bold]Pushing to GitHub to trigger training...[/bold]")
+        subprocess.run(["git", "add", str(config_path)], check=True)
+        subprocess.run(["git", "commit", "-m", f"exp: submit {exp_id}"], check=True)
+        success, msg = git_push()
+        if success:
+            console.print("[green]Pushed! Training will start automatically.[/green]")
+            console.print(f"[dim]Check status: modelswarm status[/dim]")
+        else:
+            console.print(f"[red]Push failed: {msg}[/red]")
+    else:
+        console.print(f"[dim]Push to GitHub to trigger training:[/dim]")
+        console.print(f"  git add {config_path} && git commit -m 'exp: submit {exp_id}' && git push")
 
 
 # ── Queue ────────────────────────────────────────────────────
+
+@main.command()
+@click.argument("experiment_id")
+def results(experiment_id):
+    """Show results from a completed experiment."""
+    # Check local output first
+    output_dir = Path(f"experiments/output/{experiment_id}")
+    results_path = output_dir / "results.json"
+
+    if results_path.exists():
+        with open(results_path) as f:
+            results = json.load(f)
+        console.print(Panel(
+            f"OOF AUC: {results.get('oof_metric', 'N/A')}\n"
+            f"Fold AUCs: {[f'{m:.5f}' for m in results.get('fold_metrics', [])]}\n"
+            f"Runtime: {results.get('runtime_seconds', 0):.1f}s\n"
+            f"Features: {', '.join(results.get('features_used', []))}\n"
+            f"Model: {results.get('model_name', 'N/A')}",
+            title=f"Results: {experiment_id}",
+        ))
+    else:
+        # Fall back to API
+        client = get_client()
+        exp = client.get_experiment(experiment_id)
+        oof = f"{exp['oof_metric']:.5f}" if exp.get("oof_metric") else "pending"
+        console.print(Panel(
+            f"Status: {exp.get('status', 'N/A')}\n"
+            f"OOF: {oof}\n"
+            f"Decision: {exp.get('decision', 'N/A')}",
+            title=f"Experiment: {experiment_id}",
+        ))
+        if not results_path.exists():
+            console.print(f"[dim]No local output yet. Training may still be running.[/dim]")
+
 
 @main.command()
 def queue():

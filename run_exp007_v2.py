@@ -85,12 +85,13 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(X, y)):
     oof_xgb[val_idx] = xgb_model.predict_proba(X_val)[:, 1]
     test_xgb += xgb_model.predict_proba(X_test)[:, 1] / 5
     
-    # CatBoost
+    # CatBoost - REDUCE iterations and use early stopping
     cat_model = CatBoostClassifier(
-        iterations=1000, learning_rate=0.05, depth=6,
-        random_seed=42, verbose=0, cat_features=cat_features
+        iterations=500, learning_rate=0.05, depth=6,
+        random_seed=42, verbose=0, cat_features=cat_features,
+        early_stopping_rounds=50
     )
-    cat_model.fit(X_train, y_train)
+    cat_model.fit(X_train, y_train, eval_set=(X_val, y_val), verbose=False)
     oof_cat[val_idx] = cat_model.predict_proba(X_val)[:, 1]
     test_cat += cat_model.predict_proba(X_test)[:, 1] / 5
     
