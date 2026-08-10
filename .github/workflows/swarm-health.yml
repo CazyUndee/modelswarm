@@ -23,7 +23,18 @@ jobs:
       - name: Install dependencies
         run: pip install -e "."
 
+      - name: Check credentials
+        id: creds
+        run: |
+          if [ -n "${{ vars.MODELSWARM_API_URL }}" ] && [ -n "${{ secrets.MODELSWARM_OPS_KEY }}" ]; then
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+            echo "::warning::API credentials not set in GitHub Actions. Skipping health check."
+          fi
+
       - name: Run health check
+        if: steps.creds.outputs.has_creds == 'true'
         run: |
           python scripts/health_check.py \
             --api-url ${{ vars.MODELSWARM_API_URL }} \

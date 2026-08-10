@@ -124,7 +124,7 @@ jobs:
           git diff --quiet && git diff --staged --quiet || git commit -m "exp: ${{ matrix.experiment.id }} results [skip ci]"
           git push
 
-  on-complete:
+  sync-results:
     needs: run-experiment
     if: always()
     runs-on: ubuntu-latest

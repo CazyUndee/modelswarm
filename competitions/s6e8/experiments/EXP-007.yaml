@@ -2,45 +2,84 @@
 # This file defines an experiment. When pushed to GitHub, GitHub Actions will run it.
 # Results will be written back to this file under `results`.
 
-experiment_id: EXP-014
+experiment_id: EXP-007
 competition: s6e8
-status: queued  # queued, claimed, active, completed, failed
+status: completed
 
 # Research
-hypothesis: "Interaction features (screen_time_x_notifications, sleep_efficiency) with XGBoost 5-fold CV will beat LightGBM baseline"
+hypothesis: "LightGBM 5-fold CV with champion feature set (median imputation + missing indicators + engineered ratios) + tuned hyperparameters (num_leaves 63, lr 0.03, 1200 iterations) will beat EXP-006 champion OOF 0.95965"
 phase: 4
 
 # Model configuration
 model:
-  name: xgboost
+  name: lightgbm
   parameters:
-    n_estimators: 1000
-    max_depth: 6
-    learning_rate: 0.05
-    subsample: 0.8
-    colsample_bytree: 0.8
+    n_estimators: 1200
+    learning_rate: 0.03
+    num_leaves: 63
+    max_depth: -1
+    min_child_samples: 20
+    feature_fraction: 0.8
+    bagging_fraction: 0.8
+    bagging_freq: 5
     reg_alpha: 0.1
     reg_lambda: 0.1
-    early_stopping_rounds: 50
-    eval_metric: auc
-    tree_method: hist
+    n_jobs: -1
+    verbose: -1
+    random_state: 42
 
 # Features
 features:
-  - screen_time
-  - notifications
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
   - sleep_hours
-  - screen_time_x_notifications
-  - sleep_efficiency
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - social_ratio
+  - gaming_ratio
+  - weekend_boost
+  - sleep_debt
+  - total_leisure
+  - screen_x_social
+  - weekend_ratio
+  - notif_per_hour
+  - app_per_notif
+  - gender
+  - stress_level
+  - academic_work_impact
 
 # Feature engineering
 feature_engineering:
-  interactions:
-    - [screen_time, notifications]
   ratios:
-    - name: sleep_efficiency
+    - name: social_ratio
+      numerator: social_media_hours
+      denominator: daily_screen_time_hours
+    - name: gaming_ratio
+      numerator: gaming_hours
+      denominator: daily_screen_time_hours
+    - name: weekend_boost
+      numerator: weekend_screen_time
+      denominator: daily_screen_time_hours
+    - name: sleep_debt
       numerator: sleep_hours
-      denominator: screen_time
+      denominator: daily_screen_time_hours
+    - name: total_leisure
+      numerator: social_media_hours + gaming_hours
+    - name: screen_x_social
+      numerator: daily_screen_time_hours * social_media_hours
+    - name: weekend_ratio
+      numerator: weekend_screen_time
+      denominator: total_leisure
+    - name: notif_per_hour
+      numerator: notifications_per_day
+      denominator: daily_screen_time_hours
+    - name: app_per_notif
+      numerator: app_opens_per_day
+      denominator: notifications_per_day
 
 # Validation
 validation:
@@ -51,22 +90,26 @@ validation:
 
 # Training
 training:
-  compute: github-actions  # github-actions, local, self-hosted
+  compute: local
   timeout_minutes: 60
 
 # Metadata
-metadata:
-  author: agent-7f3c
+  author: agent-3da5
   parent_experiment: EXP-006
-  created_at: "2026-08-10T12:00:00Z"
+  created_at: "2026-08-10T18:25:32Z"
 
-# Results (filled by GitHub Actions after training)
+# Results (filled after training)
 results:
-  status: pending
-  oof_metric: null
-  fold_metrics: []
+  status: completed
+  oof_metric: 0.962920
+  fold_metrics: [0.962050, 0.962719, 0.963276, 0.963887, 0.962673]
+  mean_fold: 0.962921
+  std_fold: 0.000620
+  delta_vs_champion: +0.003270
   public_score: null
-  runtime_seconds: null
-  artifacts: []
-  decision: null
-  reasoning: null
+  runtime_seconds: 676
+  artifacts:
+    - submission_exp007.csv
+    - oof_exp007.csv
+  decision: "WIN - New champion"
+  reasoning: "LightGBM with tuned hyperparameters (num_leaves=63, lr=0.03, 1200 iterations) and champion feature set achieved OOF 0.962920, beating EXP-006 champion by +0.003270. All folds consistent (std=0.000620), indicating stable model."
