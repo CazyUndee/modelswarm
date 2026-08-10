@@ -1,0 +1,83 @@
+# ModelSwarm Competition Configuration — S6E8
+
+competition:
+  id: s6e8
+  name: "Kaggle Playground Series S6E8"
+  full_name: "Smartphone Addiction Prediction"
+  url: "https://www.kaggle.com/competitions/playground-series-s6e8"
+  deadline: "2026-09-01"
+  status: active
+
+task:
+  type: binary_classification
+  target: addicted_label
+  metric: roc_auc
+  higher_is_better: true
+
+dataset:
+  readme: competitions/s6e8/README.md
+  train: competitions/s6e8/data/train.csv
+  test: competitions/s6e8/data/test.csv
+  sample_submission: competitions/s6e8/data/sample_submission.csv
+  n_features: 17
+  n_train: 100000  # approximate — verify with actual data
+  n_test: 66667    # approximate — verify with actual data
+  target_balance: 0.3  # ~30% positive class
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  n_repeats: 1
+  random_state: 42
+  stratify_on: addicted_label
+  seeds: [42, 123, 7, 2024, 99]  # for seed sensitivity testing
+
+environment:
+  python: ">=3.10"
+  required_packages:
+    - numpy
+    - pandas
+    - scikit-learn
+    - lightgbm
+    - xgboost
+    - catboost
+    - scipy
+    - matplotlib
+    - seaborn
+
+constraints:
+  - "No external data allowed"
+  - "No target leakage"
+  - "All features must be derivable from provided data"
+  - "Submission must match sample_submission format"
+  - "Must use the provided train.csv — do not fabricate data"
+
+current_champion:
+  experiment_id: "EXP-006"
+  description: "5-fold regularized LightGBM ensemble"
+  oof_score: 0.96421
+  metric: roc_auc
+  status: active
+
+directories:
+  data: competitions/s6e8/data
+  notebooks: competitions/s6e8/notebooks
+  experiments: competitions/s6e8/experiments
+  leaderboard: competitions/s6e8/leaderboard
+  shared: competitions/s6e8/shared
+
+research_phases:
+  current: 4
+  phases:
+    1: "Reconnaissance — EDA, understand data"
+    2: "Validation — establish trustworthy CV"
+    3: "Core Models — LightGBM, XGBoost, CatBoost"
+    4: "Feature Engineering — hypothesis-driven features"
+    5: "Feature Selection — what actually helps"
+    6: "Advanced Features — deeper structure"
+    7: "Model Specialization — optimize survivors"
+    8: "Diversity Analysis — complementarity"
+    9: "Ensembling — robust combinations"
+    10: "Adversarial Validation — break it"
+    11: "Final Optimization — concentrate compute"
+    12: "Final Validation — freeze and submit"

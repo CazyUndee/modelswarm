@@ -1,0 +1,29 @@
+experiment_id: EXP-006
+hypothesis: "5-fold regularized LightGBM ensemble achieves strong OOF ROC-AUC"
+agent_id: agent-legacy-003
+executing_agent_id: agent-legacy-003
+parent_agent_id: null
+parent_experiment_id: null
+competition_id: playground-series-s6e8
+phase: 3
+model: lightgbm
+validation_protocol: stratified_5_fold
+status: promoted
+decision: promoted
+reasoning: "Best performing model. Strong regularization prevents overfitting. Consistent performance across all 5 folds. Promoted to champion."
+created_at: "2026-07-15T00:00:00Z"
+completed_at: "2026-07-15T04:00:00Z"
+oof_metric: 0.96421
+fold_metrics: []
+configuration:
+  n_estimators: 1000
+  learning_rate: 0.05
+  num_leaves: 64
+  reg_alpha: 0.1
+  reg_lambda: 0.1
+  subsample: 0.8
+  colsample_bytree: 0.8
+  early_stopping_rounds: 50
+artifacts: []
+metadata_quality: directly_recorded
+notes: "Current canonical champion. 5-fold regularized LightGBM ensemble."

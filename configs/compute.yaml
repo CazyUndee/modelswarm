@@ -1,0 +1,42 @@
+# ModelSwarm Compute Configuration
+# Register compute runners and set resource budgets.
+
+runners:
+  # Example runner configuration
+  # Real runners register themselves via the API
+  github-actions:
+    provider: github-actions
+    capabilities:
+      cpu: 4
+      ram_gb: 16
+      gpu: false
+      gpu_memory_gb: 0
+    runtime_limit_minutes: 60
+    cost_per_hour: 0.008  # GitHub Actions pricing
+    max_concurrent: 4
+    status: available
+
+  local-machine:
+    provider: local
+    capabilities:
+      cpu: 16
+      ram_gb: 64
+      gpu: false
+      gpu_memory_gb: 0
+    runtime_limit_minutes: 480
+    cost_per_hour: 0.0
+    max_concurrent: 2
+    status: available
+
+budget:
+  # Compute budget management
+  max_concurrent_experiments: 4
+  max_daily_compute_hours: 96  # 4 runners * 24 hours
+  prioritize_high_information_gain: true
+  reserve_compute_for_verification: 0.2  # 20% reserved for verification
+
+allocation:
+  # Dynamic allocation across research categories
+  exploit: 0.4   # 40% for strong branches
+  explore: 0.35  # 35% for new hypotheses
+  verify: 0.25   # 25% for replication/robustness

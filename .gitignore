@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets and credentials — NEVER commit these
+*.env
+.env.*
+!.env.example
+credentials/
+secrets/
+*.token
+*.key
+.kaggle/
+kaggle.json
+
+# Model artifacts (large files)
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.cbm
+*.lgb
+*.model
+*.bin
+!tests/fixtures/*.pkl
+
+# Data (do not commit datasets)
+data/
+!data/.gitkeep
+
+# Workspace scratch (private to each agent)
+agents/*/workspace/scratch/
+agents/*/workspace/artifacts/
+agents/*/workspace/experiments/
+
+# Node / Worker
+node_modules/
+worker/node_modules/
+worker/.wrangler/
+*.log
+
+# Wrangler
+.dev.vars
+wrangler.toml.bak
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Tool artifacts
+.omo/
+.codegraph/

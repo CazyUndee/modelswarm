@@ -1,0 +1,20 @@
+{
+  "name": "modelswarm-worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute modelswarm --file=schema.sql --remote",
+    "db:init:local": "wrangler d1 execute modelswarm --file=schema.sql --local",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250720.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^3.90.0"
+  },
+  "dependencies": {
+    "itty-router": "^5.0.18"
+  }
+}

@@ -1,0 +1,51 @@
+# ModelSwarm Active Competition
+
+# The active competition is configured in competitions/<id>/
+# Change this pointer to switch competitions.
+# All swarm infrastructure stays the same.
+
+active_competition: s6e8
+
+# Competition registry
+# Each competition lives in competitions/<id>/ with its own:
+#   - competition.yaml (config)
+#   - README.md (details, data dictionary, validation strategy)
+#   - agents.md (agent instructions)
+#   - validate_data.py (data integrity checks)
+#   - data/ (train.csv, test.csv, sample_submission.csv)
+#   - experiments/ (experiment records)
+#   - shared/ (shared discoveries)
+
+competitions:
+  s6e8:
+    name: "Kaggle Playground Series S6E8"
+    config: competitions/s6e8/competition.yaml
+    readme: competitions/s6e8/README.md
+    agents_md: competitions/s6e8/agents.md
+    data_dir: competitions/s6e8/data
+    status: active
+
+# Legacy fields (for backward compatibility)
+# These are overridden by competitions/s6e8/competition.yaml
+competition:
+  id: s6e8
+  name: "Kaggle Playground Series S6E8"
+  target: addicted_label
+  metric: roc_auc
+  higher_is_better: true
+  deadline: "2026-09-01"
+  url: "https://www.kaggle.com/competitions/playground-series-s6e8"
+  status: active
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+  stratify_on: addicted_label
+
+current_champion:
+  experiment_id: "EXP-006"
+  description: "5-fold regularized LightGBM ensemble"
+  oof_score: 0.96421
+  metric: roc_auc
+  status: active

@@ -1,0 +1,79 @@
+name: ModelSwarm Experiment Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      experiment_id:
+        description: "Experiment ID to run (e.g., EXP-014)"
+        required: true
+        type: string
+      agent_id:
+        description: "Agent ID running the experiment"
+        required: true
+        type: string
+      competition_id:
+        description: "Competition ID"
+        required: true
+        type: string
+        default: "s6e8"
+
+jobs:
+  run-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[ml]"
+          pip install -r requirements-ml.txt
+
+      - name: Claim experiment
+        id: claim
+        run: |
+          python -m modelswarm claim ${{ inputs.experiment_id }} \
+            --agent ${{ inputs.agent_id }} \
+            --api-url ${{ vars.MODELSWARM_API_URL }}
+        continue-on-error: false
+
+      - name: Run experiment
+        id: run
+        run: |
+          python scripts/run_experiment.py \
+            --experiment-id ${{ inputs.experiment_id }} \
+            --agent-id ${{ inputs.agent_id }} \
+            --competition-id ${{ inputs.competition_id }} \
+            --output-dir agents/${{ inputs.agent_id }}/workspace/artifacts/
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exp-${{ inputs.experiment_id }}-artifacts
+          path: agents/${{ inputs.agent_id }}/workspace/artifacts/
+          retention-days: 30
+
+      - name: Complete experiment
+        if: success()
+        run: |
+          python -m modelswarm complete ${{ inputs.experiment_id }} \
+            --agent ${{ inputs.agent_id }} \
+            --oof ${{ steps.run.outputs.oof_metric }} \
+            --api-url ${{ vars.MODELSWARM_API_URL }}
+
+      - name: Fail experiment
+        if: failure()
+        run: |
+          python -m modelswarm fail ${{ inputs.experiment_id }} \
+            --agent ${{ inputs.agent_id }} \
+            --reason "GitHub Actions workflow failed" \
+            --api-url ${{ vars.MODELSWARM_API_URL }}

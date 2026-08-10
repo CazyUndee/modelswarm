@@ -1,0 +1,18 @@
+experiment_id: EXP-003b
+hypothesis: "Extended feature importance analysis with permutation importance"
+agent_id: agent-legacy-002
+executing_agent_id: agent-legacy-002
+parent_agent_id: null
+parent_experiment_id: EXP-003
+competition_id: playground-series-s6e8
+phase: 1
+model: lightgbm
+status: completed
+decision: null
+reasoning: "Extended analysis building on EXP-003 with additional importance methods."
+created_at: "2026-07-06T00:00:00Z"
+completed_at: "2026-07-06T01:30:00Z"
+oof_metric: null
+fold_metrics: []
+artifacts: []
+metadata_quality: reconstructed

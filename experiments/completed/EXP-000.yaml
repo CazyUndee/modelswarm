@@ -1,0 +1,20 @@
+experiment_id: EXP-000
+hypothesis: "Baseline LightGBM with default parameters provides a reasonable starting point"
+agent_id: agent-legacy-001
+executing_agent_id: agent-legacy-001
+parent_agent_id: null
+parent_experiment_id: null
+competition_id: playground-series-s6e8
+phase: 1
+model: lightgbm
+status: completed
+decision: null
+reasoning: "Baseline established for comparison with future experiments."
+created_at: "2026-07-01T00:00:00Z"
+completed_at: "2026-07-01T01:00:00Z"
+oof_metric: null
+fold_metrics: []
+artifacts: []
+# Note: OOF scores not directly recorded for early experiments.
+# This is reconstructed metadata from research history.
+metadata_quality: reconstructed

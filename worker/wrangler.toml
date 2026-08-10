@@ -1,0 +1,16 @@
+name = "modelswarm"
+main = "src/index.ts"
+compatibility_date = "2025-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "modelswarm"
+database_id = "9d22cfb6-0e66-4e20-9eb5-82e7d34e867a"
+
+# Environment variables (secrets via wrangler secret put)
+[vars]
+ENVIRONMENT = "production"
+CLAIM_EXPIRY_MINUTES = "30"
+STALE_THRESHOLD_MINUTES = "15"

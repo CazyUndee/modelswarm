@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Experiment",
+  "type": "object",
+  "required": ["experiment_id", "hypothesis", "agent_id", "status", "created_at"],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^EXP-[0-9]{3,4}[a-z]?$",
+      "description": "Globally unique experiment ID"
+    },
+    "hypothesis": { "type": "string", "minLength": 1 },
+    "agent_id": { "type": "string", "description": "Agent that owns/created this experiment" },
+    "executing_agent_id": { "type": "string", "description": "Agent that actually ran the experiment (may differ from owner for subagents)" },
+    "parent_agent_id": { "type": ["string", "null"] },
+    "parent_experiment_id": { "type": ["string", "null"] },
+    "competition_id": { "type": "string" },
+    "phase": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "configuration": { "type": "object", "additionalProperties": true },
+    "dataset": { "type": "string" },
+    "features": { "type": "array", "items": { "type": "string" } },
+    "model": { "type": "string" },
+    "validation_protocol": { "type": "string" },
+    "oof_metric": { "type": ["number", "null"] },
+    "fold_metrics": { "type": "array", "items": { "type": "number" } },
+    "public_score": { "type": ["number", "null"] },
+    "runtime_seconds": { "type": ["number", "null"] },
+    "compute_info": { "type": "object" },
+    "artifacts": { "type": "array", "items": { "type": "string" } },
+    "decision": {
+      "type": "string",
+      "enum": ["promoted", "rejected", "failed", "inconclusive", null]
+    },
+    "reasoning": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "claimed", "active", "completed", "promoted", "rejected", "failed"]
+    },
+    "claimed_by": { "type": ["string", "null"] },
+    "claimed_at": { "type": ["string", "null"], "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

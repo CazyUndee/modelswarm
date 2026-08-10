@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SharedScript",
+  "type": "object",
+  "required": ["script_id", "name", "author_id", "description", "version", "created_at"],
+  "properties": {
+    "script_id": { "type": "string", "pattern": "^SCRIPT-[a-z0-9]{8}$" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "author_id": { "type": "string" },
+    "description": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "dependencies": { "type": "array", "items": { "type": "string" } },
+    "usage": { "type": "string" },
+    "source_path": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

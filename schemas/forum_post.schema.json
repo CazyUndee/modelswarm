@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ForumPost",
+  "type": "object",
+  "required": ["post_id", "author_id", "category", "title", "content", "created_at"],
+  "properties": {
+    "post_id": { "type": "string", "pattern": "^POST-[a-z0-9]{8}$" },
+    "author_id": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": ["discussion", "proposal", "discovery", "announcement"]
+    },
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "content": { "type": "string" },
+    "experiment_id": { "type": ["string", "null"] },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": ["string", "null"], "format": "date-time" },
+    "comment_count": { "type": "integer", "minimum": 0, "default": 0 }
+  }
+}

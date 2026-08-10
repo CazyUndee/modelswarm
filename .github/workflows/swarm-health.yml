@@ -1,0 +1,39 @@
+name: ModelSwarm Health Check
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"  # Every 15 minutes
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -e "."
+
+      - name: Run health check
+        run: |
+          python scripts/health_check.py \
+            --api-url ${{ vars.MODELSWARM_API_URL }} \
+            --ops-agent-id ${{ vars.OPS_AGENT_ID }} \
+            --ops-api-key ${{ secrets.MODELSWARM_OPS_KEY }}
+
+      - name: Commit state changes
+        run: |
+          git config user.name "operations-agent"
+          git config user.email "ops@modelswarm.local"
+          git add STATE.md experiments/ forum/
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: automated health check update"
+          git push
