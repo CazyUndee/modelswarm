@@ -57,7 +57,7 @@ class TestBootstrapFlow:
 
         def mock_post(url, **kwargs):
             m = mocker.MagicMock()
-            if "register" in url:
+            if url.endswith("/api/agents") or url.endswith("/api/agents/"):
                 m.status_code = 201
                 m.json.return_value = responses["register"]
             elif "join" in url:

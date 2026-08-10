@@ -92,7 +92,7 @@ class Client:
         payload = {"name": name, "model": model, "role": role}
         if parent_agent_id:
             payload["parent_agent_id"] = parent_agent_id
-        return self._request("POST", "/api/agents/register", json=payload)
+        return self._request("POST", "/api/agents", json=payload)
 
     def heartbeat(self) -> dict:
         """Send a heartbeat to signal the agent is active."""
