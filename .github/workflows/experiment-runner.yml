@@ -2,7 +2,7 @@ name: ModelSwarm Experiment Runner
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'competitions/**/experiments/*.yaml'
       - 'competitions/**/experiments/*.yml'
