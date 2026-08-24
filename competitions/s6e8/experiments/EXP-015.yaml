@@ -1,0 +1,107 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# Seed-count scaling at the capacity optimum region: does averaging 10 seeds
+# keep paying where 5 seeds paid +0.0002-0.0004? Config = champion-family
+# (nl127 / lr0.03 / 2000t / bagged) with seeds doubled.
+
+experiment_id: EXP-015
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  Doubling the seed ensemble from 5 to 10 members (nl127 champion config)
+  adds a further variance-reduction gain over EXP-012's 0.964038, testing
+  whether the seed lever is exhausted or scalable.
+phase: 4
+
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+    - name: lightgbm
+      parameters: &lgbm_params
+        n_estimators: 2000
+        learning_rate: 0.03
+        num_leaves: 127
+        min_child_samples: 40
+        subsample: 0.8
+        subsample_freq: 1
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        n_jobs: -1
+        verbose: -1
+        random_state: 42
+        early_stopping_rounds: 100
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 123
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 7
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 2024
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 99
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 555
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 2026
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 314
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 271828
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 161803
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-012
+  created_at: "2026-08-24T18:00:00Z"
+  design_notes: >-
+    First five seeds identical to EXP-012 => direct comparability; members 6-10
+    are new seeds. If blend(10) > blend(5) by > +0.0001, seed scaling continues.
+
+# Results (filled automatically by scripts/record_results.py after the run)

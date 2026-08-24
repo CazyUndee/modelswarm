@@ -122,21 +122,31 @@ def _get_members(model_config: dict) -> list[dict]:
 
 def _blend(member_preds: dict[str, np.ndarray], method: str,
            weights: dict[str, float] | None = None) -> np.ndarray:
-    """Blend member prediction vectors into one."""
+    """Blend member prediction vectors into one.
+
+    weights may be keyed by member key ("lightgbm[0]") or base member name
+    ("lightgbm"); name-level weights apply to every member of that family.
+    """
     names = list(member_preds)
     arrays = [member_preds[n] for n in names]
+
+    def _w(n: str) -> float:
+        if not weights:
+            return 1.0
+        return float(weights.get(n, weights.get(n.split("[")[0], 1.0)))
+
     if len(arrays) == 1:
         return arrays[0]
     if method == "probability_average":
         if weights:
-            w = np.array([weights.get(n, 1.0) for n in names], dtype=float)
+            w = np.array([_w(n) for n in names])
             w = w / w.sum()
             return np.average(arrays, axis=0, weights=w)
         return np.mean(arrays, axis=0)
     if method == "rank_average":
         ranks = [pd.Series(a).rank(pct=True).to_numpy() for a in arrays]
         if weights:
-            w = np.array([weights.get(n, 1.0) for n in names], dtype=float)
+            w = np.array([_w(n) for n in names])
             w = w / w.sum()
             return np.average(ranks, axis=0, weights=w)
         return np.mean(ranks, axis=0)

@@ -207,5 +207,12 @@ results:
   artifacts:
   - experiments/output/EXP-013/oof_predictions.csv
   - experiments/output/EXP-013/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: >-
+    New best verified score: blend OOF 0.964109 (+0.00007 over EXP-012).
+    Margin below the 0.0005 bar, but the capacity ladder is now four
+    independently-configured points rising monotonically (64->96->127->255 =
+    0.96366 -> 0.96399 -> 0.96404 -> 0.96411), each confirmed at member level;
+    treated as a trend promotion rather than noise-chasing. Curve has FLATTENED
+    (+0.00007 last step): further leaf doubling deprioritized. Next levers:
+    seed-count scaling and weighted linear stacking.
