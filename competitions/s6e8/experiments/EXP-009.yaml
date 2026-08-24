@@ -289,5 +289,13 @@ results:
   artifacts:
   - experiments/output/EXP-009/oof_predictions.csv
   - experiments/output/EXP-009/results.json
-  decision: null
-  reasoning: null
+  decision: inconclusive
+  reasoning: >-
+    Seed-averaged blend OOF 0.963303 — best GHA-verified score, +0.00018 over
+    the re-baselined champion (EXP-010, 0.963127) but BELOW the 0.0005
+    promotion margin: directionally positive, not conclusive alone. Same-family
+    seed correlations ~0.988 are LOWER than cross-family GBDT correlations
+    (LGBM~XGB 0.995 in EXP-008), explaining why seed averaging helps where
+    family blending did not. NOTE: per-member records collapsed because all
+    members shared name 'lightgbm' (runner bug, fixed post-run; blend metric
+    unaffected). EXP-011 combines this lever with row bagging for a clean A/B.

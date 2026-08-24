@@ -1,0 +1,90 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# Combines the two levers measured as positive:
+#   - row bagging ON (subsample_freq 1): EXP-008 member 0.963223 vs EXP-010
+#     no-bagging 0.963127 => ~+0.0001 (within noise alone)
+#   - 5-seed averaging: EXP-009 blend 0.963303 vs single-seed 0.963127..0.963223
+#     => ~+0.0002 (best verified score so far)
+# If effects are additive this should land near 0.9634-0.9635.
+
+experiment_id: EXP-011
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  Probability-averaging five bagged LightGBM runs (subsample_freq=1, seeds
+  42/123/7/2024/99) on canonical raw features combines both verified-positive
+  levers and exceeds the re-baselined champion (0.963127) by >= 0.0003.
+phase: 4
+
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+    - name: lightgbm
+      parameters: &lgbm_params
+        n_estimators: 1000
+        learning_rate: 0.05
+        num_leaves: 64
+        min_child_samples: 20
+        subsample: 0.8
+        subsample_freq: 1
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        n_jobs: -1
+        verbose: -1
+        random_state: 42
+        early_stopping_rounds: 50
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 123
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 7
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 2024
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 99
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 90
+  predict_test: true
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-009
+  created_at: "2026-08-24T16:45:00Z"
+  design_notes: >-
+        Direct A/B against EXP-009 (identical except subsample_freq 1 vs absent).
+        Any delta is attributable to row bagging under seed averaging.
+
+# Results (filled automatically by scripts/record_results.py after the run)

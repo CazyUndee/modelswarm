@@ -45,7 +45,8 @@ def record_results(config_path: str, output_dir: str) -> dict:
         "status": "completed",
         **{k: results.get(k) for k in PASSTHROUGH},
         "members": [
-            {"name": m.get("name"), "oof_auc": m.get("oof_auc"),
+            {"member_index": m.get("member_index"), "name": m.get("name"),
+             "key": m.get("key"), "oof_auc": m.get("oof_auc"),
              "fold_metrics": m.get("fold_metrics", [])}
             for m in results.get("members", [])
         ],

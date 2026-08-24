@@ -266,9 +266,9 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
     skf = StratifiedKFold(n_splits=val_config.get("n_folds", 5),
                           shuffle=True, random_state=val_config.get("random_state", 42))
 
-    member_names = [m["name"] for m in members]
-    oof_by_member = {n: np.zeros(len(X)) for n in member_names}
-    member_fold_aucs = {n: [] for n in member_names}
+    member_keys = [f"{m['name']}[{i}]" for i, m in enumerate(members)]
+    oof_by_member = {k: np.zeros(len(X)) for k in member_keys}
+    member_fold_aucs = {k: [] for k in member_keys}
     blend_fold_aucs = []
 
     for fold, (train_idx, val_idx) in enumerate(skf.split(X, y)):
@@ -276,30 +276,30 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
         y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
 
         fold_preds = {}
-        for m in members:
+        for key, m in zip(member_keys, members):
             preds = _fit_member_predict(m["name"], m.get("parameters", {}),
                                         X_train, y_train, X_val, cat_cols,
                                         eval_set=(X_val, y_val))
-            oof_by_member[m["name"]][val_idx] = preds
-            fold_preds[m["name"]] = preds
+            oof_by_member[key][val_idx] = preds
+            fold_preds[key] = preds
             auc = roc_auc_score(y_val, preds)
-            member_fold_aucs[m["name"]].append(float(auc))
+            member_fold_aucs[key].append(float(auc))
 
         blended = _blend(fold_preds, blend_method, blend_weights)
         blend_fold_aucs.append(float(roc_auc_score(y_val, blended)))
 
-        fold_str = " ".join(f"{n}={member_fold_aucs[n][-1]:.5f}" for n in member_names)
+        fold_str = " ".join(f"{n}={member_fold_aucs[n][-1]:.5f}" for n in member_keys)
         print(f"  Fold {fold}: {fold_str} | blend={blend_fold_aucs[-1]:.5f}")
 
     member_oof_aucs = {}
-    for n in member_names:
-        auc = roc_auc_score(y, oof_by_member[n])
-        member_oof_aucs[n] = float(auc)
-        print(f"  OOF {n}: {auc:.5f}")
+    for k in member_keys:
+        auc = roc_auc_score(y, oof_by_member[k])
+        member_oof_aucs[k] = float(auc)
+        print(f"  OOF {k}: {auc:.5f}")
 
     correlations = {
         f"{a}~{b}": float(np.corrcoef(oof_by_member[a], oof_by_member[b])[0, 1])
-        for a, b in combinations(member_names, 2)
+        for a, b in combinations(member_keys, 2)
     }
     for pair, r in correlations.items():
         print(f"  OOF corr {pair}: {r:.4f}")
@@ -307,7 +307,7 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
     blended_oof = _blend(oof_by_member, blend_method, blend_weights)
     oof_auc = roc_auc_score(y, blended_oof)
     rank_diag = None
-    if len(member_names) > 1 and blend_method != "rank_average":
+    if len(member_keys) > 1 and blend_method != "rank_average":
         rank_oof = _blend(oof_by_member, "rank_average", blend_weights)
         rank_diag = float(roc_auc_score(y, rank_oof))
         print(f"  OOF blend({blend_method}): {oof_auc:.5f} | rank_average diagnostic: {rank_diag:.5f}")
@@ -320,10 +320,12 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
         "oof_predictions": blended_oof.tolist(),
         "features_used": available,
         "categorical_features": cat_cols,
-        "model_name": ("ensemble:" + "+".join(member_names)) if len(member_names) > 1 else member_names[0],
+        "model_name": ("ensemble:" + "+".join(m["name"] for m in members)) if len(member_keys) > 1 else members[0]["name"],
         "blend_method": blend_method,
-        "members": [{"name": n, "oof_auc": member_oof_aucs[n],
-                     "fold_metrics": member_fold_aucs[n]} for n in member_names],
+        "members": [{"member_index": i, "name": m["name"], "key": k,
+                     "oof_auc": member_oof_aucs[k],
+                     "fold_metrics": member_fold_aucs[k]}
+                    for i, (k, m) in enumerate(zip(member_keys, members))],
         "member_correlations": correlations,
         "rank_average_diagnostic": rank_diag,
     }
