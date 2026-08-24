@@ -8,17 +8,78 @@
 
 | ID | Description | OOF ROC-AUC | Status |
 |----|-------------|-------------|--------|
-| **EXP-012** | 5-seed LightGBM, num_leaves 127 / lr 0.03 / 2000t | **0.964038** | **CHAMPION** |
-| EXP-011 | 5-seed LightGBM, num_leaves 64, bagged | 0.963664 | Verified |
-| EXP-009 | 5-seed LightGBM, num_leaves 64, unbagged | 0.963303 | Verified |
-| EXP-010 | Legacy champion config reproduction (nl64) | 0.963127 | Verified reference baseline |
+| **EXP-022** | 5-seed LGBM nl255 + **max_bin 511** | **0.965203** | **CHAMPION** |
+| EXP-013 | 5-seed LGBM nl255 (max_bin default 255) | 0.964109 | Verified (superseded) |
+| EXP-015 | 10-seed nl127 | 0.964092 | Verified |
+| EXP-012 | 5-seed nl127 | 0.964038 | Verified |
+| EXP-010 | Legacy champion config reproduction | 0.963127 | Verified reference baseline |
 
 ## Active Experiments
 
 | ID | Description | Status |
 |----|-------------|--------|
-| EXP-013 | Capacity step: num_leaves 255 / lr 0.02 / 3000t / colsample 0.7 | Running on GitHub Actions |
-| EXP-014 | Capacity midpoint: num_leaves 96 / lr 0.04 / 1500t | Running on GitHub Actions |
+| EXP-024 | max_bin 511 → 1024 continuation | Running on GitHub Actions |
+| EXP-025 | Capacity re-probe nl511/mcs120 @ max_bin 511 | Running on GitHub Actions |
+
+## Champion Lineage (all GHA-verified)
+
+| Stage | ID | Config delta | OOF | Gain |
+|-------|----|--------------|-----|------|
+| Baseline | EXP-010 | legacy config reproduced (nl64, bagging off) | 0.963127 | — |
+| +seeds | EXP-009 | 5-seed average | 0.963303 | +0.00018 |
+| +bagging | EXP-011 | subsample_freq 1 | 0.963664 | +0.00036 |
+| +capacity | EXP-012 | num_leaves 127, lr 0.03, 2000t | 0.964038 | +0.00037 |
+| +capacity² | EXP-013 | num_leaves 255, lr 0.02, 3000t | 0.964109 | +0.00007 |
+| +**bin resolution** | **EXP-022** | **max_bin 511** | **0.965203** | **+0.00109** |
+
+Total verified progress this session: **+0.00208 over the re-baselined start.**
+max_bin was the single largest lever discovered — the continuous screen-time
+features need finer split granularity than LightGBM's default 255 bins.
+EXP-024 (1024 bins) and EXP-025 (nl511 at high bins) probe whether the
+(bin-resolution × capacity) surface has more gradient left.
+
+## Recently Completed Experiments
+
+| ID | Description | OOF ROC-AUC | Decision |
+|----|-------------|-------------|----------|
+| EXP-007 | LightGBM + engineered ratios (tuned) | 0.962917 | Rejected |
+| EXP-008 | LGBM+XGB+CatBoost probability blend | 0.962273 | Rejected |
+| EXP-009 | 5-seed ensemble nl64 unbagged | 0.963303 | Inconclusive+ |
+| EXP-010 | Legacy champion reproduction nl64 | 0.963127 | Promoted as verified baseline |
+| EXP-011 | Bagged 5-seed ensemble nl64 | 0.963664 | Promoted (superseded) |
+| EXP-012 | Capacity probe nl127 | 0.964038 | Promoted (superseded) |
+| EXP-013 | Capacity probe nl255 | 0.964109 | Promoted (superseded by 022) |
+| EXP-014 | Capacity midpoint nl96 | 0.963986 | Rejected |
+| EXP-015 | 10-seed nl127 | 0.964092 | Rejected (seed scaling exhausted) |
+| EXP-016 | Weighted linear stack | 0.961869 | Rejected |
+| EXP-017 | DART boosting nl127 | 0.961464 | Rejected |
+| EXP-018 | GOSS boosting nl255 | 0.963781 | Rejected |
+| EXP-019 | micro-grid mcs→20 @nl255 | 0.964064 | Rejected |
+| EXP-020 | micro-grid colsample→0.8 @nl255 | 0.963921 | Rejected |
+| EXP-021 | micro-grid reg_lambda→1.0 @nl255 | 0.964115 | Rejected (statistical tie) |
+| EXP-022 | **max_bin 511 @nl255** | **0.965203** | **Promoted — current champion** |
+| EXP-023 | Pseudo-labeling (self-training) | 0.963847 | Rejected |
+
+## Levers Status
+
+| Lever | Verdict | Evidence |
+|-------|---------|----------|
+| **Histogram resolution (max_bin)** | **STRONG POSITIVE (+0.0011)** | EXP-022 vs 013 |
+| Seed averaging (→5) | POSITIVE (+0.0002) | EXP-009 vs 010 |
+| Row bagging | POSITIVE (+0.0004) | EXP-011 vs 009 |
+| Leaf capacity to 255 | POSITIVE, saturating (+0.0004) | EXP-012/013 curve |
+| Micro-grid around optimum (mcs/col/L2) | FLAT (±0.0002) | EXP-019/020/021 |
+| Seed scaling (→10) | EXHAUSTED (+0.00005) | EXP-015 |
+| GOSS boosting | DEAD (−0.0003) | EXP-018 |
+| DART boosting | DEAD (−0.0026) | EXP-017 |
+| Pseudo-labeling | DEAD (−0.0003) | EXP-023 |
+| Cross-family GBDT blend | DEAD (−0.0009) | EXP-008 |
+| Linear/logistic stack | DEAD (−0.0022) | EXP-016 |
+| Engineered ratios | DEAD (−0.0013) | EXP-007 |
+| Missingness indicators | DEAD (EDA) | no run needed |
+
+Boosting-mode ranking: **gbdt > goss > dart**.
+Train/test distributions verified clean (KS p≥0.14 all numerics) — CV tracks LB.
 
 ## Champion Lineage (all GHA-verified)
 
