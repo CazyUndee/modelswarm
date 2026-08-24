@@ -1,78 +1,202 @@
-# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
-# Push a change to this file → Actions trains on the committed data and writes
-# results back under `results`. DO NOT run this locally.
-#
-# Seed-count scaling at the capacity optimum region: does averaging 10 seeds
-# keep paying where 5 seeds paid +0.0002-0.0004? Config = champion-family
-# (nl127 / lr0.03 / 2000t / bagged) with seeds doubled.
-
 experiment_id: EXP-015
 competition: s6e8
 status: queued
-
-hypothesis: >-
-  Doubling the seed ensemble from 5 to 10 members (nl127 champion config)
-  adds a further variance-reduction gain over EXP-012's 0.964038, testing
-  whether the seed lever is exhausted or scalable.
+hypothesis: Doubling the seed ensemble from 5 to 10 members (nl127 champion config)
+  adds a further variance-reduction gain over EXP-012's 0.964038, testing whether
+  the seed lever is exhausted or scalable.
 phase: 4
-
 model:
   name: ensemble
   blend: probability_average
   members:
-    - name: lightgbm
-      parameters: &lgbm_params
-        n_estimators: 2000
-        learning_rate: 0.03
-        num_leaves: 127
-        min_child_samples: 40
-        subsample: 0.8
-        subsample_freq: 1
-        colsample_bytree: 0.8
-        reg_alpha: 0.1
-        reg_lambda: 0.1
-        n_jobs: -1
-        verbose: -1
-        random_state: 42
-        early_stopping_rounds: 100
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 123
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 7
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 2024
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 99
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 555
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 2026
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 314
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 271828
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 161803
-
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 42
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 123
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 7
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 2024
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 99
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 555
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 2026
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 314
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 271828
+      early_stopping_rounds: 100
+  - name: lightgbm
+    parameters:
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 127
+      min_child_samples: 40
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 161803
+      early_stopping_rounds: 100
 features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-012
+  created_at: '2026-08-24T18:00:00Z'
+  design_notes: First five seeds identical to EXP-012 => direct comparability; members
+    6-10 are new seeds. If blend(10) > blend(5) by > +0.0001, seed scaling continues.
+results:
+  status: completed
+  oof_metric: 0.9640922178446021
+  fold_metrics:
+  - 0.9632892997525863
+  - 0.9640308825407291
+  - 0.9643206369118869
+  - 0.9650034290646914
+  - 0.9638227848862689
+  runtime_seconds: 3035.0159146785736
+  features_used:
   - age
   - daily_screen_time_hours
   - social_media_hours
@@ -85,23 +209,162 @@ features:
   - gender
   - stress_level
   - academic_work_impact
-
-validation:
-  strategy: stratified_kfold
-  n_folds: 5
-  random_state: 42
-
-training:
-  compute: github_actions
-  timeout_minutes: 120
-  predict_test: true
-
-metadata:
-  author: agent-orchestrator
-  parent_experiment: EXP-012
-  created_at: "2026-08-24T18:00:00Z"
-  design_notes: >-
-    First five seeds identical to EXP-012 => direct comparability; members 6-10
-    are new seeds. If blend(10) > blend(5) by > +0.0001, seed scaling continues.
-
-# Results (filled automatically by scripts/record_results.py after the run)
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9965953861394632
+    lightgbm[0]~lightgbm[2]: 0.9963956661642093
+    lightgbm[0]~lightgbm[3]: 0.996621783842872
+    lightgbm[0]~lightgbm[4]: 0.9964442581462981
+    lightgbm[0]~lightgbm[5]: 0.9965518331193249
+    lightgbm[0]~lightgbm[6]: 0.9963600056502137
+    lightgbm[0]~lightgbm[7]: 0.9963832348265245
+    lightgbm[0]~lightgbm[8]: 0.9964932367322196
+    lightgbm[0]~lightgbm[9]: 0.9965391761920844
+    lightgbm[1]~lightgbm[2]: 0.9966351208899181
+    lightgbm[1]~lightgbm[3]: 0.9966380793836718
+    lightgbm[1]~lightgbm[4]: 0.9967452170296975
+    lightgbm[1]~lightgbm[5]: 0.9967438492903313
+    lightgbm[1]~lightgbm[6]: 0.9965398628708422
+    lightgbm[1]~lightgbm[7]: 0.9966856056338477
+    lightgbm[1]~lightgbm[8]: 0.9965949363634622
+    lightgbm[1]~lightgbm[9]: 0.9967684904723503
+    lightgbm[2]~lightgbm[3]: 0.9967247726844641
+    lightgbm[2]~lightgbm[4]: 0.9965896383558375
+    lightgbm[2]~lightgbm[5]: 0.9966269926244293
+    lightgbm[2]~lightgbm[6]: 0.9967210703166193
+    lightgbm[2]~lightgbm[7]: 0.9966979801764574
+    lightgbm[2]~lightgbm[8]: 0.9965854148711994
+    lightgbm[2]~lightgbm[9]: 0.9967033818609944
+    lightgbm[3]~lightgbm[4]: 0.996697631118436
+    lightgbm[3]~lightgbm[5]: 0.9965365610528858
+    lightgbm[3]~lightgbm[6]: 0.9965869508152564
+    lightgbm[3]~lightgbm[7]: 0.996528676310695
+    lightgbm[3]~lightgbm[8]: 0.9966834384604851
+    lightgbm[3]~lightgbm[9]: 0.9967920268682282
+    lightgbm[4]~lightgbm[5]: 0.9965968538012843
+    lightgbm[4]~lightgbm[6]: 0.9966948850969414
+    lightgbm[4]~lightgbm[7]: 0.9964765667577377
+    lightgbm[4]~lightgbm[8]: 0.9967100469108473
+    lightgbm[4]~lightgbm[9]: 0.9966601027658469
+    lightgbm[5]~lightgbm[6]: 0.9967388308157817
+    lightgbm[5]~lightgbm[7]: 0.9967552363639126
+    lightgbm[5]~lightgbm[8]: 0.9965803652869264
+    lightgbm[5]~lightgbm[9]: 0.9965773730966127
+    lightgbm[6]~lightgbm[7]: 0.9966698831723423
+    lightgbm[6]~lightgbm[8]: 0.9967155773583052
+    lightgbm[6]~lightgbm[9]: 0.9966223390370427
+    lightgbm[7]~lightgbm[8]: 0.9965401184579684
+    lightgbm[7]~lightgbm[9]: 0.9965369953531125
+    lightgbm[8]~lightgbm[9]: 0.9966921200831985
+  rank_average_diagnostic: 0.9640914251367148
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9636508924073109
+    fold_metrics:
+    - 0.9628454036249358
+    - 0.9635563601748073
+    - 0.9639522048563044
+    - 0.9645245510945277
+    - 0.963383216285888
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9636375150754235
+    fold_metrics:
+    - 0.962829737708707
+    - 0.9635691298818896
+    - 0.9639649606088091
+    - 0.9645759663550365
+    - 0.9632561976349994
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9636883870534755
+    fold_metrics:
+    - 0.962922566095955
+    - 0.9636362732199272
+    - 0.9638338751128305
+    - 0.964564965580952
+    - 0.9634903327153468
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9636393078109743
+    fold_metrics:
+    - 0.962799004147048
+    - 0.9634786593108131
+    - 0.963820004516437
+    - 0.9646542698030626
+    - 0.9634471948705019
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.9636603277811943
+    fold_metrics:
+    - 0.9628621569833373
+    - 0.9636491710554036
+    - 0.9638692791447452
+    - 0.9644827160321064
+    - 0.9634436293127228
+  - member_index: 5
+    name: lightgbm
+    key: lightgbm[5]
+    oof_auc: 0.9635970564100454
+    fold_metrics:
+    - 0.962745166879311
+    - 0.9635613762111476
+    - 0.9638937729804696
+    - 0.9645025817687471
+    - 0.9632897270209317
+  - member_index: 6
+    name: lightgbm
+    key: lightgbm[6]
+    oof_auc: 0.9636490911467648
+    fold_metrics:
+    - 0.9629305686656169
+    - 0.9635692509061351
+    - 0.9637806543837029
+    - 0.9645770058442062
+    - 0.9633946753943727
+  - member_index: 7
+    name: lightgbm
+    key: lightgbm[7]
+    oof_auc: 0.9637366980314848
+    fold_metrics:
+    - 0.9628870849332843
+    - 0.9637855476197608
+    - 0.964009977061199
+    - 0.9645590868979976
+    - 0.9634498617443237
+  - member_index: 8
+    name: lightgbm
+    key: lightgbm[8]
+    oof_auc: 0.9636470219070387
+    fold_metrics:
+    - 0.9629148405880881
+    - 0.9635381930908371
+    - 0.9639030520134005
+    - 0.9644831006710083
+    - 0.9634105632234888
+  - member_index: 9
+    name: lightgbm
+    key: lightgbm[9]
+    oof_auc: 0.9636835854511447
+    fold_metrics:
+    - 0.9628479618795852
+    - 0.9636176451274577
+    - 0.963891545322449
+    - 0.9646426925780641
+    - 0.9634297149347135
+  artifacts:
+  - experiments/output/EXP-015/oof_predictions.csv
+  - experiments/output/EXP-015/results.json
+  decision: null
+  reasoning: null
