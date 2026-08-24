@@ -207,5 +207,12 @@ results:
   artifacts:
   - experiments/output/EXP-012/oof_predictions.csv
   - experiments/output/EXP-012/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: >-
+    NEW CHAMPION (supersedes EXP-011). Blend OOF 0.964038 = +0.00037 over
+    EXP-011 (num_leaves 64) and +0.00091 over verified baseline (EXP-010,
+    0.963127). Doubling capacity (num_leaves 127, min_child_samples 40,
+    lr 0.03, 2000 trees) lifted ALL five seed members uniformly by ~+0.00035
+    (members 0.963633-0.963685, std ~0.00002) - the plateau was capacity-limited,
+    not information-limited. Per design notes: proceed up the capacity curve
+    (EXP-013: num_leaves 255; EXP-014: midpoint 96/lr 0.05 control).

@@ -1,0 +1,88 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# Capacity curve midpoint control. EXP-012 (nl 64->127) gained +0.00037.
+# EXP-013 probes nl 255 in parallel; this run tests the intermediate point
+# with a faster LR so the curve shape (rising / peaked / falling) is mapped
+# from three points regardless of which single run wins.
+
+experiment_id: EXP-014
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  The capacity optimum lies between 64 and 255 leaves: num_leaves 96 with
+  lr 0.04, min_child_samples 30, 1500 trees (5 seeds) lands above EXP-012
+  (0.964038), locating the peak of the leaf-count curve.
+phase: 4
+
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+    - name: lightgbm
+      parameters: &lgbm_params
+        n_estimators: 1500
+        learning_rate: 0.04
+        num_leaves: 96
+        min_child_samples: 30
+        subsample: 0.8
+        subsample_freq: 1
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        n_jobs: -1
+        verbose: -1
+        random_state: 42
+        early_stopping_rounds: 100
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 123
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 7
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 2024
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 99
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-012
+  created_at: "2026-08-24T17:25:00Z"
+  design_notes: >-
+    Three-point capacity map when combined with EXP-012 (64) and EXP-013 (255):
+    96 vs both neighbors identifies whether the optimum is interior.
+
+# Results (filled automatically by scripts/record_results.py after the run)

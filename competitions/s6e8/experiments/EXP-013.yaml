@@ -1,0 +1,88 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# Capacity curve step 2 (EXP-010 -> 0.96313, EXP-011 bagging+seeds -> 0.96366,
+# EXP-012 nl127 -> 0.96404). num_leaves doubled each capacity win so far.
+# This probes the next doubling with matched regularization and slower LR.
+
+experiment_id: EXP-013
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  Continuing the verified capacity trend (num_leaves 255, min_child_samples 80,
+  lr 0.02, 3000 trees, colsample 0.7), averaged over 5 seeds, beats champion
+  EXP-012 (OOF 0.964038) rather than overfitting.
+phase: 4
+
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+    - name: lightgbm
+      parameters: &lgbm_params
+        n_estimators: 3000
+        learning_rate: 0.02
+        num_leaves: 255
+        min_child_samples: 80
+        subsample: 0.8
+        subsample_freq: 1
+        colsample_bytree: 0.7
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        n_jobs: -1
+        verbose: -1
+        random_state: 42
+        early_stopping_rounds: 150
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 123
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 7
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 2024
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 99
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-012
+  created_at: "2026-08-24T17:20:00Z"
+  design_notes: >-
+    colsample lowered 0.8 -> 0.7 to keep per-tree information diverse at higher
+    capacity. If EXP-013 <= EXP-012, the capacity curve has peaked between 64
+    and 255 leaves; EXP-014 midpoint locates the peak.
+
+# Results (filled automatically by scripts/record_results.py after the run)
