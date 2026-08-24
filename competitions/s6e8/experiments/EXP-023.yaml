@@ -157,5 +157,6 @@ results:
   artifacts:
   - experiments/output/EXP-023/oof_predictions.csv
   - experiments/output/EXP-023/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    Pseudo-labeling (self-training, w=0.3) scored 0.963847 (-0.0003 vs pre-existing champion). Confident test rows added no real signal - consistent with near-saturating feature structure where confident predictions are already correct in training. Lever closed; infrastructure retained for future datasets.

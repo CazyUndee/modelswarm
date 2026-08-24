@@ -210,5 +210,6 @@ results:
   artifacts:
   - experiments/output/EXP-022/oof_predictions.csv
   - experiments/output/EXP-022/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: >-
+    NEW CHAMPION. max_bin 255->511 alone gains +0.0011 OOF (0.964109 -> 0.965203), triple the promotion margin. All folds >= 0.9644; members 0.964920-0.964955 (std ~0.00002). Histogram resolution was the largest single lever found this session - the continuous screen-time features need finer split granularity than the default. Seed blending added +0.00025 over best member.
