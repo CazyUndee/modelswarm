@@ -188,14 +188,14 @@ metadata:
     6-10 are new seeds. If blend(10) > blend(5) by > +0.0001, seed scaling continues.
 results:
   status: completed
-  oof_metric: 0.9640922178446021
+  oof_metric: 0.964090281990612
   fold_metrics:
-  - 0.9632892997525863
-  - 0.9640308825407291
-  - 0.9643206369118869
-  - 0.9650034290646914
-  - 0.9638227848862689
-  runtime_seconds: 3035.0159146785736
+  - 0.9632899259325401
+  - 0.9640324165293844
+  - 0.964317862741864
+  - 0.9649948178217276
+  - 0.9638227912293234
+  runtime_seconds: 2770.281546354294
   features_used:
   - age
   - daily_screen_time_hours
@@ -216,52 +216,52 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9965953861394632
-    lightgbm[0]~lightgbm[2]: 0.9963956661642093
-    lightgbm[0]~lightgbm[3]: 0.996621783842872
-    lightgbm[0]~lightgbm[4]: 0.9964442581462981
-    lightgbm[0]~lightgbm[5]: 0.9965518331193249
-    lightgbm[0]~lightgbm[6]: 0.9963600056502137
-    lightgbm[0]~lightgbm[7]: 0.9963832348265245
-    lightgbm[0]~lightgbm[8]: 0.9964932367322196
-    lightgbm[0]~lightgbm[9]: 0.9965391761920844
-    lightgbm[1]~lightgbm[2]: 0.9966351208899181
-    lightgbm[1]~lightgbm[3]: 0.9966380793836718
-    lightgbm[1]~lightgbm[4]: 0.9967452170296975
-    lightgbm[1]~lightgbm[5]: 0.9967438492903313
-    lightgbm[1]~lightgbm[6]: 0.9965398628708422
-    lightgbm[1]~lightgbm[7]: 0.9966856056338477
-    lightgbm[1]~lightgbm[8]: 0.9965949363634622
-    lightgbm[1]~lightgbm[9]: 0.9967684904723503
-    lightgbm[2]~lightgbm[3]: 0.9967247726844641
-    lightgbm[2]~lightgbm[4]: 0.9965896383558375
-    lightgbm[2]~lightgbm[5]: 0.9966269926244293
-    lightgbm[2]~lightgbm[6]: 0.9967210703166193
-    lightgbm[2]~lightgbm[7]: 0.9966979801764574
-    lightgbm[2]~lightgbm[8]: 0.9965854148711994
-    lightgbm[2]~lightgbm[9]: 0.9967033818609944
-    lightgbm[3]~lightgbm[4]: 0.996697631118436
-    lightgbm[3]~lightgbm[5]: 0.9965365610528858
-    lightgbm[3]~lightgbm[6]: 0.9965869508152564
-    lightgbm[3]~lightgbm[7]: 0.996528676310695
-    lightgbm[3]~lightgbm[8]: 0.9966834384604851
-    lightgbm[3]~lightgbm[9]: 0.9967920268682282
-    lightgbm[4]~lightgbm[5]: 0.9965968538012843
-    lightgbm[4]~lightgbm[6]: 0.9966948850969414
-    lightgbm[4]~lightgbm[7]: 0.9964765667577377
-    lightgbm[4]~lightgbm[8]: 0.9967100469108473
-    lightgbm[4]~lightgbm[9]: 0.9966601027658469
-    lightgbm[5]~lightgbm[6]: 0.9967388308157817
-    lightgbm[5]~lightgbm[7]: 0.9967552363639126
-    lightgbm[5]~lightgbm[8]: 0.9965803652869264
-    lightgbm[5]~lightgbm[9]: 0.9965773730966127
-    lightgbm[6]~lightgbm[7]: 0.9966698831723423
-    lightgbm[6]~lightgbm[8]: 0.9967155773583052
-    lightgbm[6]~lightgbm[9]: 0.9966223390370427
-    lightgbm[7]~lightgbm[8]: 0.9965401184579684
-    lightgbm[7]~lightgbm[9]: 0.9965369953531125
-    lightgbm[8]~lightgbm[9]: 0.9966921200831985
-  rank_average_diagnostic: 0.9640914251367148
+    lightgbm[0]~lightgbm[1]: 0.9966122397256412
+    lightgbm[0]~lightgbm[2]: 0.9964076831447917
+    lightgbm[0]~lightgbm[3]: 0.9966217815778856
+    lightgbm[0]~lightgbm[4]: 0.9964543750730505
+    lightgbm[0]~lightgbm[5]: 0.9965518333046569
+    lightgbm[0]~lightgbm[6]: 0.9963525809110254
+    lightgbm[0]~lightgbm[7]: 0.9963811564070367
+    lightgbm[0]~lightgbm[8]: 0.9964957596924083
+    lightgbm[0]~lightgbm[9]: 0.9965429330007515
+    lightgbm[1]~lightgbm[2]: 0.9966674287586685
+    lightgbm[1]~lightgbm[3]: 0.996653123077176
+    lightgbm[1]~lightgbm[4]: 0.9967592242489174
+    lightgbm[1]~lightgbm[5]: 0.9967550635998578
+    lightgbm[1]~lightgbm[6]: 0.9965492314911853
+    lightgbm[1]~lightgbm[7]: 0.9966929367782685
+    lightgbm[1]~lightgbm[8]: 0.9966098479631241
+    lightgbm[1]~lightgbm[9]: 0.9967856541442202
+    lightgbm[2]~lightgbm[3]: 0.9967369936835366
+    lightgbm[2]~lightgbm[4]: 0.996615184836234
+    lightgbm[2]~lightgbm[5]: 0.9966369710205978
+    lightgbm[2]~lightgbm[6]: 0.996727196569323
+    lightgbm[2]~lightgbm[7]: 0.9967115673252255
+    lightgbm[2]~lightgbm[8]: 0.9966067379978945
+    lightgbm[2]~lightgbm[9]: 0.9967285086704781
+    lightgbm[3]~lightgbm[4]: 0.9967046140501857
+    lightgbm[3]~lightgbm[5]: 0.9965365856497271
+    lightgbm[3]~lightgbm[6]: 0.9965821454184147
+    lightgbm[3]~lightgbm[7]: 0.9965316445601219
+    lightgbm[3]~lightgbm[8]: 0.99668397658355
+    lightgbm[3]~lightgbm[9]: 0.9967948874163444
+    lightgbm[4]~lightgbm[5]: 0.9966070132135374
+    lightgbm[4]~lightgbm[6]: 0.9966981479151119
+    lightgbm[4]~lightgbm[7]: 0.9964818825087522
+    lightgbm[4]~lightgbm[8]: 0.9967195284622089
+    lightgbm[4]~lightgbm[9]: 0.9966720759943376
+    lightgbm[5]~lightgbm[6]: 0.9967327926109171
+    lightgbm[5]~lightgbm[7]: 0.9967549486446283
+    lightgbm[5]~lightgbm[8]: 0.9965799443055186
+    lightgbm[5]~lightgbm[9]: 0.9965805330653221
+    lightgbm[6]~lightgbm[7]: 0.9966634266379616
+    lightgbm[6]~lightgbm[8]: 0.9967097425996837
+    lightgbm[6]~lightgbm[9]: 0.9966182278229658
+    lightgbm[7]~lightgbm[8]: 0.9965475575008687
+    lightgbm[7]~lightgbm[9]: 0.9965445293311612
+    lightgbm[8]~lightgbm[9]: 0.9967008706323154
+  rank_average_diagnostic: 0.9640896837947096
   members:
   - member_index: 0
     name: lightgbm
@@ -276,101 +276,95 @@ results:
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9636375150754235
+    oof_auc: 0.963627122222739
     fold_metrics:
     - 0.962829737708707
-    - 0.9635691298818896
+    - 0.9635491357631352
     - 0.9639649606088091
-    - 0.9645759663550365
+    - 0.9645429051698375
     - 0.9632561976349994
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9636883870534755
+    oof_auc: 0.9636852992695925
     fold_metrics:
     - 0.962922566095955
     - 0.9636362732199272
-    - 0.9638338751128305
+    - 0.9638184953923019
     - 0.964564965580952
     - 0.9634903327153468
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9636393078109743
+    oof_auc: 0.9636393417790226
     fold_metrics:
-    - 0.962799004147048
+    - 0.9627991391258712
     - 0.9634786593108131
     - 0.963820004516437
-    - 0.9646542698030626
-    - 0.9634471948705019
+    - 0.9646543020254508
+    - 0.9634472032433339
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9636603277811943
+    oof_auc: 0.9636533718515615
     fold_metrics:
-    - 0.9628621569833373
+    - 0.9628622008768268
     - 0.9636491710554036
-    - 0.9638692791447452
-    - 0.9644827160321064
+    - 0.9638692788910255
+    - 0.9644523521398934
     - 0.9634436293127228
   - member_index: 5
     name: lightgbm
     key: lightgbm[5]
-    oof_auc: 0.9635970564100454
+    oof_auc: 0.9635970546238559
     fold_metrics:
     - 0.962745166879311
-    - 0.9635613762111476
+    - 0.963561375957428
     - 0.9638937729804696
-    - 0.9645025817687471
-    - 0.9632897270209317
+    - 0.9645025660381323
+    - 0.963289732856542
   - member_index: 6
     name: lightgbm
     key: lightgbm[6]
-    oof_auc: 0.9636490911467648
+    oof_auc: 0.9636587132282024
     fold_metrics:
     - 0.9629305686656169
-    - 0.9635692509061351
-    - 0.9637806543837029
-    - 0.9645770058442062
-    - 0.9633946753943727
+    - 0.9636179574562759
+    - 0.9637808088989346
+    - 0.9645770045756084
+    - 0.9633946175457159
   - member_index: 7
     name: lightgbm
     key: lightgbm[7]
-    oof_auc: 0.9637366980314848
+    oof_auc: 0.9637345953717458
     fold_metrics:
-    - 0.9628870849332843
-    - 0.9637855476197608
+    - 0.9628817309424469
+    - 0.9637934233296264
     - 0.964009977061199
-    - 0.9645590868979976
+    - 0.9645412727379803
     - 0.9634498617443237
   - member_index: 8
     name: lightgbm
     key: lightgbm[8]
-    oof_auc: 0.9636470219070387
+    oof_auc: 0.9636487522680375
     fold_metrics:
-    - 0.9629148405880881
-    - 0.9635381930908371
+    - 0.9629235685420643
+    - 0.9635381314369763
     - 0.9639030520134005
     - 0.9644831006710083
     - 0.9634105632234888
   - member_index: 9
     name: lightgbm
     key: lightgbm[9]
-    oof_auc: 0.9636835854511447
+    oof_auc: 0.9636856847313318
     fold_metrics:
-    - 0.9628479618795852
+    - 0.9628558710804371
     - 0.9636176451274577
     - 0.963891545322449
     - 0.9646426925780641
-    - 0.9634297149347135
+    - 0.9634298691977984
   artifacts:
   - experiments/output/EXP-015/oof_predictions.csv
   - experiments/output/EXP-015/results.json
-  decision: rejected
-  reasoning: >-
-    Seed scaling exhausted: 10-seed blend OOF 0.964092 vs identical-config
-    5-seed (EXP-012) 0.964038 => +0.00005 from doubling seeds. Member spread
-    tiny (mean 0.963659, std 0.00004) - bagged LGBM at this capacity is
-    essentially deterministic across seeds. First five seeds had paid
-    +0.0002; marginal utility collapsed. Statistically indistinguishable from
-    champion EXP-013 (0.964109): more seeds approximates more capacity.
+  decision: null
+  reasoning: null
