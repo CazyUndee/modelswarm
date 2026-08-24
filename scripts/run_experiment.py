@@ -245,6 +245,83 @@ def _fit_member_predict(model_name: str, params: dict,
             model.fit(X_tr, y_train, verbose=False)
         return model.predict_proba(encode(X_pred))[:, 1]
 
+def _fit_member_predict(model_name: str, params: dict,
+                        X_train: pd.DataFrame, y_train: pd.Series,
+                        X_pred: pd.DataFrame, cat_cols: list[str],
+                        eval_set: tuple | None = None,
+                        sample_weight: np.ndarray | None = None) -> np.ndarray:
+    """Fit one model member; return positive-class probabilities for X_pred.
+
+    Categorical handling per family:
+      - lightgbm: native category dtype + native NaN handling
+      - xgboost:  category dtype with enable_categorical=True (hist), native NaN
+      - catboost: ordinal codes (NaN → separate bucket via NaN code) +
+                  numerics median-filled with TRAINING statistics only
+      - logistic: median-imputed numerics + one-hot categoricals, standardized
+    eval_set=(X_val, y_val) enables early stopping where supported.
+    sample_weight flows to fit() where supported (all families).
+    """
+    if model_name == "lightgbm":
+        import lightgbm as lgb
+        X_tr, X_pr = _align_categoricals(X_train, X_pred, cat_cols)
+        ctor = {k: v for k, v in params.items()
+                if k not in ("eval_metric", "early_stopping_rounds")}
+        model = lgb.LGBMClassifier(**ctor)
+        es = params.get("early_stopping_rounds")
+        fit_kwargs = {"sample_weight": sample_weight} if sample_weight is not None else {}
+        if es and eval_set is not None:
+            X_ev = _align_categoricals(eval_set[0], X_train, cat_cols)[0]
+            model.fit(X_tr, y_train, eval_set=[(X_ev, eval_set[1])],
+                      callbacks=[lgb.early_stopping(es, verbose=False)], **fit_kwargs)
+        else:
+            model.fit(X_tr, y_train, callbacks=[], **fit_kwargs)
+        return model.predict_proba(X_pr)[:, 1]
+
+    if model_name == "xgboost":
+        import xgboost as xgb
+        X_tr, X_pr = _align_categoricals(X_train, X_pred, cat_cols)
+        ctor = {k: v for k, v in params.items()
+                if k not in ("eval_metric", "early_stopping_rounds")}
+        ctor.setdefault("tree_method", "hist")
+        ctor.setdefault("enable_categorical", True)
+        ctor.setdefault("eval_metric", "auc")
+        model = xgb.XGBClassifier(**ctor)
+        es = params.get("early_stopping_rounds")
+        fit_kwargs = {"sample_weight": sample_weight} if sample_weight is not None else {}
+        if es and eval_set is not None:
+            X_ev = _align_categoricals(eval_set[0], X_train, cat_cols)[0]
+            model.set_params(early_stopping_rounds=es)
+            model.fit(X_tr, y_train, eval_set=[(X_ev, eval_set[1])], verbose=False, **fit_kwargs)
+        else:
+            model.fit(X_tr, y_train, verbose=False, **fit_kwargs)
+        return model.predict_proba(X_pr)[:, 1]
+
+    if model_name == "catboost":
+        from catboost import CatBoostClassifier
+        medians = {c: (X_train[c].median() if c not in cat_cols else 0.0)
+                   for c in X_train.columns}
+        codes_tr = {c: pd.Categorical(X_train[c]).codes for c in cat_cols}
+        vocab = {c: pd.Categorical(X_train[c]).categories for c in cat_cols}
+        X_tr = _catboost_frame(X_train, medians, codes_tr)
+
+        def encode(df: pd.DataFrame) -> pd.DataFrame:
+            codes = {c: pd.Categorical(df[c], categories=vocab[c]).codes for c in cat_cols}
+            return _catboost_frame(df, medians, codes)
+
+        ctor = {("thread_count" if k == "n_jobs" else k): v
+                for k, v in params.items() if k != "eval_metric"}
+        es = params.get("early_stopping_rounds")
+        model = CatBoostClassifier(**ctor)
+        fit_kwargs = {}
+        if sample_weight is not None:
+            fit_kwargs["sample_weight"] = sample_weight
+        if es and eval_set is not None:
+            model.fit(X_tr, y_train, eval_set=[(encode(eval_set[0]), eval_set[1])],
+                      early_stopping_rounds=es, verbose=False, **fit_kwargs)
+        else:
+            model.fit(X_tr, y_train, verbose=False, **fit_kwargs)
+        return model.predict_proba(encode(X_pred))[:, 1]
+
     if model_name == "logistic":
         # Linear member: median-imputed numerics (train-fold stats), one-hot
         # categoricals, standardized. Genuinely decorrelated from tree splits.
@@ -263,14 +340,21 @@ def _fit_member_predict(model_name: str, params: dict,
                 "max_iter": params.get("max_iter", 1000),
                 "random_state": params.get("random_state", 42)}
         model = make_pipeline(pre, LogisticRegression(**ctor))
-        model.fit(X_train, y_train)
+        fit_kwargs = {"logisticregression__sample_weight": sample_weight} if sample_weight is not None else {}
+        model.fit(X_train, y_train, **fit_kwargs)
         return model.predict_proba(X_pred)[:, 1]
 
     raise ValueError(f"Unknown member model: {model_name}")
 
 
-def train_model(train: pd.DataFrame, config: dict) -> dict:
-    """Train the configured model/ensemble with stratified CV. Returns results dict."""
+def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = None) -> dict:
+    """Train the configured model/ensemble with stratified CV. Returns results dict.
+
+    If config.training.pseudo_label is set and `test` is provided, uses leak-free
+    per-fold self-training: a base model fit ONLY on the fold's training rows
+    selects confident test rows, then final models are fit on
+    fold-train + weighted pseudo-labeled rows and produce the recorded OOF.
+    """
     from sklearn.metrics import roc_auc_score
     from sklearn.model_selection import StratifiedKFold
 
@@ -293,6 +377,15 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
     print(f"  Members: {[m['name'] for m in members]} | blend: {blend_method}")
     print(f"  Features: {len(available)} ({len(cat_cols)} categorical)")
 
+    pl_cfg = config.get("training", {}).get("pseudo_label")
+    use_pseudo = bool(pl_cfg) and test is not None
+    if use_pseudo:
+        X_test_al = test[available].copy()
+        for c in cat_cols:
+            X_test_al[c] = X_test_al[c].astype(X[c].dtype) if X[c].dtype.name != 'category' else X[c].dtype
+        print(f"  Pseudo-labeling ENABLED: low={pl_cfg.get('low')} high={pl_cfg.get('high')} "
+              f"weight={pl_cfg.get('weight', 0.5)}")
+
     val_config = config.get("validation", {})
     skf = StratifiedKFold(n_splits=val_config.get("n_folds", 5),
                           shuffle=True, random_state=val_config.get("random_state", 42))
@@ -301,16 +394,46 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
     oof_by_member = {k: np.zeros(len(X)) for k in member_keys}
     member_fold_aucs = {k: [] for k in member_keys}
     blend_fold_aucs = []
+    pseudo_counts = []
 
     for fold, (train_idx, val_idx) in enumerate(skf.split(X, y)):
         X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
         y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
 
+        # --- Optional pseudo-label generation (base models see fold-train ONLY) ---
+        sw_map = None
+        if use_pseudo:
+            base_preds = {}
+            for key, m in zip(member_keys, members):
+                base_preds[key] = _fit_member_predict(
+                    m["name"], m.get("parameters", {}), X_train, y_train,
+                    X_test_al, cat_cols)
+            base_avg = _blend(base_preds, blend_method, blend_weights)
+            lo, hi = pl_cfg.get("low", 0.02), pl_cfg.get("high", 0.98)
+            w = float(pl_cfg.get("weight", 0.5))
+            conf_mask = (base_avg <= lo) | (base_avg >= hi)
+            n_conf = int(conf_mask.sum())
+            pseudo_counts.append(n_conf)
+            if n_conf > 0:
+                X_conf = X_test_al.loc[conf_mask].copy()
+                y_conf = pd.Series((base_avg[conf_mask] >= hi).astype(int),
+                                   index=X_conf.index)
+                X_aug = pd.concat([X_train, X_conf], ignore_index=True)
+                y_aug = pd.concat([y_train, y_conf], ignore_index=True)
+                sw_map = np.concatenate([np.ones(len(X_train)), np.full(n_conf, w)])
+                print(f"    fold {fold}: {n_conf} pseudo rows "
+                      f"({n_conf / len(X_test_al):.1%} of test)")
+            else:
+                X_aug, y_aug = X_train, y_train
+        else:
+            X_aug, y_aug = X_train, y_train
+
         fold_preds = {}
         for key, m in zip(member_keys, members):
             preds = _fit_member_predict(m["name"], m.get("parameters", {}),
-                                        X_train, y_train, X_val, cat_cols,
-                                        eval_set=(X_val, y_val))
+                                        X_aug, y_aug, X_val, cat_cols,
+                                        eval_set=(X_val, y_val) if not use_pseudo else None,
+                                        sample_weight=sw_map)
             oof_by_member[key][val_idx] = preds
             fold_preds[key] = preds
             auc = roc_auc_score(y_val, preds)
@@ -321,6 +444,9 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
 
         fold_str = " ".join(f"{n}={member_fold_aucs[n][-1]:.5f}" for n in member_keys)
         print(f"  Fold {fold}: {fold_str} | blend={blend_fold_aucs[-1]:.5f}")
+
+    if use_pseudo:
+        print(f"  Pseudo rows/fold: {pseudo_counts}")
 
     member_oof_aucs = {}
     for k in member_keys:
@@ -363,7 +489,11 @@ def train_model(train: pd.DataFrame, config: dict) -> dict:
 
 
 def predict_test(train: pd.DataFrame, test: pd.DataFrame, config: dict) -> np.ndarray:
-    """Fit every member on the full dataset and predict the test set (submission)."""
+    """Fit every member on the full dataset and predict the test set (submission).
+
+    Mirrors the CV pseudo-label procedure when configured: base full-data fit
+    selects confident test rows, final fit is on train + weighted pseudo rows.
+    """
     model_config = config.get("model", {})
     members = _get_members(model_config)
     blend_method = model_config.get("blend", "probability_average")
@@ -377,11 +507,39 @@ def predict_test(train: pd.DataFrame, test: pd.DataFrame, config: dict) -> np.nd
     cat_cols = [c for c in features if not pd.api.types.is_numeric_dtype(X[c])]
     X, X_test = _align_categoricals(X, X_test, cat_cols)
 
+    pl_cfg = config.get("training", {}).get("pseudo_label")
+
+    if pl_cfg:
+        base_preds = {}
+        for key, m in zip((f"{m['name']}[{i}]" for i, m in enumerate(members)), members):
+            base_preds[key] = _fit_member_predict(
+                m["name"], m.get("parameters", {}), X, y, X_test, cat_cols)
+        base_avg = _blend(base_preds, blend_method, blend_weights)
+        lo, hi = pl_cfg.get("low", 0.02), pl_cfg.get("high", 0.98)
+        w = float(pl_cfg.get("weight", 0.5))
+        conf_mask = (base_avg <= lo) | (base_avg >= hi)
+        n_conf = int(conf_mask.sum())
+        print(f"  pseudo-labeling submission: {n_conf} confident test rows")
+        if n_conf > 0:
+            X_conf = X_test.loc[conf_mask].copy()
+            y_conf = pd.Series((base_avg[conf_mask] >= hi).astype(int), index=X_conf.index)
+            X_aug = pd.concat([X, X_conf], ignore_index=True)
+            y_aug = pd.concat([y, y_conf], ignore_index=True)
+            sw = np.concatenate([np.ones(len(X)), np.full(n_conf, w)])
+            final_preds = {}
+            for key, m in zip((f"{m['name']}[{i}]" for i, m in enumerate(members)), members):
+                # Predict the SAME test rows the model was partially trained on;
+                # standard self-training practice — recorded transparently.
+                final_preds[key] = _fit_member_predict(
+                    m["name"], m.get("parameters", {}), X_aug, y_aug,
+                    X_test, cat_cols, sample_weight=sw)
+            return _blend(final_preds, blend_method, blend_weights)
+
     member_preds = {}
-    for m in members:
-        member_preds[m["name"]] = _fit_member_predict(
+    for key, m in zip((f"{m['name']}[{i}]" for i, m in enumerate(members)), members):
+        member_preds[key] = _fit_member_predict(
             m["name"], m.get("parameters", {}), X, y, X_test, cat_cols)
-        print(f"  test predictions ready: {m['name']}")
+        print(f"  test predictions ready: {key}")
 
     return _blend(member_preds, blend_method, blend_weights)
 
@@ -436,7 +594,8 @@ def main():
 
     print("\n[3/5] Training (stratified CV)...")
     start_time = time.time()
-    results = train_model(train, config)
+    pl_enabled = bool(config.get("training", {}).get("pseudo_label"))
+    results = train_model(train, config, test=test if pl_enabled else None)
     runtime = time.time() - start_time
     results["runtime_seconds"] = runtime
 

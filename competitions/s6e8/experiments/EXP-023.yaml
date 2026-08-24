@@ -1,0 +1,91 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# Pseudo-labeling (self-training) probe — the last structural lever.
+# Leak-free design: per fold, base models fit ONLY on that fold's training rows
+# select confident test rows; final models train on fold-train + weighted pseudo
+# rows and produce the recorded OOF. Submission mirrors the procedure at full scale.
+#
+# Thresholds chosen from EDA: top/bottom deciles of the dominant features are
+# near-deterministic (p≈0.9997), so 0.01/0.99 captures a large confident band.
+
+experiment_id: EXP-023
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  Self-training on confident test predictions (p<=0.01 or p>=0.99, weight 0.3)
+  adds real signal from the 296k-row unlabeled test set and beats champion
+  EXP-013 (0.964109), because the decision boundary region is small relative
+  to the confidently-classified mass.
+phase: 4
+
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+    - name: lightgbm
+      parameters: &lgbm_params
+        n_estimators: 3000
+        learning_rate: 0.02
+        num_leaves: 255
+        min_child_samples: 80
+        subsample: 0.8
+        subsample_freq: 1
+        colsample_bytree: 0.7
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        n_jobs: -1
+        verbose: -1
+        random_state: 42
+        early_stopping_rounds: 150
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 123
+    - name: lightgbm
+      parameters:
+        <<: *lgbm_params
+        random_state: 7
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+  pseudo_label:
+    low: 0.01
+    high: 0.99
+    weight: 0.3
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-013
+  created_at: "2026-08-24T20:45:00Z"
+  design_notes: >-
+    3 seeds to keep double-fit cost sane (~2x EXP-013). Integrity note: base
+    models see fold-train only, so OOF remains leak-free w.r.t. validation rows;
+    mild optimism vs true LB possible if pseudo labels are wrong — weight kept
+    conservative (0.3). If OOF improves but LB would not, the gap shows in
+    public score after submission.
+
+# Results (filled automatically by scripts/record_results.py after the run)
