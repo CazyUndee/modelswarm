@@ -62,11 +62,15 @@ current_champion:
   metric: roc_auc
   status: active
 
-queued_experiments:
+queued_experiments: []
+
+last_completed:
   - experiment_id: "EXP-007"
     description: "LightGBM + engineered screen-time features (tuned)"
-    status: queued
+    oof_score: 0.962917
+    decision: rejected  # below champion EXP-006 (0.96421)
     compute: github_actions
+    run_date: "2026-08-24"
 
 directories:
   data: competitions/s6e8/data

@@ -1,6 +1,6 @@
 experiment_id: EXP-007
 competition: s6e8
-status: queued
+status: completed
 hypothesis: LightGBM 5-fold stratified CV with the engineered screen-time feature
   set (9 derived ratios/products/sums + raw behavioral features + 3 categoricals)
   and tuned hyperparameters (num_leaves=63, lr=0.03, up to 1200 trees with early stopping)
@@ -137,5 +137,12 @@ results:
   artifacts:
   - experiments/output/EXP-007/oof_predictions.csv
   - experiments/output/EXP-007/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    GHA-verified OOF 0.962917 (5-fold, max spread ~0.0019) is BELOW champion
+    EXP-006 (0.96421) by -0.00129 — outside the 0.001 replicate band, so
+    rejected per operations policy. Champion unchanged. Notable: the voided
+    local run's score (0.962920) closely matched this verified result; the
+    erroneous part of the local record was its champion baseline citation
+    (0.95965), not the score itself. Engineered screen-time ratios add no
+    signal over EXP-006's configuration.

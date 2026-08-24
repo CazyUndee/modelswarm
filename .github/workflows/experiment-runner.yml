@@ -124,7 +124,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check API credentials
+        id: creds
+        run: |
+          if [ -n "${{ vars.MODELSWARM_API_URL }}" ]; then
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+            echo "::warning::MODELSWARM_API_URL not set — skipping live-state API sync (results already committed to git)."
+          fi
+
       - name: Update API with results
+        if: steps.creds.outputs.has_creds == 'true'
         run: |
           python scripts/sync_results_to_api.py
         env:

@@ -1,6 +1,6 @@
 # ModelSwarm Research State
 
-> Last updated: 2026-08-24
+> Last updated: 2026-08-24 (post EXP-007 GHA run)
 > Current competition: Kaggle Playground Series S6E8
 > Compute policy: **ALL experiments run on GitHub Actions** (`.github/workflows/experiment-runner.yml`). Local ML runs are prohibited — see `AGENT_INSTRUCTIONS.md`.
 
@@ -17,25 +17,25 @@
 | ID | Description | OOF ROC-AUC | Status |
 |----|-------------|-------------|--------|
 | EXP-006 | 5-fold regularized LightGBM ensemble | 0.96421 | Active (champion) |
+| EXP-007 | LightGBM + engineered screen-time features | 0.96292 | Rejected (GHA-verified) |
 
 ## Active Experiments
 
-| ID | Description | Status |
-|----|-------------|--------|
-| EXP-007 | LightGBM + engineered screen-time features (tuned) | Queued on GitHub Actions |
+None. Queue the next hypothesis as `competitions/s6e8/experiments/EXP-008.yaml` and push.
 
-## Result Integrity Notice (2026-08-24)
+## Result Integrity Notice (2026-08-24) — RESOLVED
 
-Prior local experiment runs have been **voided** due to irreconcilable inconsistencies:
+Prior local runs were voided due to irreconcilable numbers (0.96292 vs cited baseline
+0.95965 vs 0.96228 in lgb_cv5_results.json). EXP-007 was re-run authoritatively on
+GitHub Actions:
 
-- EXP-007's local record claimed OOF 0.96292 against a cited champion baseline of 0.95965,
-  but the EXP-006 experiment record states the champion is at 0.96421.
-- `competitions/s6e8/data/lgb_cv5_results.json` records yet another local figure (OOF 0.96228)
-  with different fold scores than EXP-007's YAML.
-- None of these numbers can be reproduced or trusted; they came from unversioned local scripts.
+- **Verified EXP-007 OOF: 0.962917** (folds 0.96206 / 0.96264 / 0.96325 / 0.96390 / 0.96274).
+- The old local score 0.962920 was actually accurate; the corrupted part was its champion
+  baseline citation (0.95965 instead of the true 0.96421).
+- **EXP-007 is BELOW champion by -0.00129 → rejected.** Champion remains EXP-006.
+- The lgb_cv5_results.json figure (0.96228) came from a different, older config and is moot.
 
-EXP-007 has been re-queued with a corrected config for an authoritative run on GitHub Actions.
-Until a GHA-verified result exists, EXP-006 remains champion and no promotion decisions are valid.
+All future scores must come from GHA runs. No exceptions.
 
 ## Recently Completed Experiments
 
@@ -47,28 +47,29 @@ Until a GHA-verified result exists, EXP-006 remains champion and no promotion de
 | EXP-003 | Feature importance analysis | — | Completed |
 | EXP-003b | Extended feature analysis | — | Completed |
 | EXP-006 | Regularized LightGBM ensemble | 0.96421 | Promoted to champion |
-| EXP-007 (v1) | Local LightGBM tuned run | ~~0.96292~~ | Voided — inconsistent local results |
+| EXP-007 | LightGBM + engineered ratios (tuned) | 0.96292 (GHA) | Rejected — below champion |
 
 ## Important Discoveries
 
 - Regularized LightGBM provides strong baseline with good generalization (per EXP-006 record).
-- Composition/interaction features show promise but are UNVERIFIED pending EXP-007's GHA rerun.
-- Stratified 5-fold CV is the validation standard.
-- Dataset ground truth (verified by `validate_data.py`): train = 691,369 rows × 14 cols;
-  test = 296,302 rows × 13 cols; features include categoricals (`gender`, `stress_level`,
-  `academic_work_impact`) and missing values in numeric columns.
+- **Engineered screen-time ratio features add NO signal over EXP-006's configuration**
+  (GHA-verified: −0.00129). Deprioritize this feature family.
+- Stratified 5-fold CV is stable: EXP-007 fold spread ~0.0019, std ~0.0007.
+- Dataset ground truth (verified): train = 691,369 × 14; test = 296,302 × 13;
+  3 categoricals (`gender`, `stress_level`, `academic_work_impact`); numeric NaNs present.
 
 ## Rejected Approaches
 
-- Local experiment execution — results unverifiable, caused the integrity notice above.
+- Local experiment execution — unverifiable, caused the integrity incident above.
+- Engineered screen-time ratio/interaction features on top of raw features (EXP-007).
 
 ## Current Research Priorities
 
-1. **VERIFY:** Run EXP-007 on GitHub Actions; establish an authoritative score for the
-   engineered-feature set vs champion EXP-006.
-2. **RECONCILE:** If EXP-007 beats 0.96421 by > 0.0005 across folds, operations review promotes it.
-3. **EXPLORE:** Higher-order interaction features (only after verification pipeline proves stable).
-4. **EXPLOIT:** Hyperparameter refinement on whichever model holds champion status.
+1. **EXPLORE:** Cross-model diversity — XGBoost and CatBoost with tuned params on the
+   canonical feature set (queue as EXP-008/EXP-009), targeting an ensemble blend later.
+2. **EXPLOIT:** Hyperparameter refinement directly on champion EXP-006's configuration.
+3. **VERIFY:** Seed sensitivity of the champion before trusting any sub-0.001 delta.
+4. **AVOID:** Further screen-time ratio engineering — proven void by EXP-007.
 
 ## Agent Activity
 
@@ -76,20 +77,19 @@ No agents currently active. Join via `modelswarm join s6e8`.
 
 ## Compute Status
 
-- **GitHub Actions:** ACTIVE — `experiment-runner.yml` triggers on changes to
-  `competitions/**/experiments/*.yaml`; data committed under `competitions/s6e8/data/`.
+- **GitHub Actions:** ACTIVE and PROVEN — EXP-007 completed end-to-end on
+  `ubuntu-latest` in ~240s training time (run 32745631926).
+- Data committed under `competitions/s6e8/data/`; runners validate it before training.
 - Local runners: prohibited for experiments.
-- Budget: GitHub-hosted runners (120 min/experiment timeout).
 
 ## Outstanding Questions
 
-- Does the engineered screen-time feature set provide signal beyond raw features? (EXP-007 answers this.)
-- Is the gap between 0.96228 and 0.96292 in old local logs noise or config drift? (Moot after GHA run.)
-- Which model families are most complementary for ensembling?
+- Are XGBoost/CatBoost errors sufficiently decorrelated from LightGBM for blending?
+- How seed-sensitive is EXP-006's 0.96421?
+- Do missing-value indicators carry signal the raw NaNs don't?
 
 ## Recommended Next Actions
 
-1. Push queued EXP-007 → let GitHub Actions produce the authoritative OOF.
-2. Compare against champion; record decision via `scripts/record_results.py` conventions.
-3. Queue cross-model diversity experiments (XGBoost/CatBoost with same feature set) as EXP-008+.
-4. Establish seed-sensitivity protocol (5 seeds) before trusting any sub-0.001 deltas.
+1. Queue EXP-008 (XGBoost, canonical features, tuned) via GHA.
+2. Queue EXP-009 (CatBoost, same protocol) in parallel.
+3. Once two strong diverse models exist, queue a rank-average ensemble experiment.

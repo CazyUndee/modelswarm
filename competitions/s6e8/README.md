@@ -93,9 +93,8 @@ for seed in [42, 123, 7, 2024, 99]:
 
 ### Queued Experiments
 
-| ID | Description | Status |
-|----|-------------|--------|
-| EXP-007 | LightGBM + engineered screen-time features (tuned) | Queued on GitHub Actions (prior local run voided — see STATE.md) |
+None — EXP-007 completed on GitHub Actions (OOF 0.96292, rejected: below champion).
+Next up per STATE.md: cross-model diversity (XGBoost / CatBoost).
 
 ### Recent Experiments
 
@@ -106,14 +105,14 @@ for seed in [42, 123, 7, 2024, 99]:
 | EXP-002 | CatBoost baseline | — | Completed |
 | EXP-003 | Feature importance analysis | — | Completed |
 | EXP-006 | Regularized LightGBM ensemble | 0.96421 | Promoted |
-| EXP-007 (v1) | Local tuned LightGBM run | ~~0.96292~~ | Voided — inconsistent local results |
+| EXP-007 | LightGBM + engineered ratios (tuned) | 0.96292 (GHA) | Rejected — below champion |
 
 ### Key Findings
 
 - Regularized LightGBM provides strong baseline with good generalization
-- Composition/interaction features show promise but UNVERIFIED until EXP-007 completes on GitHub Actions
-- Stratified 5-fold CV provides stable validation
-- All local runs pre-2026-08-24 are deprecated; only GHA results count
+- **Engineered screen-time ratios add no signal** (EXP-007, GHA-verified −0.00129 vs champion)
+- Stratified 5-fold CV provides stable validation (fold std ~0.0007)
+- All scores must come from GitHub Actions runs; local results are void
 
 ## Research Priorities
 
