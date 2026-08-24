@@ -81,14 +81,14 @@ metadata:
     at this quality gap; if within 0.0002, tune weights upward.
 results:
   status: completed
-  oof_metric: 0.9618689351812522
+  oof_metric: 0.9618632923648235
   fold_metrics:
   - 0.9610426843113724
-  - 0.9617456332171903
+  - 0.9617275511292838
   - 0.9621249617681048
   - 0.9628970457107598
-  - 0.9615415822236757
-  runtime_seconds: 496.98386669158936
+  - 0.9615321498479553
+  runtime_seconds: 583.0583910942078
   features_used:
   - age
   - daily_screen_time_hours
@@ -109,34 +109,34 @@ results:
   model_name: ensemble:lightgbm+lightgbm+logistic+logistic
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9965954032516127
-    lightgbm[0]~logistic[2]: 0.8428733486659753
-    lightgbm[0]~logistic[3]: 0.8428729688957136
-    lightgbm[1]~logistic[2]: 0.842597440381575
-    lightgbm[1]~logistic[3]: 0.8425970610897251
-    logistic[2]~logistic[3]: 0.9999999996649204
-  rank_average_diagnostic: 0.961214215456933
+    lightgbm[0]~lightgbm[1]: 0.9966079642640661
+    lightgbm[0]~logistic[2]: 0.8428733033580775
+    lightgbm[0]~logistic[3]: 0.8428729235834228
+    lightgbm[1]~logistic[2]: 0.8427003154567787
+    lightgbm[1]~logistic[3]: 0.8426999366426772
+    logistic[2]~logistic[3]: 0.9999999996649216
+  rank_average_diagnostic: 0.9612084131165225
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.9636509241933664
+    oof_auc: 0.9636508924073109
     fold_metrics:
     - 0.9628454036249358
     - 0.9635563601748073
     - 0.9639522048563044
     - 0.9645245510945277
-    - 0.9633833791755267
+    - 0.963383216285888
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9636374633672651
+    oof_auc: 0.9636298791555993
     fold_metrics:
     - 0.962829737708707
-    - 0.9635688741325406
+    - 0.9635491119134936
     - 0.9639649606088091
     - 0.9645759663550365
-    - 0.9632561976349994
+    - 0.9632387407879293
   - member_index: 2
     name: logistic
     key: logistic[2]
@@ -160,11 +160,5 @@ results:
   artifacts:
   - experiments/output/EXP-016/oof_predictions.csv
   - experiments/output/EXP-016/results.json
-  decision: rejected
-  reasoning: >-
-    Weighted stack OOF 0.961869 (-0.0022 vs champion EXP-012 0.964038).
-    Logistic members scored 0.911484/0.911483 standalone (and correlated 1.0
-    with each other - deterministic learner, config nearly identical); despite
-    genuine decorrelation (corr ~0.843 vs LGBM), a ~0.05 AUC quality gap
-    cannot be offset by diversity weighting at any reasonable mix. Linear
-    stacking eliminated on this dataset. rank_average worse (0.961214).
+  decision: null
+  reasoning: null
