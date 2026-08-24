@@ -1,58 +1,131 @@
-# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
-# Push a change to this file → Actions trains on the committed data and writes
-# results back under `results`. DO NOT run this locally.
-#
-# Histogram precision probe: max_bin 255 -> 511 at the exact champion config
-# (EXP-013). Finer binning sharpens split points on continuous features.
-# Single-variable A/B; cheap relative to remaining ideas.
-
 experiment_id: EXP-022
 competition: s6e8
 status: queued
-
-hypothesis: >-
-  Doubling histogram resolution (max_bin 511) refines split points enough to
-  edge the champion (EXP-013, 0.964109) upward at nl255 capacity.
+hypothesis: Doubling histogram resolution (max_bin 511) refines split points enough
+  to edge the champion (EXP-013, 0.964109) upward at nl255 capacity.
 phase: 4
-
 model:
   name: ensemble
   blend: probability_average
   members:
-    - name: lightgbm
-      parameters: &lgbm_params
-        n_estimators: 3000
-        learning_rate: 0.02
-        num_leaves: 255
-        min_child_samples: 80
-        subsample: 0.8
-        subsample_freq: 1
-        colsample_bytree: 0.7
-        reg_alpha: 0.1
-        reg_lambda: 0.1
-        max_bin: 511
-        n_jobs: -1
-        verbose: -1
-        random_state: 42
-        early_stopping_rounds: 150
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 123
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 7
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 2024
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 99
-
+  - name: lightgbm
+    parameters:
+      n_estimators: 3000
+      learning_rate: 0.02
+      num_leaves: 255
+      min_child_samples: 80
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      max_bin: 511
+      n_jobs: -1
+      verbose: -1
+      random_state: 42
+      early_stopping_rounds: 150
+  - name: lightgbm
+    parameters:
+      n_estimators: 3000
+      learning_rate: 0.02
+      num_leaves: 255
+      min_child_samples: 80
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      max_bin: 511
+      n_jobs: -1
+      verbose: -1
+      random_state: 123
+      early_stopping_rounds: 150
+  - name: lightgbm
+    parameters:
+      n_estimators: 3000
+      learning_rate: 0.02
+      num_leaves: 255
+      min_child_samples: 80
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      max_bin: 511
+      n_jobs: -1
+      verbose: -1
+      random_state: 7
+      early_stopping_rounds: 150
+  - name: lightgbm
+    parameters:
+      n_estimators: 3000
+      learning_rate: 0.02
+      num_leaves: 255
+      min_child_samples: 80
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      max_bin: 511
+      n_jobs: -1
+      verbose: -1
+      random_state: 2024
+      early_stopping_rounds: 150
+  - name: lightgbm
+    parameters:
+      n_estimators: 3000
+      learning_rate: 0.02
+      num_leaves: 255
+      min_child_samples: 80
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      max_bin: 511
+      n_jobs: -1
+      verbose: -1
+      random_state: 99
+      early_stopping_rounds: 150
 features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+training:
+  compute: github_actions
+  timeout_minutes: 120
+  predict_test: true
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-013
+  created_at: '2026-08-24T20:40:00Z'
+  design_notes: Last cheap single-variable lever; everything else measured flat or
+    negative.
+results:
+  status: completed
+  oof_metric: 0.9652028543634525
+  fold_metrics:
+  - 0.9644371789471129
+  - 0.965166578627871
+  - 0.9653755410692408
+  - 0.966031646234165
+  - 0.9650069567855863
+  runtime_seconds: 2260.2060117721558
+  features_used:
   - age
   - daily_screen_time_hours
   - social_media_hours
@@ -65,21 +138,77 @@ features:
   - gender
   - stress_level
   - academic_work_impact
-
-validation:
-  strategy: stratified_kfold
-  n_folds: 5
-  random_state: 42
-
-training:
-  compute: github_actions
-  timeout_minutes: 120
-  predict_test: true
-
-metadata:
-  author: agent-orchestrator
-  parent_experiment: EXP-013
-  created_at: "2026-08-24T20:40:00Z"
-  design_notes: Last cheap single-variable lever; everything else measured flat or negative.
-
-# Results (filled automatically by scripts/record_results.py after the run)
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9976592576692374
+    lightgbm[0]~lightgbm[2]: 0.9975780074166056
+    lightgbm[0]~lightgbm[3]: 0.9976662547182603
+    lightgbm[0]~lightgbm[4]: 0.9975730162737204
+    lightgbm[1]~lightgbm[2]: 0.9975990999323753
+    lightgbm[1]~lightgbm[3]: 0.9976681142874041
+    lightgbm[1]~lightgbm[4]: 0.9975774317083544
+    lightgbm[2]~lightgbm[3]: 0.9976744544271142
+    lightgbm[2]~lightgbm[4]: 0.9976192617166135
+    lightgbm[3]~lightgbm[4]: 0.9976062115957792
+  rank_average_diagnostic: 0.9652008768384717
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.964954779668344
+    fold_metrics:
+    - 0.9641766911309316
+    - 0.964966122896993
+    - 0.9651111416581044
+    - 0.9656904395594381
+    - 0.9648323251380628
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9649265373623759
+    fold_metrics:
+    - 0.9641928693070172
+    - 0.9648493103966812
+    - 0.9651153521347391
+    - 0.9657755591843125
+    - 0.9647126624005831
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.964931162913397
+    fold_metrics:
+    - 0.9641492706397092
+    - 0.9648711556535814
+    - 0.9651198587021382
+    - 0.9658259491639485
+    - 0.9646889987478522
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9649196011518699
+    fold_metrics:
+    - 0.9641115042246704
+    - 0.9649036375969512
+    - 0.9650725823693393
+    - 0.9657883291451143
+    - 0.964726017321188
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.9649507442804467
+    fold_metrics:
+    - 0.9642409867202646
+    - 0.9649038471693345
+    - 0.9651249138112961
+    - 0.9657474082343838
+    - 0.9647403541466248
+  artifacts:
+  - experiments/output/EXP-022/oof_predictions.csv
+  - experiments/output/EXP-022/results.json
+  decision: null
+  reasoning: null
