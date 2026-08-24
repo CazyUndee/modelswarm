@@ -49,7 +49,36 @@ EXP-013/014 map the capacity curve's peak (64 → 96 → 127 → 255 leaves).
 | EXP-009 | 5-seed ensemble nl64 unbagged | 0.963303 | Inconclusive+ |
 | EXP-010 | Legacy champion reproduction nl64 | 0.963127 | Promoted as verified baseline |
 | EXP-011 | Bagged 5-seed ensemble nl64 | 0.963664 | Promoted (superseded) |
-| EXP-012 | Capacity probe nl127 | 0.964038 | **Promoted — current champion** |
+| EXP-012 | Capacity probe nl127 | 0.964038 | Promoted (superseded) |
+| EXP-013 | Capacity probe nl255 | **0.964109** | **Promoted — current champion** |
+| EXP-014 | Capacity midpoint nl96 | 0.963986 | Rejected (below champion) |
+| EXP-016 | Weighted linear stack (LGBM + logistic) | 0.961869 | Rejected — quality gap > decorrelation |
+
+## Capacity Curve (all bagged, 5-seed blends)
+
+| num_leaves | OOF | lr | trees |
+|-----------|------|-----|-------|
+| 64 | 0.963664 | 0.05 | 1000 |
+| 96 | 0.963986 | 0.04 | 1500 |
+| 127 | 0.964038 | 0.03 | 2000 |
+| 255 | **0.964109** | 0.02 | 3000 |
+
+Rising but flattened (+0.00007 last step). Deeper leaf-doubling deprioritized;
+remaining capacity upside < remaining lever upside elsewhere.
+
+## Levers Status
+
+| Lever | Verdict | Evidence |
+|-------|---------|----------|
+| Seed averaging (5→) | POSITIVE (+0.0002) | EXP-009 vs 010 |
+| Row bagging | POSITIVE (+0.0004) | EXP-011 vs 009 |
+| Leaf capacity to 255 | POSITIVE, saturating (+0.0004 total) | EXP-012/013 curve |
+| Cross-family GBDT blend | DEAD (−0.0009) | EXP-008 |
+| Linear/logistic stack | DEAD (−0.0022) | EXP-016 (gap 0.05 AUC unbeatable by corr 0.84) |
+| Engineered ratios | DEAD (−0.0013) | EXP-007 |
+| Missingness indicators | DEAD (EDA) | no run needed |
+| DART boosting | TESTING (EXP-017) | queued |
+| 10-seed scaling | TESTING (EXP-015) | running |
 
 ## Important Discoveries
 
