@@ -235,6 +235,27 @@ def _fit_member_predict(model_name: str, params: dict,
             model.fit(X_tr, y_train, verbose=False)
         return model.predict_proba(encode(X_pred))[:, 1]
 
+    if model_name == "logistic":
+        # Linear member: median-imputed numerics (train-fold stats), one-hot
+        # categoricals, standardized. Genuinely decorrelated from tree splits.
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler, OneHotEncoder
+        from sklearn.compose import ColumnTransformer
+        from sklearn.impute import SimpleImputer
+
+        num_cols = [c for c in X_train.columns if c not in cat_cols]
+        pre = ColumnTransformer([
+            ("num", make_pipeline(SimpleImputer(strategy="median"), StandardScaler()), num_cols),
+            ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=0.01), cat_cols),
+        ])
+        ctor = {"C": params.get("C", 1.0),
+                "max_iter": params.get("max_iter", 1000),
+                "random_state": params.get("random_state", 42)}
+        model = make_pipeline(pre, LogisticRegression(**ctor))
+        model.fit(X_train, y_train)
+        return model.predict_proba(X_pred)[:, 1]
+
     raise ValueError(f"Unknown member model: {model_name}")
 
 
