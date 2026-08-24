@@ -1,61 +1,127 @@
-# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
-# Push a change to this file → Actions trains on the committed data and writes
-# results back under `results`. DO NOT run this locally.
-#
-# Combines the two levers measured as positive:
-#   - row bagging ON (subsample_freq 1): EXP-008 member 0.963223 vs EXP-010
-#     no-bagging 0.963127 => ~+0.0001 (within noise alone)
-#   - 5-seed averaging: EXP-009 blend 0.963303 vs single-seed 0.963127..0.963223
-#     => ~+0.0002 (best verified score so far)
-# If effects are additive this should land near 0.9634-0.9635.
-
 experiment_id: EXP-011
 competition: s6e8
 status: queued
-
-hypothesis: >-
-  Probability-averaging five bagged LightGBM runs (subsample_freq=1, seeds
-  42/123/7/2024/99) on canonical raw features combines both verified-positive
-  levers and exceeds the re-baselined champion (0.963127) by >= 0.0003.
+hypothesis: Probability-averaging five bagged LightGBM runs (subsample_freq=1, seeds
+  42/123/7/2024/99) on canonical raw features combines both verified-positive levers
+  and exceeds the re-baselined champion (0.963127) by >= 0.0003.
 phase: 4
-
 model:
   name: ensemble
   blend: probability_average
   members:
-    - name: lightgbm
-      parameters: &lgbm_params
-        n_estimators: 1000
-        learning_rate: 0.05
-        num_leaves: 64
-        min_child_samples: 20
-        subsample: 0.8
-        subsample_freq: 1
-        colsample_bytree: 0.8
-        reg_alpha: 0.1
-        reg_lambda: 0.1
-        n_jobs: -1
-        verbose: -1
-        random_state: 42
-        early_stopping_rounds: 50
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 123
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 7
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 2024
-    - name: lightgbm
-      parameters:
-        <<: *lgbm_params
-        random_state: 99
-
+  - name: lightgbm
+    parameters:
+      n_estimators: 1000
+      learning_rate: 0.05
+      num_leaves: 64
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 42
+      early_stopping_rounds: 50
+  - name: lightgbm
+    parameters:
+      n_estimators: 1000
+      learning_rate: 0.05
+      num_leaves: 64
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 123
+      early_stopping_rounds: 50
+  - name: lightgbm
+    parameters:
+      n_estimators: 1000
+      learning_rate: 0.05
+      num_leaves: 64
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 7
+      early_stopping_rounds: 50
+  - name: lightgbm
+    parameters:
+      n_estimators: 1000
+      learning_rate: 0.05
+      num_leaves: 64
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 2024
+      early_stopping_rounds: 50
+  - name: lightgbm
+    parameters:
+      n_estimators: 1000
+      learning_rate: 0.05
+      num_leaves: 64
+      min_child_samples: 20
+      subsample: 0.8
+      subsample_freq: 1
+      colsample_bytree: 0.8
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      n_jobs: -1
+      verbose: -1
+      random_state: 99
+      early_stopping_rounds: 50
 features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+training:
+  compute: github_actions
+  timeout_minutes: 90
+  predict_test: true
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-009
+  created_at: '2026-08-24T16:45:00Z'
+  design_notes: Direct A/B against EXP-009 (identical except subsample_freq 1 vs absent).
+    Any delta is attributable to row bagging under seed averaging.
+results:
+  status: completed
+  oof_metric: 0.9636639905455897
+  fold_metrics:
+  - 0.9628442811694592
+  - 0.963569361781597
+  - 0.9639212079337087
+  - 0.9645157559048594
+  - 0.9634779805047925
+  runtime_seconds: 682.4451966285706
+  features_used:
   - age
   - daily_screen_time_hours
   - social_media_hours
@@ -68,23 +134,77 @@ features:
   - gender
   - stress_level
   - academic_work_impact
-
-validation:
-  strategy: stratified_kfold
-  n_folds: 5
-  random_state: 42
-
-training:
-  compute: github_actions
-  timeout_minutes: 90
-  predict_test: true
-
-metadata:
-  author: agent-orchestrator
-  parent_experiment: EXP-009
-  created_at: "2026-08-24T16:45:00Z"
-  design_notes: >-
-        Direct A/B against EXP-009 (identical except subsample_freq 1 vs absent).
-        Any delta is attributable to row bagging under seed averaging.
-
-# Results (filled automatically by scripts/record_results.py after the run)
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9969380900939737
+    lightgbm[0]~lightgbm[2]: 0.9967419538896543
+    lightgbm[0]~lightgbm[3]: 0.9969215088407738
+    lightgbm[0]~lightgbm[4]: 0.9967999111530409
+    lightgbm[1]~lightgbm[2]: 0.9969745913550486
+    lightgbm[1]~lightgbm[3]: 0.997001012779574
+    lightgbm[1]~lightgbm[4]: 0.9970812459445759
+    lightgbm[2]~lightgbm[3]: 0.9970360369399499
+    lightgbm[2]~lightgbm[4]: 0.996935025711834
+    lightgbm[3]~lightgbm[4]: 0.9970187473708821
+  rank_average_diagnostic: 0.9636623189258706
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9632235433807557
+    fold_metrics:
+    - 0.9623894805543094
+    - 0.9631462907043657
+    - 0.9634719141754509
+    - 0.9641039129344677
+    - 0.963011963650768
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.963333949072459
+    fold_metrics:
+    - 0.9625683248308917
+    - 0.9632385553266798
+    - 0.9637522149545978
+    - 0.9640899822065309
+    - 0.9630241174505785
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9633516766030814
+    fold_metrics:
+    - 0.9626267908320115
+    - 0.9632264600062739
+    - 0.9635703249011693
+    - 0.9641560685487467
+    - 0.9631858435194759
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9632903082596149
+    fold_metrics:
+    - 0.9624498410796253
+    - 0.9630179423353495
+    - 0.9635314340008974
+    - 0.9642519636447072
+    - 0.9632077486237851
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.96330295832818
+    fold_metrics:
+    - 0.9624441785657636
+    - 0.9633499529434517
+    - 0.9635004916280141
+    - 0.9640956259451428
+    - 0.9631294390493443
+  artifacts:
+  - experiments/output/EXP-011/oof_predictions.csv
+  - experiments/output/EXP-011/results.json
+  decision: null
+  reasoning: null
