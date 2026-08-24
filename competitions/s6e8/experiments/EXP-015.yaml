@@ -366,5 +366,11 @@ results:
   artifacts:
   - experiments/output/EXP-015/oof_predictions.csv
   - experiments/output/EXP-015/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    Seed scaling exhausted: 10-seed blend OOF 0.964092 vs identical-config
+    5-seed (EXP-012) 0.964038 => +0.00005 from doubling seeds. Member spread
+    tiny (mean 0.963659, std 0.00004) - bagged LGBM at this capacity is
+    essentially deterministic across seeds. First five seeds had paid
+    +0.0002; marginal utility collapsed. Statistically indistinguishable from
+    champion EXP-013 (0.964109): more seeds approximates more capacity.
