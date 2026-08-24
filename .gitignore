@@ -88,3 +88,6 @@ htmlcov/
 # Tool artifacts
 .omo/
 .codegraph/
+
+# CatBoost local training logs
+catboost_info/
