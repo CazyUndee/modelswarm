@@ -160,5 +160,11 @@ results:
   artifacts:
   - experiments/output/EXP-016/oof_predictions.csv
   - experiments/output/EXP-016/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    Weighted stack OOF 0.961869 (-0.0022 vs champion EXP-012 0.964038).
+    Logistic members scored 0.911484/0.911483 standalone (and correlated 1.0
+    with each other - deterministic learner, config nearly identical); despite
+    genuine decorrelation (corr ~0.843 vs LGBM), a ~0.05 AUC quality gap
+    cannot be offset by diversity weighting at any reasonable mix. Linear
+    stacking eliminated on this dataset. rank_average worse (0.961214).
