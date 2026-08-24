@@ -93,5 +93,14 @@ results:
   artifacts:
   - experiments/output/EXP-010/oof_predictions.csv
   - experiments/output/EXP-010/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: >-
+    CHAMPION RE-BASELINED. Faithful reproduction of the legacy EXP-006 config
+    yields GHA-verified OOF 0.963127 (folds 0.96229/0.96301/0.96341/0.96390/
+    0.96303, std ~0.0006), NOT the claimed 0.96421 (-0.00108 discrepancy). The
+    legacy record is now considered unreliable (local-era, no folds/artifacts).
+    This experiment becomes the verified reference baseline. All prior deltas
+    recomputed: the field clusters at 0.9631 +/- 0.0002 (plateau). Note: bagging
+    was inert in this run exactly as in the legacy config (no subsample_freq);
+    EXP-008's LGBM member (+subsample_freq 1) scored 0.963223, i.e. row-bagging
+    adds ~+0.0001 - within noise pending EXP-009 seed-variance measurement.
