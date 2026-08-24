@@ -219,5 +219,10 @@ results:
   artifacts:
   - experiments/output/EXP-017/oof_predictions.csv
   - experiments/output/EXP-017/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    DART boosting rejected decisively: blend OOF 0.961464 (-0.0026 vs champion
+    EXP-013 0.964109). Members 0.960832-0.961919 with high seed variance
+    (spread ~0.0011 vs GBDT-mode ~0.00004) - dart's stochastic drop adds
+    variance without recovering the accuracy gap at this scale/trees budget.
+    Boosting-mode lever closed for dart; GOSS tested separately (EXP-018).
