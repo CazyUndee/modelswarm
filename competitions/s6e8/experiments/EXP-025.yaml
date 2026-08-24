@@ -1,0 +1,118 @@
+competition: s6e8
+experiment_id: EXP-025
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+hypothesis: 'Capacity curve RE-OPENED by finer bins: with max_bin 511 the old leaf
+  ceiling (nl255) may no longer hold - nl511/mcs120/lr0.015/4000t probes whether more
+  capacity pays at high bin resolution (vs EXP-022 0.965203).'
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-022
+  created_at: '2026-08-24T21:45:00Z'
+  design_notes: Regularization scaled with capacity per earlier findings; if this
+    beats EXP-022, the joint (bins, leaves) surface has a new gradient to climb.
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.7
+      early_stopping_rounds: 200
+      learning_rate: 0.015
+      max_bin: 511
+      min_child_samples: 120
+      n_estimators: 4000
+      n_jobs: -1
+      num_leaves: 511
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.7
+      early_stopping_rounds: 200
+      learning_rate: 0.015
+      max_bin: 511
+      min_child_samples: 120
+      n_estimators: 4000
+      n_jobs: -1
+      num_leaves: 511
+      random_state: 123
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.7
+      early_stopping_rounds: 200
+      learning_rate: 0.015
+      max_bin: 511
+      min_child_samples: 120
+      n_estimators: 4000
+      n_jobs: -1
+      num_leaves: 511
+      random_state: 7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.7
+      early_stopping_rounds: 200
+      learning_rate: 0.015
+      max_bin: 511
+      min_child_samples: 120
+      n_estimators: 4000
+      n_jobs: -1
+      num_leaves: 511
+      random_state: 2024
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.7
+      early_stopping_rounds: 200
+      learning_rate: 0.015
+      max_bin: 511
+      min_child_samples: 120
+      n_estimators: 4000
+      n_jobs: -1
+      num_leaves: 511
+      random_state: 99
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  name: ensemble
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 120
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
