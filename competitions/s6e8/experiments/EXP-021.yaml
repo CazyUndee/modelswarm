@@ -204,5 +204,6 @@ results:
   artifacts:
   - experiments/output/EXP-021/oof_predictions.csv
   - experiments/output/EXP-021/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    reg_lambda 1.0 gives +0.000006 - statistical zero. Optimum confirmed FLAT: all single-variable perturbations within +/-0.0002. HP space around champion exhausted.

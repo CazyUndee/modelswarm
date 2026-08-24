@@ -204,5 +204,6 @@ results:
   artifacts:
   - experiments/output/EXP-019/oof_predictions.csv
   - experiments/output/EXP-019/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: >-
+    mcs 80->20 costs -0.000045; leaf regularization already right.
