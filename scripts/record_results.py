@@ -33,14 +33,22 @@ def record_results(config_path: str, output_dir: str) -> dict:
     with open(results_path) as f:
         results = json.load(f)
 
+    # Keys carried from results.json into the experiment record.
+    PASSTHROUGH = (
+        "oof_metric", "fold_metrics", "runtime_seconds", "features_used",
+        "categorical_features", "model_name", "blend_method",
+        "member_correlations", "rank_average_diagnostic",
+    )
+
     # Update config with results
     config["results"] = {
         "status": "completed",
-        "oof_metric": results.get("oof_metric"),
-        "fold_metrics": results.get("fold_metrics", []),
-        "runtime_seconds": results.get("runtime_seconds"),
-        "features_used": results.get("features_used", []),
-        "model_name": results.get("model_name"),
+        **{k: results.get(k) for k in PASSTHROUGH},
+        "members": [
+            {"name": m.get("name"), "oof_auc": m.get("oof_auc"),
+             "fold_metrics": m.get("fold_metrics", [])}
+            for m in results.get("members", [])
+        ],
         "artifacts": [
             str(Path(output_dir) / "oof_predictions.csv"),
             str(Path(output_dir) / "results.json"),
