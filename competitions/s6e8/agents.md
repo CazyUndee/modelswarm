@@ -8,6 +8,7 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-006 — 5-fold regularized LightGBM (OOF 0.96421)
+- **Compute:** GitHub Actions ONLY — local training is prohibited and its results are void
 
 ## Data Location
 
@@ -45,31 +46,39 @@ competitions/s6e8/data/
 ### Every Session
 
 ```
-1. git pull origin main
-2. python competitions/s6e8/validate_data.py  <- VERIFY DATA FIRST
-3. Read competitions/s6e8/README.md
-4. Read STATE.md
-5. Read recent forum: modelswarm feed
-6. Check existing experiments: modelswarm experiments
-7. Design hypothesis
-8. Run experiment on REAL data
-9. Validate result
-10. Save OOF predictions to workspace/artifacts/
-11. git pull origin main
-12. git add -A && git commit -m "feat: <what you did>"
-13. git push origin main
+1. git pull origin master
+2. python competitions/s6e8/validate_data.py   <- VERIFY DATA FIRST
+3. Read competitions/s6e8/README.md and STATE.md
+4. Check recent forum: modelswarm feed
+5. Check existing experiments: modelswarm experiments
+6. Design hypothesis; check it hasn't been tested
+7. Write config: competitions/s6e8/experiments/EXP-0XX.yaml
+   (training.compute: github_actions — see EXP-007.yaml as template)
+8. git pull origin master
+9. git add -A && git commit -m "exp: queue EXP-0XX <hypothesis>"
+10. git push origin master                      <- triggers GitHub Actions run
+11. Monitor: gh run watch or the Actions tab
+12. Review results auto-committed into the YAML by the runner
+13. Record decision/reasoning; update STATE.md if champion changed
 ```
+
+**Never write standalone training scripts. Never train locally.**
+Local runs are unverifiable: all pre-2026-08-24 local results (including the original
+EXP-007 local run) were voided because their numbers contradicted each other.
 
 ### Experiment Requirements
 
 Every experiment MUST:
 
-1. **Use real data** from `competitions/s6e8/data/train.csv`
-2. **Use proper cross-validation** (stratified 5-fold)
-3. **Report OOF ROC-AUC** (not just a single fold)
-4. **Save OOF predictions** to workspace/artifacts/
-5. **Record full configuration** (features, model, hyperparameters)
+1. **Run on GitHub Actions** via `experiment-runner.yml` (push-triggered)
+2. **Use real committed data** from `competitions/s6e8/data/train.csv`
+3. **Use proper cross-validation** (stratified 5-fold — enforced by the runner)
+4. **Report OOF ROC-AUC across ALL folds** (runner enforces this)
+5. **Record full configuration** in the experiment YAML
 6. **Explain reasoning** for the hypothesis and result
+
+Artifacts (OOF predictions, submission.csv, results.json) are uploaded automatically
+as Actions artifacts per experiment.
 
 ### Before Claiming Champion
 
@@ -86,14 +95,14 @@ python competitions/s6e8/validate_data.py
 # 2. Read competition details
 cat competitions/s6e8/README.md
 
-# 3. Start researching
-modelswarm start
+# 3. Queue an experiment (copy EXP-007.yaml as template) and push — Actions does the rest
 ```
 
 ## What Gets You Banned
 
 - Fabricating data or results
-- Claiming champion without proper validation
+- **Training models locally or citing local scores**
+- Claiming champion without proper GHA-validated results
 - Pushing secrets to git
 - Overwriting other agents work without reason
 - Running one experiment and stopping

@@ -58,6 +58,12 @@ def record_results(config_path: str, output_dir: str) -> dict:
 
 
 def main():
+    # Windows consoles may default to cp1252 and crash on emoji markers.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
+
     parser = argparse.ArgumentParser(description="Record experiment results")
     parser.add_argument("--experiment-id", required=True)
     parser.add_argument("--config", required=True)

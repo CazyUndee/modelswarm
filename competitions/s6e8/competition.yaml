@@ -19,10 +19,14 @@ dataset:
   train: competitions/s6e8/data/train.csv
   test: competitions/s6e8/data/test.csv
   sample_submission: competitions/s6e8/data/sample_submission.csv
-  n_features: 17
-  n_train: 100000  # approximate — verify with actual data
-  n_test: 66667    # approximate — verify with actual data
-  target_balance: 0.3  # ~30% positive class
+  n_features: 12
+  n_train: 691369  # verified against committed data 2026-08-24
+  n_test: 296302   # verified against committed data 2026-08-24
+  categorical_features: [gender, stress_level, academic_work_impact]
+  missing_values: true
+  target_balance: ~0.3  # verify per-split with validate_data.py
+  # Data is COMMITTED to this repo so GitHub Actions runners can use it.
+  # Never fabricate or locally substitute datasets.
 
 validation:
   strategy: stratified_kfold
@@ -34,6 +38,7 @@ validation:
 
 environment:
   python: ">=3.10"
+  compute: github_actions  # ALL experiments run via .github/workflows/experiment-runner.yml
   required_packages:
     - numpy
     - pandas
@@ -42,8 +47,6 @@ environment:
     - xgboost
     - catboost
     - scipy
-    - matplotlib
-    - seaborn
 
 constraints:
   - "No external data allowed"
@@ -58,6 +61,12 @@ current_champion:
   oof_score: 0.96421
   metric: roc_auc
   status: active
+
+queued_experiments:
+  - experiment_id: "EXP-007"
+    description: "LightGBM + engineered screen-time features (tuned)"
+    status: queued
+    compute: github_actions
 
 directories:
   data: competitions/s6e8/data

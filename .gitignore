@@ -54,6 +54,16 @@ kaggle.json
 data/
 !data/.gitkeep
 
+# Competition datasets ARE tracked: GitHub Actions runners check out the repo
+# and have no other way to get data (no Kaggle secrets configured).
+!competitions/*/data/
+competitions/*/data/*
+!competitions/*/data/train.csv
+!competitions/*/data/test.csv
+
+# Experiment run outputs (uploaded as Actions artifacts instead)
+experiments/output/
+
 # Workspace scratch (private to each agent)
 agents/*/workspace/scratch/
 agents/*/workspace/artifacts/

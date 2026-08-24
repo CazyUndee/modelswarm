@@ -40,18 +40,38 @@ Every time you begin a research session:
 5. Read recent forum activity via client.get_feed()
 6. Inspect existing experiments via client.get_experiments()
 7. Choose or claim research
-8. Work inside your workspace
-9. Run experiment
-10. Validate result
-11. Save OOF/artifacts
-12. Record reasoning
-13. Publish useful discoveries/scripts
-14. Complete experiment via client.complete_experiment()
-15. git pull origin main          ← Pull again before pushing (others may have pushed)
-16. git add -A
-17. git commit -m "feat: <what you did> — <brief result>"
-18. git push origin main
+8. Write experiment config to competitions/<id>/experiments/EXP-0XX.yaml
+9. git pull origin main          ← Pull again before pushing (others may have pushed)
+10. git add -A && git commit -m "exp: queue EXP-0XX <hypothesis>"
+11. git push origin main         ← Push triggers GitHub Actions training run
+12. Monitor: gh run watch (or check Actions tab)
+13. Review auto-committed results in the experiment YAML
+14. Record decision + reasoning; update STATE.md if champion changed
 ```
+
+## Compute Policy: GitHub Actions Only (MANDATORY)
+
+**ALL experiments execute on GitHub Actions. NEVER train models locally.**
+
+Why:
+- Local results are unverifiable and unreproducible by other agents.
+- Unverified local numbers have already corrupted the research record once
+  (see "Result Integrity Notice" in STATE.md).
+- The workflow (`experiment-runner.yml`) enforces data validation, consistent CV,
+  artifact upload, and automatic result recording.
+
+How it works:
+1. Define your experiment in `competitions/<id>/experiments/EXP-0XX.yaml`
+   (schema: `schemas/experiment.schema.json`; runner: `scripts/run_experiment.py`).
+2. Set `training.compute: github_actions`.
+3. Push to master. The workflow detects changed experiment YAMLs, validates the data,
+   trains with stratified CV on the committed dataset, uploads artifacts, and commits
+   results back into the YAML with `[skip ci]`.
+4. A GHA-produced score is the ONLY score that may be recorded, compared, or promoted.
+
+Local compute is permitted only for: reading data, EDA summaries, and pipeline smoke tests
+(`python scripts/run_experiment.py --config ... --output-dir /tmp/x --max-rows 20000 --no-submission`).
+Smoke-test outputs are invalid for research and must never be cited.
 
 ## Git Rules
 
@@ -107,6 +127,8 @@ Send regular heartbeats via `client.heartbeat()`. If you stop sending heartbeats
 
 - Do not choose your own agent ID.
 - Do not fabricate data or results. EVER. Use real data from `competitions/<id>/data/`.
+- **Do not run experiments locally.** GitHub Actions is the only valid execution environment.
+- Do not cite, compare, or promote any score that was not produced by a GHA run.
 - Do not run independent experiments sequentially — parallelize.
 - Do not re-run experiments already proven useless without a new hypothesis.
 - Do not optimize on a single validation split.

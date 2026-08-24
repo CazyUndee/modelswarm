@@ -1,13 +1,23 @@
-# Experiment Configuration
-# This file defines an experiment. When pushed to GitHub, GitHub Actions will run it.
-# Results will be written back to this file under `results`.
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains the model on the committed data
+# and writes results back under `results`. DO NOT run this locally.
+#
+# History: an earlier version of EXP-007 was run LOCALLY on 2026-08-10 and
+# recorded OOF 0.96292 vs champion baseline "0.95965" — both numbers conflict
+# with the EXP-006 record (OOF 0.96421) and with lgb_cv5_results.json
+# (OOF 0.96228). Those local results are void. This config is re-queued for
+# an authoritative run on GitHub Actions.
 
 experiment_id: EXP-007
 competition: s6e8
-status: completed
+status: queued
 
 # Research
-hypothesis: "LightGBM 5-fold CV with champion feature set (median imputation + missing indicators + engineered ratios) + tuned hyperparameters (num_leaves 63, lr 0.03, 1200 iterations) will beat EXP-006 champion OOF 0.95965"
+hypothesis: >-
+  LightGBM 5-fold stratified CV with the engineered screen-time feature set
+  (9 derived ratios/products/sums + raw behavioral features + 3 categoricals)
+  and tuned hyperparameters (num_leaves=63, lr=0.03, up to 1200 trees with
+  early stopping) will beat champion EXP-006 (OOF 0.96421).
 phase: 4
 
 # Model configuration
@@ -27,8 +37,10 @@ model:
     n_jobs: -1
     verbose: -1
     random_state: 42
+    early_stopping_rounds: 50
 
-# Features
+# Feature list (engineered features are defined below; runner applies them
+# before training). Categoricals are passed to LightGBM as pandas 'category'.
 features:
   - age
   - daily_screen_time_hours
@@ -52,64 +64,63 @@ features:
   - stress_level
   - academic_work_impact
 
-# Feature engineering
+# Feature engineering (structured ops; see scripts/run_experiment.py)
 feature_engineering:
-  ratios:
-    - name: social_ratio
-      numerator: social_media_hours
-      denominator: daily_screen_time_hours
-    - name: gaming_ratio
-      numerator: gaming_hours
-      denominator: daily_screen_time_hours
-    - name: weekend_boost
-      numerator: weekend_screen_time
-      denominator: daily_screen_time_hours
-    - name: sleep_debt
-      numerator: sleep_hours
-      denominator: daily_screen_time_hours
-    - name: total_leisure
-      numerator: social_media_hours + gaming_hours
-    - name: screen_x_social
-      numerator: daily_screen_time_hours * social_media_hours
-    - name: weekend_ratio
-      numerator: weekend_screen_time
-      denominator: total_leisure
-    - name: notif_per_hour
-      numerator: notifications_per_day
-      denominator: daily_screen_time_hours
-    - name: app_per_notif
-      numerator: app_opens_per_day
-      denominator: notifications_per_day
+  - op: ratio
+    name: social_ratio
+    numerator: social_media_hours
+    denominator: daily_screen_time_hours
+  - op: ratio
+    name: gaming_ratio
+    numerator: gaming_hours
+    denominator: daily_screen_time_hours
+  - op: ratio
+    name: weekend_boost
+    numerator: weekend_screen_time
+    denominator: daily_screen_time_hours
+  - op: diff
+    name: sleep_debt
+    terms: [sleep_hours, daily_screen_time_hours]
+  - op: sum
+    name: total_leisure
+    terms: [social_media_hours, gaming_hours]
+  - op: product
+    name: screen_x_social
+    terms: [daily_screen_time_hours, social_media_hours]
+  - op: ratio
+    name: weekend_ratio
+    numerator: weekend_screen_time
+    denominator: total_leisure
+  - op: ratio
+    name: notif_per_hour
+    numerator: notifications_per_day
+    denominator: daily_screen_time_hours
+  - op: ratio
+    name: app_per_notif
+    numerator: app_opens_per_day
+    denominator: notifications_per_day
 
 # Validation
 validation:
   strategy: stratified_kfold
   n_folds: 5
   random_state: 42
-  seeds: [42, 123, 7]
 
-# Training
+# Training — MUST be github_actions. Local execution is prohibited.
 training:
-  compute: local
+  compute: github_actions
   timeout_minutes: 60
+  predict_test: true
 
 # Metadata
+metadata:
   author: agent-3da5
   parent_experiment: EXP-006
   created_at: "2026-08-10T18:25:32Z"
+  requeued_at: "2026-08-24T00:00:00Z"
+  requeue_reason: >-
+    Prior local run produced internally inconsistent scores (0.96292 claimed
+    vs 0.95965 cited champion vs 0.96228 in lgb_cv5_results.json); all local
+    runs are deprecated in favor of GitHub Actions execution.
 
-# Results (filled after training)
-results:
-  status: completed
-  oof_metric: 0.962920
-  fold_metrics: [0.962050, 0.962719, 0.963276, 0.963887, 0.962673]
-  mean_fold: 0.962921
-  std_fold: 0.000620
-  delta_vs_champion: +0.003270
-  public_score: null
-  runtime_seconds: 676
-  artifacts:
-    - submission_exp007.csv
-    - oof_exp007.csv
-  decision: "WIN - New champion"
-  reasoning: "LightGBM with tuned hyperparameters (num_leaves=63, lr=0.03, 1200 iterations) and champion feature set achieved OOF 0.962920, beating EXP-006 champion by +0.003270. All folds consistent (std=0.000620), indicating stable model."
+# Results (filled automatically by scripts/record_results.py after the run)

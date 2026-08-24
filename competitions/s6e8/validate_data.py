@@ -17,25 +17,28 @@ import pandas as pd
 
 DATA_DIR = "competitions/s6e8/data"
 
-# Expected properties of the real dataset (from Kaggle)
+# Expected properties of the real dataset (from Kaggle playground-series-s6e8)
+# Verified against the actual downloaded files on 2026-08-24.
 EXPECTED = {
     "train": {
-        "n_rows": 100000,  # approximate — within 10%
-        "n_cols": 19,  # id + 17 features + target
-        "columns": ["id", "age", "gender", "income", "education", "employment",
-                     "sleep_hours", "screen_time", "social_media", "gaming",
-                     "exercise", "meditation", "stress_level", "relationship_status",
-                     "has_children", "addicted_label"],
+        "n_rows": 691369,  # approximate — within 10%
+        "n_cols": 14,  # id + 12 features + target
+        "columns": ["id", "age", "daily_screen_time_hours", "social_media_hours",
+                     "gaming_hours", "work_study_hours", "sleep_hours",
+                     "notifications_per_day", "app_opens_per_day",
+                     "weekend_screen_time", "gender", "stress_level",
+                     "academic_work_impact", "addicted_label"],
         "target": "addicted_label",
         "target_values": [0, 1],
     },
     "test": {
-        "n_rows": 66667,  # approximate — within 10%
-        "n_cols": 18,  # id + 17 features (no target)
-        "columns": ["id", "age", "gender", "income", "education", "employment",
-                     "sleep_hours", "screen_time", "social_media", "gaming",
-                     "exercise", "meditation", "stress_level", "relationship_status",
-                     "has_children"],
+        "n_rows": 296302,  # approximate — within 10%
+        "n_cols": 13,  # id + 12 features (no target)
+        "columns": ["id", "age", "daily_screen_time_hours", "social_media_hours",
+                     "gaming_hours", "work_study_hours", "sleep_hours",
+                     "notifications_per_day", "app_opens_per_day",
+                     "weekend_screen_time", "gender", "stress_level",
+                     "academic_work_impact"],
     },
 }
 
@@ -114,6 +117,12 @@ def check_not_synthetic(df: pd.DataFrame, name: str) -> bool:
 
 
 def main():
+    # Windows consoles may default to cp1252 and crash on emoji markers.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
+
     print("=" * 60)
     print("S6E8 Data Validation")
     print("=" * 60)

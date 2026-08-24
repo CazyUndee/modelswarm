@@ -56,6 +56,8 @@ jobs:
     if: needs.detect-experiments.outputs.experiments != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: write
     strategy:
       matrix:
         experiment: ${{ fromJson(needs.detect-experiments.outputs.experiments) }}
@@ -71,26 +73,14 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: |
-          pip install -e ".[ml]"
-          pip install -r requirements-ml.txt
+        run: pip install -e ".[ml]"
 
-      - name: Read experiment config
-        id: config
+      - name: Verify data is present
         run: |
-          python -c "
-          import yaml
-          import json
-          with open('${{ matrix.experiment.path }}') as f:
-              config = yaml.safe_load(f)
-          # Output key fields
-          print(f'hypothesis={config.get(\"hypothesis\", \"\")}')
-          print(f'model={config.get(\"model\", \"lightgbm\")}')
-          print(f'features={json.dumps(config.get(\"features\", []))}')
-          echo 'config_json<<EOF'
-          echo '${{ toJson(config) }}'
-          echo 'EOF'
-          "
+          python competitions/${{ matrix.experiment.competition }}/validate_data.py || {
+            echo "::error::Competition data missing or invalid. Data must be committed under competitions/<id>/data/. GitHub Actions cannot download from Kaggle."
+            exit 1
+          }
 
       - name: Run experiment
         id: run
@@ -120,7 +110,9 @@ jobs:
         run: |
           git config user.name "modelswarm-bot"
           git config user.email "bot@modelswarm.local"
-          git add competitions/ experiments/output/
+          # Only the experiment YAML (results written back by record_results).
+          # Bulky artifacts stay in Actions artifacts + experiments/output (gitignored).
+          git add competitions/
           git diff --quiet && git diff --staged --quiet || git commit -m "exp: ${{ matrix.experiment.id }} results [skip ci]"
           git push
 
