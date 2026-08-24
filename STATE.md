@@ -16,95 +16,91 @@
 
 | ID | Description | OOF ROC-AUC | Status |
 |----|-------------|-------------|--------|
-| EXP-006 | 5-fold regularized LightGBM ensemble | 0.96421 | Champion — **UNDER RE-VERIFICATION (EXP-010)** |
-| EXP-008 | LGBM member, champion-style config (GHA) | 0.96322 | Best GHA-verified single model |
+| **EXP-010** | Faithful legacy-champion config reproduction | **0.963127** | **Verified reference baseline** |
+| EXP-009 | 5-seed LightGBM ensemble | 0.963303 | Best verified score (+0.00018, inconclusive) |
+| EXP-008 | LGBM member, bagged champion-style | 0.963223 | Verified |
 
 ## Active Experiments
 
 | ID | Description | Status |
 |----|-------------|--------|
-| EXP-009 | 5-seed LightGBM ensemble (seed diversity) | Running on GitHub Actions |
-| EXP-010 | Faithful legacy-champion config reproduction | Running on GitHub Actions |
+| EXP-011 | 5-seed ensemble + row bagging (A/B vs EXP-009) | Running on GitHub Actions |
+| EXP-012 | Capacity probe: num_leaves 127, lr 0.03, 5 seeds | Running on GitHub Actions |
 
-## Result Integrity Notice (2026-08-24) — RESOLVED
+## CHAMPION RE-BASELINE (2026-08-24, EXP-010)
 
-Prior local runs were voided due to irreconcilable numbers (0.96292 vs cited baseline
-0.95965 vs 0.96228 in lgb_cv5_results.json). EXP-007 was re-run authoritatively on
-GitHub Actions:
+Faithful GHA reproduction of the legacy EXP-006 configuration yields
+**OOF 0.963127**, not the claimed 0.96421 (legacy record: local-era, empty folds,
+no artifacts — unreliable). All comparisons now key off 0.963127.
+Recomputed field deltas: everything clusters at **0.9631 ± 0.0002 — a plateau**:
 
-- **Verified EXP-007 OOF: 0.962917** (folds 0.96206 / 0.96264 / 0.96325 / 0.96390 / 0.96274).
-- The old local score 0.962920 was actually accurate; the corrupted part was its champion
-  baseline citation (0.95965 instead of the true 0.96421).
-- **EXP-007 is BELOW champion by -0.00129 → rejected.**
-- The lgb_cv5_results.json figure (0.96228) came from a different, older config and is moot.
-
-## CHAMPION UNDER REVIEW (2026-08-24, post EXP-008)
-
-EXP-008's champion-style LGBM member scored **0.96322**, not 0.96421. The EXP-006 record
-is a legacy local-era artifact: empty fold metrics, no artifacts. Its config lists
-`subsample: 0.8` without `subsample_freq` (sklearn default 0 = row bagging DISABLED).
-**EXP-010 reproduces that configuration exactly on GHA.** Until it lands, treat both
-0.96421 and 0.96322 as candidate baselines; no promotion decisions.
+| Config | OOF | Δ vs 0.963127 |
+|---|---|---|
+| EXP-010 exact legacy champion | 0.963127 | baseline |
+| EXP-008 LGBM (+subsample_freq 1) | 0.963223 | +0.00010 |
+| EXP-009 5-seed average | 0.963303 | +0.00018 |
+| EXP-007 ratios+tuned | 0.962917 | −0.00021 |
+| EXP-008 blend (LGBM+XGB+CatBoost) | 0.962273 | −0.00085 |
 
 ## Recently Completed Experiments
 
 | ID | Description | OOF ROC-AUC | Decision |
 |----|-------------|-------------|----------|
-| EXP-000–003b | Baselines + feature analysis (local era) | — | Unverified |
-| EXP-006 | Regularized LightGBM ensemble (local era) | 0.96421? | Under re-verification |
-| EXP-007 | LightGBM + engineered ratios (tuned) | 0.96292 (GHA) | Rejected — below champion |
-| EXP-008 | LGBM+XGB+CatBoost probability blend | 0.96227 (GHA) | Rejected — members too correlated, blend drags |
+| EXP-006 (legacy) | Local-era champion claim | ~~0.96421~~ | Not reproducible — superseded by EXP-010 |
+| EXP-007 | LightGBM + engineered ratios (tuned) | 0.96292 (GHA) | Rejected |
+| EXP-008 | LGBM+XGB+CatBoost probability blend | 0.96227 (GHA) | Rejected |
+| EXP-009 | 5-seed LightGBM ensemble | 0.96330 (GHA) | Inconclusive+ (below margin, best score) |
+| EXP-010 | Legacy champion faithful reproduction | 0.96313 (GHA) | Promoted as verified baseline |
 
 ## Important Discoveries
 
-- **Cross-family OOF correlations are near-saturated**: LGBM~XGB 0.9952,
-  XGB~CatBoost 0.9867, LGBM~CatBoost 0.9828. Family-level blending is dead on this
-  dataset unless a genuinely different model class (linear/NN/kNN) enters the mix.
-- CatBoost substantially weaker here (0.95681) — likely ordinal-encoded categoricals
-  underperform native handling; deprioritize.
-- **Missing-value indicators are a dead hypothesis** (EDA): target rate among missing
-  ≈ known for every feature (max Δ +0.004). No experiment needed.
+- **Legacy champion number was inflated**: true reproducible value 0.96313, −0.00108 off.
+- **Same-family seed diversity decorrelates MORE than family switching**:
+  seed~seed corr ≈ 0.988 < LGBM~XGB 0.995. This is why seed averaging helped
+  (+0.0002) while cross-family blending hurt (−0.0009).
+- CatBoost substantially weaker here (0.95681); XGBoost redundant vs LightGBM.
+- **Missing-value indicators are dead** (EDA): target|missing ≈ target|known everywhere.
 - Signal concentrates in `daily_screen_time_hours`, `weekend_screen_time`,
   `social_media_hours` — strongly monotone, saturating near p=1.0 in top deciles.
-  Categoricals carry minimal signal (gender Δ≈0.02 at most).
-- Stratified 5-fold CV is stable: fold std ~0.0007 across GHA runs.
+- Stratified 5-fold CV stable: fold std ~0.0006–0.0008 across runs.
 - All scores must come from GHA runs. Local results void.
 
 ## Rejected Approaches
 
-- Local experiment execution — unverifiable, caused the integrity incident above.
-- Engineered screen-time ratio/interaction features on raw features (EXP-007).
-- Cross-family GBDT probability blending (EXP-008): correlation too high, members weaker.
-- Missingness indicators (EDA-eliminated, no run needed).
+- Local experiment execution (unverifiable).
+- Engineered screen-time ratio/interaction features (EXP-007).
+- Cross-family GBDT blending (EXP-008): correlations saturated, members weaker.
+- Missingness indicators (EDA-eliminated).
 
 ## Current Research Priorities
 
-1. **VERIFY:** EXP-010 — is the champion 0.96421 reproducible, or is the true baseline ~0.96322?
-2. **MEASURE:** EXP-009 — seed sensitivity of the champion-family config; does seed averaging help?
-3. Then (evidence-dependent):
-   - If true baseline ≈ 0.9632: hyperparameter refinement becomes the main lever (num_leaves/lr/min_child sweep via parallel matrix runs).
-   - If blend candidates remain viable: fixed-weight blends toward the strongest member.
-   - Consider a decorrelated non-GBDT member (regularized logistic regression on saturated features) for stacking diversity.
+1. **EXP-011:** do bagging and seed-averaging combine additively?
+2. **EXP-012:** does doubling capacity break the plateau?
+3. Next levers (evidence-dependent):
+   - Capacity works → probe num_leaves 255 / min_child_samples 80.
+   - Plateau holds → add a decorrelated **linear member** (logistic regression)
+     to the stack; trees all correlate ≥0.98, a linear boundary may differ.
+   - Seed count scaling: 10-seed average if seed lever keeps paying.
 
 ## Agent Activity
 
-Orchestrator active (this session): queued EXP-007..010; runner now supports ensembles/blends.
+Orchestrator active: EXP-007..012 queued/executed this session; runner supports
+ensembles, blends, per-member diagnostics; matrix parallelism + rebase-safe commits.
 
 ## Compute Status
 
-- **GitHub Actions:** ACTIVE and PROVEN — matrix parallelism works (EXP-009+010 concurrently);
-  result commits are rebase-safe; sync-results skips cleanly without API creds.
-- Data committed under `competitions/s6e8/data/`; runners validate before training.
-- Local runners: prohibited for experiments; EDA/EDA-scripts allowed.
+- **GitHub Actions:** ACTIVE — parallel matrix runs proven; ~4–12 min per experiment;
+  results auto-committed with rebase safety; sync-results skips without creds.
+- Local: EDA/smoke only.
 
 ## Outstanding Questions
 
-- Is EXP-006's 0.96421 real? (EXP-010)
-- How much does seed variance contribute vs family variance? (EXP-009 vs EXP-008 correlations)
-- Would a non-tree model class provide usable decorrelation for stacking?
+- Additivity of bagging × seeds (EXP-011)?
+- Is the plateau capacity-limited or information-limited? (EXP-012 answers directionally.)
+- Can a linear model decorrelate enough from trees to earn a stack slot?
 
 ## Recommended Next Actions
 
-1. Analyze EXP-009/010 on completion; re-baseline champion per evidence.
-2. If re-baselined to ~0.9632: queue HP sweep (EXP-011+) as parallel matrix experiments.
-3. Maintain the loop: analyze → hypothesize → implement → queue → monitor → record.
+1. On EXP-011/012 completion: record decisions, update best-score table.
+2. If plateau persists: implement `logistic` member in runner; queue stacked run.
+3. If capacity pays: queue num_leaves 255 probe.
