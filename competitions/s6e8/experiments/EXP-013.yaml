@@ -114,14 +114,14 @@ metadata:
     64 and 255 leaves; EXP-014 midpoint locates the peak.
 results:
   status: completed
-  oof_metric: 0.9641085036208502
+  oof_metric: 0.9641082888620006
   fold_metrics:
   - 0.9633534205291202
-  - 0.9640424237375453
-  - 0.9642571387632323
+  - 0.964042444542552
+  - 0.9642563735449419
   - 0.9650228487622889
   - 0.9638737858351579
-  runtime_seconds: 1846.006988286972
+  runtime_seconds: 1952.232099533081
   features_used:
   - age
   - daily_screen_time_hours
@@ -142,17 +142,17 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9972443040585973
-    lightgbm[0]~lightgbm[2]: 0.9970346603959616
-    lightgbm[0]~lightgbm[3]: 0.9972903837033444
-    lightgbm[0]~lightgbm[4]: 0.9971137801309563
-    lightgbm[1]~lightgbm[2]: 0.9972586715067324
-    lightgbm[1]~lightgbm[3]: 0.9973140084962484
-    lightgbm[1]~lightgbm[4]: 0.9973905630985023
-    lightgbm[2]~lightgbm[3]: 0.9973696597763728
-    lightgbm[2]~lightgbm[4]: 0.9972109389294597
-    lightgbm[3]~lightgbm[4]: 0.9973187326989421
-  rank_average_diagnostic: 0.9641096577378105
+    lightgbm[0]~lightgbm[1]: 0.9972443040585959
+    lightgbm[0]~lightgbm[2]: 0.9970344673194399
+    lightgbm[0]~lightgbm[3]: 0.9972903836975788
+    lightgbm[0]~lightgbm[4]: 0.997113780130957
+    lightgbm[1]~lightgbm[2]: 0.9972578975669648
+    lightgbm[1]~lightgbm[3]: 0.997314008482295
+    lightgbm[1]~lightgbm[4]: 0.9973905630985015
+    lightgbm[2]~lightgbm[3]: 0.9973693134626513
+    lightgbm[2]~lightgbm[4]: 0.9972120297333439
+    lightgbm[3]~lightgbm[4]: 0.9973187326996619
+  rank_average_diagnostic: 0.9641093920928558
   members:
   - member_index: 0
     name: lightgbm
@@ -177,22 +177,22 @@ results:
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9638218634995241
+    oof_auc: 0.9638205531163485
     fold_metrics:
     - 0.9630746717527194
-    - 0.9637536733348147
-    - 0.9639476310532133
+    - 0.9637537748226517
+    - 0.9639411099522511
     - 0.9646951090160842
     - 0.9636399432964826
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.963762224892905
+    oof_auc: 0.9637622249740956
     fold_metrics:
     - 0.9630701532604994
     - 0.9635285593579161
     - 0.9638290283074582
-    - 0.9648191088850075
+    - 0.9648191101536056
     - 0.9635707847198658
   - member_index: 4
     name: lightgbm
@@ -207,12 +207,5 @@ results:
   artifacts:
   - experiments/output/EXP-013/oof_predictions.csv
   - experiments/output/EXP-013/results.json
-  decision: promoted
-  reasoning: >-
-    New best verified score: blend OOF 0.964109 (+0.00007 over EXP-012).
-    Margin below the 0.0005 bar, but the capacity ladder is now four
-    independently-configured points rising monotonically (64->96->127->255 =
-    0.96366 -> 0.96399 -> 0.96404 -> 0.96411), each confirmed at member level;
-    treated as a trend promotion rather than noise-chasing. Curve has FLATTENED
-    (+0.00007 last step): further leaf doubling deprioritized. Next levers:
-    seed-count scaling and weighted linear stacking.
+  decision: null
+  reasoning: null
