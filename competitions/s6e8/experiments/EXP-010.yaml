@@ -1,0 +1,74 @@
+# Experiment Configuration — executed by GitHub Actions (experiment-runner.yml).
+# Push a change to this file → Actions trains on the committed data and writes
+# results back under `results`. DO NOT run this locally.
+#
+# PURPOSE: champion verification. The EXP-006 record (legacy, local-era) claims
+# OOF 0.96421 with empty fold metrics and no artifacts. EXP-008's champion-style
+# LGBM member scored only 0.96322. One material config difference: the legacy
+# record lists 'subsample: 0.8' but NO subsample_freq — sklearn's default
+# subsample_freq=0 DISABLES row bagging, making subsample inert. This run
+# reproduces the legacy configuration EXACTLY (bagging off, colsample 0.8)
+# to establish whether the champion number is real.
+
+experiment_id: EXP-010
+competition: s6e8
+status: queued
+
+hypothesis: >-
+  Reproducing the EXP-006 legacy configuration exactly (row bagging disabled
+  via absent subsample_freq, colsample_bytree 0.8, num_leaves 64, lr 0.05,
+  1000 trees, ES 50) yields OOF ≈ 0.96421, confirming the champion baseline;
+  if it instead lands near EXP-008's 0.96322, the champion record is unreliable
+  and must be re-baselined on GHA evidence.
+phase: 3
+
+model:
+  name: lightgbm
+  parameters:
+    n_estimators: 1000
+    learning_rate: 0.05
+    num_leaves: 64
+    reg_alpha: 0.1
+    reg_lambda: 0.1
+    subsample: 0.8        # inert: no subsample_freq in legacy record (default 0)
+    colsample_bytree: 0.8
+    early_stopping_rounds: 50
+    n_jobs: -1
+    verbose: -1
+    random_state: 42
+
+features:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+
+validation:
+  strategy: stratified_kfold
+  n_folds: 5
+  random_state: 42
+
+training:
+  compute: github_actions
+  timeout_minutes: 60
+  predict_test: true
+
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-006
+  created_at: "2026-08-24T16:30:00Z"
+  design_notes: >-
+    Faithful reproduction of the legacy EXP-006 configuration block.
+    NOTE: legacy record did not specify feature list; canonical raw features
+    assumed (consistent with phase-3 era docs). If this scores materially below
+    0.96421, STATE.md must re-baseline the champion to the GHA-verified value.
+
+# Results (filled automatically by scripts/record_results.py after the run)

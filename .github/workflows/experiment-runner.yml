@@ -113,8 +113,13 @@ jobs:
           # Only the experiment YAML (results written back by record_results).
           # Bulky artifacts stay in Actions artifacts + experiments/output (gitignored).
           git add competitions/
-          git diff --quiet && git diff --staged --quiet || git commit -m "exp: ${{ matrix.experiment.id }} results [skip ci]"
-          git push
+          if git diff --staged --quiet; then
+            echo "No result changes to commit"
+          else
+            git commit -m "exp: ${{ matrix.experiment.id }} results [skip ci]"
+            # Rebase in case another experiment job pushed meanwhile.
+            git pull --rebase origin master && git push
+          fi
 
   sync-results:
     needs: run-experiment
