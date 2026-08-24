@@ -52,7 +52,10 @@ EXP-013/014 map the capacity curve's peak (64 → 96 → 127 → 255 leaves).
 | EXP-012 | Capacity probe nl127 | 0.964038 | Promoted (superseded) |
 | EXP-013 | Capacity probe nl255 | **0.964109** | **Promoted — current champion** |
 | EXP-014 | Capacity midpoint nl96 | 0.963986 | Rejected (below champion) |
+| EXP-015 | 10-seed nl127 | 0.964092 | Rejected (seed scaling exhausted) |
 | EXP-016 | Weighted linear stack (LGBM + logistic) | 0.961869 | Rejected — quality gap > decorrelation |
+| EXP-017 | DART boosting nl127 | 0.961464 | Rejected — high variance, no accuracy |
+| EXP-018 | GOSS boosting nl255 | 0.963781 | Rejected — systematically below GBDT |
 
 ## Capacity Curve (all bagged, 5-seed blends)
 
@@ -70,15 +73,27 @@ remaining capacity upside < remaining lever upside elsewhere.
 
 | Lever | Verdict | Evidence |
 |-------|---------|----------|
-| Seed averaging (5→) | POSITIVE (+0.0002) | EXP-009 vs 010 |
+| Seed averaging (→5) | POSITIVE (+0.0002) | EXP-009 vs 010 |
 | Row bagging | POSITIVE (+0.0004) | EXP-011 vs 009 |
 | Leaf capacity to 255 | POSITIVE, saturating (+0.0004 total) | EXP-012/013 curve |
+| Seed scaling (→10) | EXHAUSTED (+0.00005) | EXP-015 |
+| GOSS boosting | DEAD (−0.0003) | EXP-018 |
+| DART boosting | DEAD (−0.0026) | EXP-017 |
 | Cross-family GBDT blend | DEAD (−0.0009) | EXP-008 |
 | Linear/logistic stack | DEAD (−0.0022) | EXP-016 (gap 0.05 AUC unbeatable by corr 0.84) |
 | Engineered ratios | DEAD (−0.0013) | EXP-007 |
 | Missingness indicators | DEAD (EDA) | no run needed |
-| DART boosting | TESTING (EXP-017) | queued |
-| 10-seed scaling | TESTING (EXP-015) | running |
+
+Boosting-mode ranking: **gbdt > goss > dart**.
+Train/test distributions verified clean (KS p≥0.14 all numerics; categorical
+drift ≤2.3% on a zero-signal feature) — CV OOF should track LB faithfully.
+
+## Micro-grid In Flight
+
+Single-variable A/Bs vs champion EXP-013 (nl255/lr0.02/3000t/mcs80/col0.7/L2 0.1):
+- EXP-019: min_child_samples 80→20 (relax leaf regularization)
+- EXP-020: colsample_bytree 0.7→0.8 (isolate EXP-013's colsample change)
+- EXP-021: reg_lambda 0.1→1.0 (stronger L2)
 
 ## Important Discoveries
 
