@@ -114,14 +114,14 @@ metadata:
     diversity for stacking.'
 results:
   status: completed
-  oof_metric: 0.9640376320739663
+  oof_metric: 0.9640384475303987
   fold_metrics:
-  - 0.9632256382085143
+  - 0.9632256785499294
   - 0.9639560111576286
-  - 0.9642592925888517
-  - 0.9649560532738124
-  - 0.9637971328128228
-  runtime_seconds: 1382.2519991397858
+  - 0.9642655297775902
+  - 0.964954832375134
+  - 0.9637971343351557
+  runtime_seconds: 1367.3115797042847
   features_used:
   - age
   - daily_screen_time_hours
@@ -142,17 +142,17 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9966109931565121
-    lightgbm[0]~lightgbm[2]: 0.9964076831672756
-    lightgbm[0]~lightgbm[3]: 0.9966217815778842
-    lightgbm[0]~lightgbm[4]: 0.9964543691451029
-    lightgbm[1]~lightgbm[2]: 0.996667751175926
-    lightgbm[1]~lightgbm[3]: 0.996653703039081
-    lightgbm[1]~lightgbm[4]: 0.9967610068417193
-    lightgbm[2]~lightgbm[3]: 0.9967369936744526
-    lightgbm[2]~lightgbm[4]: 0.9966151871626543
-    lightgbm[3]~lightgbm[4]: 0.9967046228826559
-  rank_average_diagnostic: 0.9640366338883108
+    lightgbm[0]~lightgbm[1]: 0.996610993156512
+    lightgbm[0]~lightgbm[2]: 0.9963956642346091
+    lightgbm[0]~lightgbm[3]: 0.9966227196439322
+    lightgbm[0]~lightgbm[4]: 0.996454373936199
+    lightgbm[1]~lightgbm[2]: 0.9966499297152677
+    lightgbm[1]~lightgbm[3]: 0.996654316188414
+    lightgbm[1]~lightgbm[4]: 0.9967610086786421
+    lightgbm[2]~lightgbm[3]: 0.9967243362098085
+    lightgbm[2]~lightgbm[4]: 0.9965969816179282
+    lightgbm[3]~lightgbm[4]: 0.9967014640936329
+  rank_average_diagnostic: 0.964037570323566
   members:
   - member_index: 0
     name: lightgbm
@@ -177,42 +177,35 @@ results:
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9636853009238475
+    oof_auc: 0.9636883754838385
     fold_metrics:
     - 0.962922566095955
     - 0.9636362732199272
-    - 0.9638185045262073
+    - 0.9638338192945201
     - 0.964564965580952
     - 0.9634903327153468
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9636393417790226
+    oof_auc: 0.9636376500646706
     fold_metrics:
     - 0.9627991391258712
     - 0.9634786593108131
-    - 0.963820004516437
-    - 0.9646543020254508
+    - 0.9638191827186773
+    - 0.9646467333162917
     - 0.9634472032433339
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9636533622406438
+    oof_auc: 0.9636533991011013
     fold_metrics:
-    - 0.9628621569833373
+    - 0.9628623257068661
     - 0.9636491710554036
-    - 0.9638692791447452
+    - 0.9638692788910255
     - 0.9644523521398934
-    - 0.9634436293127228
+    - 0.9634436318499445
   artifacts:
   - experiments/output/EXP-012/oof_predictions.csv
   - experiments/output/EXP-012/results.json
-  decision: promoted
-  reasoning: >-
-    NEW CHAMPION (supersedes EXP-011). Blend OOF 0.964038 = +0.00037 over
-    EXP-011 (num_leaves 64) and +0.00091 over verified baseline (EXP-010,
-    0.963127). Doubling capacity (num_leaves 127, min_child_samples 40,
-    lr 0.03, 2000 trees) lifted ALL five seed members uniformly by ~+0.00035
-    (members 0.963633-0.963685, std ~0.00002) - the plateau was capacity-limited,
-    not information-limited. Per design notes: proceed up the capacity curve
-    (EXP-013: num_leaves 255; EXP-014: midpoint 96/lr 0.05 control).
+  decision: null
+  reasoning: null
