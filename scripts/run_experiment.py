@@ -107,6 +107,44 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict) -> pd.DataFrame:
     return df
 
 
+def _target_encode_fit(df_fit: pd.DataFrame, y_fit: pd.Series,
+                       cols: list[str], smoothing: float) -> dict:
+    """Fit leak-free target-encoding maps from (df_fit, y_fit) ONLY.
+
+    Encoded value for group v: (sum_y[v] + m * prior) / (count[v] + m).
+    NaN values form an explicit group (pandas>=3 groupby silently DROPS NaN
+    keys by default -- handled manually here, see discussion 735861 trap).
+    Unseen-at-apply values resolve to the prior (equivalent to count=0).
+    """
+    prior = float(pd.Series(y_fit).mean())
+    m = float(smoothing)
+    maps: dict[str, pd.Series] = {}
+    for c in cols:
+        tmp = pd.DataFrame({"v": df_fit[c].to_numpy(), "y": np.asarray(y_fit)})
+        g = tmp.groupby("v", dropna=False)["y"].agg(["sum", "count"])
+        enc = (g["sum"] + m * prior) / (g["count"] + m)
+        maps[c] = enc.astype("float64")
+    return {"prior": prior, "m": m, "maps": maps}
+
+
+def _target_encode_apply(df_apply: pd.DataFrame, stats: dict,
+                         cols: list[str]) -> pd.DataFrame:
+    """Add te_<col> columns using maps fitted on a disjoint frame."""
+    out = df_apply.copy()
+    prior = stats["prior"]
+    for c in cols:
+        enc = stats["maps"][c]
+        col = out[c]
+        vals = col.map(enc)
+        if col.isna().any():
+            nan_group = enc.index[enc.index.isna()]
+            nan_val = float(enc.iloc[enc.index.get_indexer([np.nan])[0]]) \
+                if len(nan_group) else prior
+            vals[col.isna()] = nan_val
+        out[f"te_{c}"] = vals.fillna(prior).astype("float64")
+    return out
+
+
 def _get_members(model_config: dict) -> list[dict]:
     """Normalize model config into a list of member specs.
 
@@ -362,6 +400,16 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
     skf = StratifiedKFold(n_splits=val_config.get("n_folds", 5),
                           shuffle=True, random_state=val_config.get("random_state", 42))
 
+    te_cfg = config.get("target_encoding") or {}
+    te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
+    te_smoothing = float(te_cfg.get("smoothing", 50))
+    if te_cols:
+        print(f"  Target encoding: {len(te_cols)} cols, smoothing={te_smoothing} "
+              f"(fold-train fit only)")
+    missing_te = [c for c in te_cfg.get("columns", []) if c not in X.columns]
+    if missing_te:
+        print(f"⚠️  TE columns not found (skipping): {missing_te}")
+
     member_keys = [f"{m['name']}[{i}]" for i, m in enumerate(members)]
     oof_by_member = {k: np.zeros(len(X)) for k in member_keys}
     member_fold_aucs = {k: [] for k in member_keys}
@@ -371,6 +419,14 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
     for fold, (train_idx, val_idx) in enumerate(skf.split(X, y)):
         X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]
         y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+
+        # --- Leak-free target encoding (fit on fold-train ONLY) ---
+        if te_cols:
+            te_stats = _target_encode_fit(X_train, y_train, te_cols, te_smoothing)
+            X_train = _target_encode_apply(X_train, te_stats, te_cols)
+            X_val = _target_encode_apply(X_val, te_stats, te_cols)
+            if use_pseudo:
+                X_test_al = _target_encode_apply(X_test_al, te_stats, te_cols)
 
         # --- Optional pseudo-label generation (base models see fold-train ONLY) ---
         sw_map = None
@@ -479,6 +535,16 @@ def predict_test(train: pd.DataFrame, test: pd.DataFrame, config: dict) -> np.nd
 
     cat_cols = [c for c in features if not pd.api.types.is_numeric_dtype(X[c])]
     X, X_test = _align_categoricals(X, X_test, cat_cols)
+
+    # Target encoding: fit on FULL train, apply to train + test (submission path
+    # has no holdout, mirroring the fold-level fit-on-train-only discipline).
+    te_cfg = config.get("target_encoding") or {}
+    te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
+    if te_cols:
+        te_stats = _target_encode_fit(X, y, te_cols, float(te_cfg.get("smoothing", 50)))
+        X = _target_encode_apply(X, te_stats, te_cols)
+        X_test = _target_encode_apply(X_test, te_stats, te_cols)
+        print(f"  Target encoding (submission): {len(te_cols)} cols")
 
     pl_cfg = config.get("training", {}).get("pseudo_label")
 
