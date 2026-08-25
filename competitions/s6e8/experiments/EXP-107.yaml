@@ -50,3 +50,4 @@ metadata:
   parent_experiment: EXP-035
   created_at: '2026-08-25T08:20:00Z'
   design_notes: leaf-wise path smoothing regularizer - obscure but real; untested.
+# retrigger: lost to fail-fast cascade + push race (2026-08-25)

@@ -49,3 +49,4 @@ metadata:
   parent_experiment: EXP-035
   created_at: '2026-08-25T08:20:00Z'
   design_notes: 'aggressive row-refresh combo: tighter fraction with frequent refresh.'
+# retrigger: lost to fail-fast cascade + push race (2026-08-25)
