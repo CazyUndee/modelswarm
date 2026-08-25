@@ -525,6 +525,20 @@ def main():
         print(f"⚠️  SMOKE TEST MODE: capping train to {args.max_rows} rows (invalid for research)")
         train = train.sample(n=min(args.max_rows, len(train)), random_state=42).reset_index(drop=True)
 
+    # Screening mode: reduced rows for cheap relative-ranking runs.
+    # Screening OOF scores are NOT comparable to full-data results.
+    screening = None
+    scr = config.get("training", {}).get("screening")
+    if isinstance(scr, dict) and float(scr.get("row_fraction", 1.0)) < 1.0:
+        frac = float(scr["row_fraction"])
+        seed = int(scr.get("seed", 42))
+        n_folds_eff = int(config.get("validation", {}).get("n_folds", 5))
+        train = train.sample(frac=frac, random_state=seed).reset_index(drop=True)
+        screening = {"row_fraction": frac, "seed": seed, "rows": int(len(train))}
+        print(f"⚠️  SCREENING MODE: row_fraction={frac} (seed {seed}) -> {train.shape[0]} rows, "
+              f"{n_folds_eff} folds. Scores are for RELATIVE ranking ONLY — "
+              "not comparable to full-data OOF results.")
+
     print("\n[2/5] Applying feature engineering...")
     train = apply_feature_engineering(train, config)
     test = apply_feature_engineering(test, config)
@@ -536,6 +550,8 @@ def main():
     results = train_model(train, config, test=test if pl_enabled else None)
     runtime = time.time() - start_time
     results["runtime_seconds"] = runtime
+    if screening:
+        results["screening"] = screening
 
     print("\n[4/5] Saving results...")
     oof_df = pd.DataFrame({

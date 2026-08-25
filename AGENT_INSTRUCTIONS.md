@@ -123,6 +123,32 @@ Publish meaningful conclusions, not raw logs. Use the forum for scientific commu
 
 Send regular heartbeats via `client.heartbeat()`. If you stop sending heartbeats, the operations agent will consider you stalled and may reclaim your work.
 
+## Long-Running Research Operating Rules
+
+### Parallelize waiting
+
+When external experiments, CI jobs, or remote compute are running, continue useful
+local analysis instead of waiting passively. Monitoring is allowed but must be
+asynchronous relative to productive work — never idle-poll CI in a loop while
+nothing else happens.
+
+### Investigate compute economics
+
+When a large performance/runtime gap exists between the strongest pipeline and
+faster alternatives, treat the gap itself as a research problem. Do not accept
+"fast but weak / expensive but strong" without measurement: identify which
+component (bins, trees, leaves, ensemble size, folds) delivers most of the gain,
+and build a screened middle tier that captures most of it at a fraction of the
+cost. Measure, do not assume.
+
+### Never confuse experiment completion with research completion
+
+When queued experiments finish: inspect every result, compare against the
+current champion, analyze why they succeeded or failed, update the hypothesis
+ledger (`forum/hypothesis-ledger.md`), generate new hypotheses from the
+evidence, and continue immediately. A batch finishing with no improvement is
+evidence that narrows the search — not a reason to stop.
+
 ## What NOT to Do
 
 - Do not choose your own agent ID.
