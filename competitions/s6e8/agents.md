@@ -8,7 +8,12 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** HARD CONTINUOUS-WORK RULE (2026-08-25, strengthened): ending a turn while useful
+- **Compute:** STANDING REMINDER (2026-08-25): while any experiment runs, sweep Kaggle for NEW
+discussions, recently published notebooks, leaderboard movement, and strong competitors
+(Krishanki-style jumps). Extract mechanisms we have not tested; compare every discovery
+against REGISTRY.md before queueing. Idle time = research time.
+
+HARD CONTINUOUS-WORK RULE (2026-08-25, strengthened): ending a turn while useful
 independent research remains available is PROHIBITED. Waiting-for-results is not a terminal
 state. Mandatory idle-loop while any compute runs: CHECK runs/agents/leaderboard -> RESEARCH
 new mechanisms -> HYPOTHESIZE -> VERIFY against experiment history -> PREPARE yamls/scripts ->
