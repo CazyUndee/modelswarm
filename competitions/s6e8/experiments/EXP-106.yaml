@@ -1,6 +1,6 @@
 experiment_id: EXP-106
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN vs EXP-100 control under identical reduced conditions (12% rows
   / 3 folds / 600 trees): extra_trees=True.'
 phase: 4
@@ -51,3 +51,47 @@ metadata:
   created_at: '2026-08-25T08:20:00Z'
   design_notes: extremely randomized trees - structurally different split thresholds;
     diversity source candidate.
+results:
+  status: completed
+  oof_metric: 0.9401071159395088
+  fold_metrics:
+  - 0.93909862776158
+  - 0.9406425267242136
+  - 0.9405892817760966
+  runtime_seconds: 74.52661061286926
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: lightgbm
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9401071159395088
+    fold_metrics:
+    - 0.93909862776158
+    - 0.9406425267242136
+    - 0.9405892817760966
+  artifacts:
+  - experiments/output/EXP-106/oof_predictions.csv
+  - experiments/output/EXP-106/results.json
+  decision: null
+  reasoning: null
