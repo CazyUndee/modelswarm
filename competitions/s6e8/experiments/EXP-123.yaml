@@ -248,5 +248,7 @@ results:
   artifacts:
   - experiments/output/EXP-123/oof_predictions.csv
   - experiments/output/EXP-123/results.json
-  decision: null
+  decision: 'REJECTED: nested TE 0.967339 (-0.00062 vs EXP-119 plain TE). Inner-OOF
+    encodings weakened signal in OUR context - raphdraft gain does not transfer to
+    this LGBM/col0.3/m10 setup.'
   reasoning: null

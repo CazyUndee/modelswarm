@@ -268,5 +268,6 @@ results:
   artifacts:
   - experiments/output/EXP-122/oof_predictions.csv
   - experiments/output/EXP-122/results.json
-  decision: null
+  decision: 'KEEP: best single OOF 0.968223 (10-fold > 5-fold by +0.0003). Fold-count
+    axis confirmed.'
   reasoning: null
