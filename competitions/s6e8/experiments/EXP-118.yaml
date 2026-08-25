@@ -24,22 +24,23 @@ feature_engineering:
   - work_study_hours
 hypothesis: 'DGP constraint recovery: daily_screen_time >= social + gaming + work_study
   holds in 100.00000% of all 987,671 train+test rows (verified locally: 0 violations,
-  459 exact-boundary rows), so free_time_slack = daily - (social + gaming + work) is
-  a latent generator input, not an arbitrary derived feature. Community evidence (discussion
-  735861) reports +0.0008 on EVERY model family from exactly this construction (LGBM
-  0.96726 -> 0.96809, XGB 0.96755 -> 0.96835, CAT 0.96700 -> 0.96787). Our EXP-110
+  459 exact-boundary rows), so free_time_slack = daily - (social + gaming + work)
+  is a latent generator input, not an arbitrary derived feature. Community evidence
+  (discussion 735861) reports +0.0008 on EVERY model family from exactly this construction
+  (LGBM 0.96726 -> 0.96809, XGB 0.96755 -> 0.96835, CAT 0.96700 -> 0.96787). Our EXP-110
   diff-feature falsification tested sleep_debt / screen_minus_social / social_minus_gaming
-  but NEVER this constraint slack - the rejection was correct for arbitrary diffs and
-  blind to the algebraically meaningful one. Single-variable A/B vs champion EXP-035
+  but NEVER this constraint slack - the rejection was correct for arbitrary diffs
+  and blind to the algebraically meaningful one. Single-variable A/B vs champion EXP-035
   (OOF 0.966518): identical members/features except adding free_time_slack.'
 metadata:
   author: agent-orchestrator
   parent_experiment: EXP-035
   created_at: '2026-08-25T16:40:00Z'
-  design_notes: 'Leaderboard intelligence: top LB ~0.9712; community blends score ~+0.001
-    above their OOF on public split (OOF 0.96943 -> LB 0.97062), implying our champion
-    OOF 0.966518 sits ~LB 0.9675 - a real gap of ~+0.004 exists above us. This feature
-    is the largest single documented lever. One variable only: clean attribution.'
+  design_notes: 'Leaderboard intelligence: top LB ~0.9712; community blends score
+    ~+0.001 above their OOF on public split (OOF 0.96943 -> LB 0.97062), implying
+    our champion OOF 0.966518 sits ~LB 0.9675 - a real gap of ~+0.004 exists above
+    us. This feature is the largest single documented lever. One variable only: clean
+    attribution.'
 model:
   blend: probability_average
   members:
@@ -125,7 +126,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -134,3 +135,102 @@ validation:
   n_folds: 5
   random_state: 42
   strategy: stratified_kfold
+results:
+  status: completed
+  oof_metric: 0.9672268851240574
+  fold_metrics:
+  - 0.9665788559649364
+  - 0.9672934823149915
+  - 0.9673626571858049
+  - 0.9679266745709706
+  - 0.9669752801672991
+  runtime_seconds: 2839.5582132339478
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9982471782127949
+    lightgbm[0]~lightgbm[2]: 0.9982808125907406
+    lightgbm[0]~lightgbm[3]: 0.9983028768204927
+    lightgbm[0]~lightgbm[4]: 0.9928227531546264
+    lightgbm[1]~lightgbm[2]: 0.9982073997480647
+    lightgbm[1]~lightgbm[3]: 0.9982577546554753
+    lightgbm[1]~lightgbm[4]: 0.9926719803505754
+    lightgbm[2]~lightgbm[3]: 0.9982683502606876
+    lightgbm[2]~lightgbm[4]: 0.993058109677981
+    lightgbm[3]~lightgbm[4]: 0.9931365885152722
+  rank_average_diagnostic: 0.9672227083633149
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9668422679377559
+    fold_metrics:
+    - 0.9662423502068167
+    - 0.9668566872912913
+    - 0.9670079204063777
+    - 0.9675035598539696
+    - 0.966602922064646
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9668211327887547
+    fold_metrics:
+    - 0.9661415872467574
+    - 0.9668669012809201
+    - 0.9670431635800707
+    - 0.9674774384070604
+    - 0.9665859006048347
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9668844669708538
+    fold_metrics:
+    - 0.9662231103964101
+    - 0.9669847233314895
+    - 0.9670233627956457
+    - 0.9675916084178179
+    - 0.9666126269379862
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9668807227826007
+    fold_metrics:
+    - 0.9662822724772316
+    - 0.9669583742981056
+    - 0.9670204582137525
+    - 0.9675176887369081
+    - 0.9666313277848992
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.966530937409318
+    fold_metrics:
+    - 0.9658732409736421
+    - 0.9665806360615963
+    - 0.9665969377991235
+    - 0.9673224690172573
+    - 0.9662815557768836
+  artifacts:
+  - experiments/output/EXP-118/oof_predictions.csv
+  - experiments/output/EXP-118/results.json
+  decision: null
+  reasoning: null
