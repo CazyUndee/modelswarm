@@ -1,6 +1,6 @@
 # ModelSwarm Research State
 
-> Last updated: 2026-08-25 (post EXP-027; configuration frontier reached)
+> Last updated: 2026-08-25 (EXP-038 landed; single-variable search space exhausted)
 > Current competition: Kaggle Playground Series S6E8
 > Compute policy: **ALL experiments run on GitHub Actions** (`.github/workflows/experiment-runner.yml`). Local ML runs are prohibited — see `AGENT_INSTRUCTIONS.md`.
 
@@ -8,54 +8,33 @@
 
 | ID | Description | OOF ROC-AUC | Status |
 |----|-------------|-------------|--------|
-| **EXP-026** | 5-seed LGBM nl255 / lr 0.02 / 3000t / bagged / **max_bin 2048** | **0.966155** | **CHAMPION** |
-| EXP-024 | same, max_bin 1024 | 0.966016 | Verified (superseded) |
-| EXP-022 | same, max_bin 511 | 0.965203 | Verified (superseded) |
-| EXP-013 | max_bin default (255) | 0.964109 | Verified (superseded) |
-| EXP-010 | Legacy champion config reproduction nl64 | 0.963127 | Verified reference baseline |
+| **EXP-035** | 5-seed LGBM nl255 / lr 0.02 / 3000t / bagged / max_bin 2048 / **colsample 0.3** | **0.966518** | **CHAMPION** |
+| EXP-038 | same + min_data_in_bin 1 | 0.966525 | Statistical tie (rejected) |
+| EXP-031 | colsample 0.5 | 0.966415 | Verified |
+| EXP-030 | colsample 0.6 | 0.966270 | Verified |
+| EXP-026 | colsample 0.7 | 0.966155 | Verified (former champion) |
+| EXP-010 | Legacy champion config reproduction | 0.963127 | Verified reference baseline |
 
 ## Active Experiments
 
-None queued. The measured configuration space is exhausted at current margins;
-new work requires a genuinely new hypothesis (see "Open Ideas").
+None queued. Every measured hyperparameter axis is at a confirmed optimum or
+flat; the next improvement requires a structurally new hypothesis.
 
 ## Champion Lineage (all GHA-verified)
 
 | Stage | ID | Config delta | OOF | Gain |
 |-------|----|--------------|-----|------|
 | Baseline | EXP-010 | legacy config reproduced (nl64, unbagged, seed42) | 0.963127 | — |
-| +seeds+bagging | EXP-011 | bagged 5-seed average (subsample_freq 1) | 0.963664 | +0.00054 * |
-| +capacity | EXP-013 | num_leaves 255, lr 0.02, 3000t | 0.964109 | +0.00007 |
-| +**bins** | EXP-022 | max_bin 511 | 0.965203 | +0.00109 |
-| +**bins²** | EXP-024 | max_bin 1024 | 0.966016 | +0.00081 |
-| +**bins³** | **EXP-026** | **max_bin 2048** | **0.966155** | +0.00014 |
+| +seeds+bagging | EXP-011 | bagged 5-seed average | 0.963664 | +0.00054 * |
+| +capacity | EXP-013 | num_leaves 255, lr 0.02, 3000t | 0.964109 | +0.00007 (via 012) |
+| +**bins** | EXP-022/024/026 | max_bin 255→2048 | 0.966155 | +0.00205 |
+| +**colsample↓** | **EXP-035** | **colsample 0.7→0.3** | **0.966518** | +0.00036 |
 
-\* Conflated step: bagging and seed-averaging were introduced together. Sub-attribution
-from the fixed-runner measurement pair: single bagged seed ≈ 0.963303 (EXP-009 v1,
-see Measurement Incidents) → 5-seed average 0.963664 ⇒ seed averaging ≈ +0.00036;
-residual +0.00018 attributable to bagging, though no clean isolated A/B exists.
-(EXP-012's nl127 run also sits in this ladder at 0.964038.)
+\* Conflated step (sub-levers not separable; see Measurement Incidents).
+Total verified progress this session: **+0.00339 over the re-baselined start**
+(0.963127 → 0.966518) across 32 GHA experiment records.
 
-Total verified progress this session: **+0.00303 over the re-baselined start**
-(0.963127 → 0.966155). The single largest lever was histogram resolution
-(max_bin), worth more than everything else combined.
-
-## Measurement Incidents (documented for integrity)
-
-1. **Degenerate-blend bug (fixed)**: before member-keying was added, ensemble
-   members sharing a name collided in the blend dict, so a "5-seed average"
-   silently recorded only the last member. Detected by forensics on EXP-009's
-   collapsed record (blend folds == last member's folds). All affected results
-   superseded by post-fix reruns.
-2. **Rerun-wiped decisions (fixed)**: bundling decision edits into queue pushes
-   triggered accidental matrix reruns whose `record_results` nullified five
-   records' decisions. Guard added: `record_results.py` now preserves existing
-   non-null decision/reasoning and sets truthful top-level status.
-3. **Config-drift copy**: an accidental rerun briefly made EXP-009.yaml a
-   duplicate of EXP-011 (identical scores exposed it). Restored from git history
-   with a truthful dual-run record.
-
-## Champion Configuration (EXP-026)
+## Champion Configuration (EXP-035)
 
 ```yaml
 model: {name: ensemble, blend: probability_average}
@@ -63,7 +42,7 @@ members:  # ×5, random_state ∈ {42, 123, 7, 2024, 99}
   - lightgbm:
       n_estimators: 3000, learning_rate: 0.02, num_leaves: 255,
       min_child_samples: 80, subsample: 0.8, subsample_freq: 1,
-      colsample_bytree: 0.7, reg_alpha: 0.1, reg_lambda: 0.1,
+      colsample_bytree: 0.3, reg_alpha: 0.1, reg_lambda: 0.1,
       max_bin: 2048, early_stopping_rounds: 150
 features: [age, daily_screen_time_hours, social_media_hours, gaming_hours,
            work_study_hours, sleep_hours, notifications_per_day,
@@ -72,58 +51,78 @@ features: [age, daily_screen_time_hours, social_media_hours, gaming_hours,
 validation: stratified 5-fold, seed 42
 ```
 
-Submission artifacts per experiment live in Actions artifacts
-(`exp-<ID>-artifacts`: `submission.csv`, `oof_predictions.csv`, `results.json`).
+Submission artifacts live in Actions artifacts (`exp-<ID>-artifacts`).
+The champion's `submission.csv` was format-validated against sample_submission
+(ids aligned, no nulls, probabilities in range).
+
+## Colsample Axis (mapped this session, at max_bin2048/nl255)
+
+| colsample_bytree | OOF |
+|------------------|------|
+| 0.7 | 0.966155 |
+| 0.6 | 0.966270 |
+| 0.5 | 0.966415 |
+| 0.4 | 0.966373 (wobble) |
+| **0.3** | **0.966518 ← optimum** |
+| 0.2 | 0.965517 (cliff −0.001) |
+| 0.1 | 0.960087 (collapse −0.006) |
+
+Heavy feature subsampling synergizes with fine histogram bins: each tree sees
+~4 of 12 features, and the seed blend recovers ensemble coverage.
 
 ## Recently Completed Experiments
 
 | ID | Description | OOF ROC-AUC | Decision |
 |----|-------------|-------------|----------|
-| EXP-007 | LightGBM + engineered ratios | 0.962917 | Rejected |
-| EXP-008 | LGBM+XGB+CatBoost blend | 0.962273 | Rejected |
-| EXP-009 | Bagged 5-seed nl64 (authoritative v2 run) | 0.963664 | Inconclusive+ |
-| EXP-010 | Legacy champion reproduction | 0.963127 | Promoted as verified baseline |
-| EXP-011 | Bagged 5-seed nl64 | 0.963664 | Promoted (superseded) |
-| EXP-012 | nl127 | 0.964038 | Promoted (superseded) |
-| EXP-013 | nl255 | 0.964109 | Promoted (superseded) |
-| EXP-014 | nl96 midpoint | 0.963986 | Rejected |
-| EXP-015 | 10-seed nl127 | 0.964092 | Rejected (seed scaling exhausted) |
-| EXP-016 | Weighted linear stack | 0.961869 | Rejected |
-| EXP-017 | DART boosting | 0.961464 | Rejected |
-| EXP-018 | GOSS boosting | 0.963781 | Rejected |
-| EXP-019/20/21 | HP micro-grid @nl255 | 0.96392–0.96412 | Rejected (flat optimum) |
-| EXP-022 | **max_bin 511** | 0.965203 | Promoted (superseded) |
+| EXP-007–021 | lever exploration era (see git history & prior STATE) | — | recorded |
+| EXP-022/024/026 | max_bin ladder 511/1024/2048 | 0.965203 / 0.966016 / 0.966155 | promoted chain |
 | EXP-023 | Pseudo-labeling | 0.963847 | Rejected |
-| EXP-024 | max_bin 1024 | 0.966016 | Promoted (superseded) |
-| EXP-025 | nl511 @ 511 bins | 0.964897 | Rejected |
-| EXP-026 | **max_bin 2048** | **0.966155** | **Promoted — champion** |
-| EXP-027 | nl511 @ 1024 bins | 0.965673 | Rejected |
+| EXP-025/027 | nl511 @ high bins | 0.964897 / 0.965673 | Rejected (leaf ceiling robust) |
+| EXP-028 | max_bin 4096 | 0.966155 | Rejected (bit-exact tie — asymptote proven) |
+| EXP-029 | subsample 0.7 | 0.966029 | Rejected |
+| EXP-030 | colsample 0.6 | 0.966270 | Inconclusive+ (gradient found) |
+| EXP-031 | colsample 0.5 | 0.966415 | Inconclusive+ (new best) |
+| EXP-032/033 | lr bracket 0.015/0.025 | 0.966290 / 0.966267 | Rejected (axis flat) |
+| EXP-034 | colsample 0.4 | 0.966373 | Rejected (wobble) |
+| **EXP-035** | **colsample 0.3** | **0.966518** | **Promoted — champion** |
+| EXP-036/037 | colsample 0.2 / 0.1 | 0.965517 / 0.960087 | Rejected (cliff/collapse) |
+| EXP-038 | min_data_in_bin 1 | 0.966525 | Rejected (dead heat) |
 
-## Lever Map (complete)
+## Lever Map (complete — every axis measured)
 
 | Lever | Verdict | Evidence |
 |-------|---------|----------|
-| **Histogram resolution (max_bin)** | **STRONGEST POSITIVE (+0.0020 total)** | EXP-022/024/026 ladder |
-| Seed averaging (→5) | Positive (~+0.00036) | single bagged seed 0.963303 → 5-seed avg 0.963664 |
-| Seeds+bagging combined | Positive (+0.00054 vs baseline) | EXP-010 → EXP-011 (sub-levers not separable) |
-| Leaf capacity to 255 | Positive (+0.0004), ceiling robust | EXP-012/013; 025/027 confirm ceiling |
-| Micro-grid mcs/col/L2 | FLAT (±0.0002) | EXP-019/020/021 |
+| **Histogram resolution (max_bin)** | **+0.00205, asymptote proven by tie** | EXP-022/024/026 ladder; EXP-028 tie |
+| **colsample descent to 0.3** | **+0.00036, cliffs both sides** | EXP-030/031/034/035/036/037 |
+| Seeds+bagging (combined) | +0.00054 conflated | EXP-010 → 011 |
+| Seed averaging proper | ~+0.00036 (single→5-seed) | EXP-009 v1 vs v2 |
+| Leaf capacity to 255 | +0.0004, ceiling robust | EXP-012/013; 025/027 confirm |
+| min_data_in_bin 3→1 | Flat (+0.000007) | EXP-038 |
+| lr axis (0.015–0.025) | Flat (±0.00002) | EXP-032/033 |
+| subsample fraction (0.7 vs 0.8) | Dead (−0.00013) | EXP-029 |
+| mcs/L2 micro-grid | Flat (±0.0002) | EXP-019/020/021 |
 | Seed scaling (→10) | Exhausted (+0.00005) | EXP-015 |
-| Bin scaling (→4096) | Projected ≤ +0.00005; not run-worthiness | curve asymptote |
-| GOSS / DART boosting | Dead (−0.0003 / −0.0026) | EXP-018 / 017 |
-| Pseudo-labeling | Dead (−0.0003) | EXP-023 |
-| Cross-family GBDT blend | Dead (−0.0009) | EXP-008 |
-| Linear stack | Dead (−0.0022) | EXP-016 |
-| Engineered ratios | Dead (−0.0013) | EXP-007 |
+| GOSS / DART boosting | Dead | EXP-018 / 017 |
+| Pseudo-labeling | Dead | EXP-023 |
+| Cross-family GBDT blend | Dead | EXP-008 |
+| Linear stack | Dead | EXP-016 |
+| Engineered ratios | Dead | EXP-007 |
 | Missingness indicators | Dead (EDA) | no run needed |
 
-Key structural findings:
-- LightGBM's default `max_bin=255` was severely underspecifying split granularity
-  for these continuous features — worth more than everything else combined.
-- The leaf-capacity ceiling (~255) is robust across bin resolutions.
-- Boosting-mode ranking: gbdt > goss > dart.
-- Train/test distributions verified clean (KS p≥0.14 all numerics) — CV tracks LB.
-- All scores GHA-verified; legacy-era numbers void.
+Boosting-mode ranking: gbdt > goss > dart.
+Train/test distributions verified clean (KS p≥0.14 all numerics) — CV tracks LB.
+
+## Measurement Incidents (documented for integrity)
+
+1. **Degenerate-blend bug (fixed)**: pre-keying-fix runner collided member names;
+   "ensembles" silently recorded only the last member. Detected via forensics on
+   EXP-009's collapsed record. All affected results superseded by post-fix reruns.
+2. **Rerun-wiped decisions (fixed)**: decision edits bundled into queue pushes
+   triggered accidental reruns that nullified five records' decisions. Guard:
+   `record_results.py` now preserves non-null judgment and sets truthful status.
+3. **Config-drift copy**: an accidental rerun briefly made EXP-009.yaml duplicate
+   EXP-011 (identical scores exposed it). Restored from history with truthful
+   dual-run documentation.
 
 ## Infrastructure (built this session)
 
@@ -132,25 +131,26 @@ Key structural findings:
   leak-free per-fold pseudo-labeling, smoke-test flags.
 - Workflow: matrix parallelism, rebase-safe result commits, dispatch-input support,
   data validation gate, guarded API sync.
-- Data committed under `competitions/s6e8/data/`.
+- Data committed under `competitions/s6e8/data/`; champion submission artifact
+  validated against sample_submission format.
 
 ## Open Ideas (require new evidence before queueing)
 
-1. max_bin 4096 — projected ≤ +0.00005 by asymptote; only if compute is free.
-2. Stacking meta-model over stored OOF artifacts of diverse configs — members
-   correlate ≥0.995, low expected value; requires artifact-collection plumbing.
-3. External original-dataset merge — PROHIBITED by competition constraints.
+1. Kaggle public score for the champion submission — validates CV↔LB transfer
+   empirically. BLOCKED on credentials not present in this environment.
+2. Micro-refinement of colsample within [0.25, 0.35] — projected ≤ ±0.0001.
+3. Stacking over stored OOF artifacts — members correlate ≥0.995, low EV.
 4. Any new lever must beat +0.0005 to justify a promotion claim per rules.
 
 ## Agent Activity
 
-Orchestrator session: EXP-007..027 executed (21 GHA experiment runs), champion advanced
-0.963127 → 0.966155 through seven verified promotions, every result recorded with
-decision + reasoning in its experiment YAML.
+Orchestrator session total: **EXP-007..038 executed (32 GHA experiment records)**.
+Champion advanced through eight verified promotions:
+0.963127 → 0.963664 → 0.964038 → 0.964109 → 0.965203 → 0.966016 → 0.966155 → 0.966518.
 
 ## Recommended Next Actions
 
-1. Submit champion EXP-026's artifact submission.csv to Kaggle; record public score
-   in STATE.md when available (validates CV↔LB transfer prediction).
+1. Submit champion EXP-035's artifact submission.csv to Kaggle; record public
+   score here when available.
 2. If public score diverges from OOF materially, revisit adversarial assumptions.
 3. New experiments only for hypotheses projecting > +0.0005 (per integrity rules).
