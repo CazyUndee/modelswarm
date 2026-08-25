@@ -87,6 +87,8 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict) -> pd.DataFrame:
         try:
             if kind == "ratio":
                 df[name] = df[op["numerator"]] / (df[op["denominator"]] + 1e-8)
+            elif kind == "indicator":
+                df[name] = df[op["column"]].isna().astype(int)
             elif kind in ("product", "sum", "diff"):
                 terms = op["terms"]
                 df[name] = df[terms[0]]
@@ -280,6 +282,38 @@ def _fit_member_predict(model_name: str, params: dict,
         model = make_pipeline(pre, LogisticRegression(**ctor))
         fit_kwargs = {"logisticregression__sample_weight": sample_weight} if sample_weight is not None else {}
         model.fit(X_train, y_train, **fit_kwargs)
+        return model.predict_proba(X_pred)[:, 1]
+
+    if model_name in ("mlp", "knn"):
+        # Non-tree families for diversity screening: same preprocessing as
+        # logistic (median-imputed scaled numerics + one-hot categoricals).
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler, OneHotEncoder
+        from sklearn.compose import ColumnTransformer
+        from sklearn.impute import SimpleImputer
+
+        num_cols = [c for c in X_train.columns if c not in cat_cols]
+        pre = ColumnTransformer([
+            ("num", make_pipeline(SimpleImputer(strategy="median"), StandardScaler()), num_cols),
+            ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=0.01), cat_cols),
+        ])
+        if model_name == "mlp":
+            from sklearn.neural_network import MLPClassifier
+            ctor = {"hidden_layer_sizes": tuple(params.get("hidden_layer_sizes", (64, 32))),
+                    "max_iter": params.get("max_iter", 200),
+                    "random_state": params.get("random_state", 42),
+                    "early_stopping": True}
+            model = make_pipeline(pre, MLPClassifier(**ctor))
+            fit_kwargs = {}
+            if sample_weight is not None:
+                fit_kwargs["mlpclassifier__sample_weight"] = sample_weight
+            model.fit(X_train, y_train, **fit_kwargs)
+        else:  # knn
+            from sklearn.neighbors import KNeighborsClassifier
+            ctor = {"n_neighbors": params.get("n_neighbors", 25),
+                    "weights": params.get("weights", "distance")}
+            model = make_pipeline(pre, KNeighborsClassifier(**ctor))
+            model.fit(X_train, y_train)
         return model.predict_proba(X_pred)[:, 1]
 
     raise ValueError(f"Unknown member model: {model_name}")

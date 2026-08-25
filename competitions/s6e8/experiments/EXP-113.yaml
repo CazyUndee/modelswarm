@@ -40,3 +40,4 @@ metadata:
   created_at: '2026-08-25T11:30:00Z'
   design_notes: 'MLP standalone screen: does a neural member reach ~0.96+? If yes
     it becomes a stack candidate despite decorrelation quality-gap risk.'
+# retrigger: runner lacked mlp/knn members at first attempt (2026-08-25)
