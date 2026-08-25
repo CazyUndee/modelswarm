@@ -300,6 +300,44 @@ def _fit_member_predict(model_name: str, params: dict,
             model.fit(X_tr, y_train, verbose=False, **fit_kwargs)
         return model.predict_proba(encode(X_pred))[:, 1]
 
+    if model_name == "tabm":
+        # NN member via pytabkit. Preprocessing: median-impute numerics with
+        # TRAIN-fold stats + explicit missing-indicator columns (NaN patterns
+        # carry signal; pytabkit rejects NaN in continuous cols), native
+        # categorical handling via category dtype.
+        from pytabkit import TabM_D_Classifier
+        num_cols = [c for c in X_train.columns if c not in cat_cols]
+        medians = {c: X_train[c].median() for c in num_cols}
+        # Pin categorical vocabularies to fold-train so train/val/test frames
+        # share identical dtypes and category sets.
+        vocab = {c: pd.Categorical(X_train[c]).categories for c in cat_cols}
+
+        def _tabm_frame(df: pd.DataFrame) -> pd.DataFrame:
+            out = df.copy()
+            # Indicator columns are UNCONDITIONAL so every frame gets an
+            # identical column set regardless of where missingness falls.
+            for c in num_cols:
+                out[f"{c}_imputed"] = out[c].isna().astype("float64")
+                out[c] = out[c].fillna(medians[c])
+            for c in cat_cols:
+                out[c] = pd.Categorical(out[c], categories=vocab[c])
+            return out
+
+        ctor = {k: v for k, v in params.items()
+                if k not in ("eval_metric", "early_stopping_rounds", "n_jobs",
+                             "use_eval")}
+        ctor.setdefault("device", "cpu")
+        t_budget = ctor.pop("time_to_fit_in_seconds", None)
+        model = TabM_D_Classifier(**ctor)
+        if eval_set is not None and params.get("use_eval", True):
+            model.fit(_tabm_frame(X_train), y_train,
+                      X_val=_tabm_frame(eval_set[0]), y_val=eval_set[1],
+                      time_to_fit_in_seconds=t_budget)
+        else:
+            model.fit(_tabm_frame(X_train), y_train,
+                      time_to_fit_in_seconds=t_budget)
+        return model.predict_proba(_tabm_frame(X_pred))[:, 1]
+
     if model_name == "logistic":
         # Linear member: median-imputed numerics (train-fold stats), one-hot
         # categoricals, standardized. Genuinely decorrelated from tree splits.
