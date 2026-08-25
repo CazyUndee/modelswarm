@@ -447,6 +447,7 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
         "oof_metric": float(oof_auc),
         "fold_metrics": blend_fold_aucs,
         "oof_predictions": blended_oof.tolist(),
+        "member_oofs": {k: oof_by_member[k].tolist() for k in member_keys},
         "features_used": available,
         "categorical_features": cat_cols,
         "model_name": ("ensemble:" + "+".join(m["name"] for m in members)) if len(member_keys) > 1 else members[0]["name"],
@@ -597,6 +598,14 @@ def main():
     oof_df.to_csv(oof_path, index=False)
     print(f"  OOF predictions: {oof_path}")
 
+    member_oofs = results.pop("member_oofs", None)
+    if member_oofs:
+        for key, vec in member_oofs.items():
+            m_path = output_dir / f"oof_member_{key}.csv"
+            pd.DataFrame({"id": train["id"], "target": train["addicted_label"],
+                          "prediction": vec}).to_csv(m_path, index=False)
+        print(f"  Member OOFs: {len(member_oofs)} files ({', '.join(member_oofs)})")
+
     if not args.no_submission and config.get("training", {}).get("predict_test", True):
         print("  Predicting test set on full data...")
         test_preds = predict_test(train, test, config)
@@ -607,7 +616,7 @@ def main():
 
     results_path = output_dir / "results.json"
     with open(results_path, "w") as f:
-        json.dump({k: v for k, v in results.items() if k != "oof_predictions"}, f, indent=2)
+        json.dump({k: v for k, v in results.items() if k not in ("oof_predictions", "member_oofs")}, f, indent=2)
     print(f"  Results: {results_path}")
 
     print(f"\n{'='*60}")
