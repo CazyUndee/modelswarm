@@ -57,6 +57,8 @@ data/
 # Competition datasets ARE tracked: GitHub Actions runners check out the repo
 # and have no other way to get data (no Kaggle secrets configured).
 !competitions/*/data/
+# small derived vectors for GHA analysis jobs (float32, ~4MB)
+!shared/analysis/data/*.npy
 competitions/*/data/*
 !competitions/*/data/train.csv
 !competitions/*/data/test.csv
