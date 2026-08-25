@@ -98,28 +98,31 @@
 - **Result:** 0.966290 / 0.966267 vs 0.966270 — ties.
 - **Conclusion:** REJECTED — axis flat. Same caveat as L11 regarding config era.
 
-## L13. CV-split variance (RUNNING)
+## L13. CV-split variance
 - **Hypothesis:** Split-choice noise sigma is large enough (~±0.0007 fold spread observed) that sub-margin "flat" verdicts may be split artifacts.
 - **Motivation:** Champion folds span 0.96584–0.96727; micro-grid flatness was never controlled for split choice.
 - **Expected effect:** quantifies sigma; recalibrates all margin judgments.
-- **Experiment:** EXP-041 (cv_seed 123), EXP-042 (cv_seed 2024) — identical model config, different splits.
-- **Result:** PENDING.
-- **Follow-up:** if sigma > 0.0005, re-audit which "flat"/"rejected" calls survive; if small, margins are trustworthy as-is.
+- **Experiment:** EXP-041 (cv_seed 123 → 0.966519), EXP-042 (cv_seed 2024 → 0.966498) — identical model config to champion (0.966518), different splits. Run e0ad07e, 3h wall.
+- **Result:** σ ≈ 1e-5 (Δ +0.000001 / -0.00002 vs champion). Fold-spread dominates, split-choice noise is negligible.
+- **Conclusion:** REJECTED as confounder — margins are trustworthy as-is. “Flat” calls survive; no re-audit needed.
+- **Follow-up:** none. Use σ ≈ 1e-5 to calibrate future promotion thresholds.
 
-## L14. Monotonicity constraints (RUNNING)
+## L14. Monotonicity constraints
 - **Hypothesis:** Injecting the observed monotone-saturating DGP prior (constraints on daily_screen/social_media/gaming/work_study/weekend_screen) reduces variance and beats the unconstrained champion.
 - **Motivation:** Domain logic + decile monotonicity; constraints are structural regularization, not tuning.
-- **Expected effect:** unknown — genuinely open.
-- **Experiment:** EXP-039 (monotone_constraints dict on 5 features, runner converts name-keyed dict → position list).
-- **Result:** PENDING.
-- **Follow-up:** if positive → extend constraints to sleep_hours (weak-monotone?) or tune softness via monotone_penalty... actually LGBM offers monotone_penalty param; if negative → prior conflicts with data, informative about DGP.
+- **Expected effect:** unknown — genuinely open at queue time.
+- **Experiment:** EXP-039 (monotone_constraints dict on 5 features → position list, max_bin2048/col0.3/nl255, GHA).
+- **Result:** 0.953856 vs champion 0.966518 (−0.01266). Catastrophic.
+- **Conclusion:** REJECTED — prior conflicts with data; DGP is not strictly monotone despite decile averages. Informs L17/L18 search away from hard priors.
+- **Follow-up:** none for hard constraints. Soft penalty variant (L15 in batch-2) also failed at screen.
 
-## L15. Capacity × colsample interaction (RUNNING)
+## L15. Capacity × colsample interaction
 - **Hypothesis:** At col 0.3 each tree sees ~half the features, so the nl255 leaf ceiling may shift upward.
 - **Motivation:** Ceiling verdicts (L3) were established at col 0.7.
-- **Experiment:** EXP-040 (nl511/mcs120/lr0.015/4000t @ col 0.3/max_bin2048).
-- **Result:** PENDING.
-- **Follow-up:** if EXP-040 ≥ EXP-035 → climb again; else ceiling confirmed robust across feature-diversity settings.
+- **Experiment:** EXP-040 (nl511/mcs120/lr0.015/4000t @ col 0.3/max_bin2048 → 0.966185).
+- **Result:** −0.00033 vs champion 0.966518.
+- **Conclusion:** REJECTED — ceiling confirmed robust across feature-diversity settings (col 0.7 and col 0.3 both). No climb.
+- **Follow-up:** none.
 
 ---
 
