@@ -8,7 +8,14 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** CONTINUOUS-RESEARCH MANDATE (2026-08-25): never idle while remote compute runs - mine
+- **Compute:** HARD CONTINUOUS-WORK RULE (2026-08-25, strengthened): ending a turn while useful
+independent research remains available is PROHIBITED. Waiting-for-results is not a terminal
+state. Mandatory idle-loop while any compute runs: CHECK runs/agents/leaderboard -> RESEARCH
+new mechanisms -> HYPOTHESIZE -> VERIFY against experiment history -> PREPARE yamls/scripts ->
+CHECK AGAIN. Maintain a never-empty frontier of queued hypotheses; prepare follow-up work
+before results arrive; re-check GHA/agents/LB periodically within the turn instead of stopping.
+
+CONTINUOUS-RESEARCH MANDATE (2026-08-25): never idle while remote compute runs - mine
 discussions/leaderboards, maintain a ranked hypothesis frontier, prepare follow-up scripts and
 YAMLs BEFORE results arrive, consume results immediately on arrival, update REGISTRY.md.
 A failed implementation closes only that implementation, never the hypothesis family.
