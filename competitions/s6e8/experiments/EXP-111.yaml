@@ -1,6 +1,6 @@
 experiment_id: EXP-111
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN batch 2 vs control EXP-100 under identical reduced conditions
   (12% rows / 3 folds): RE-SCREEN missing indicators for RANKING effect (EDA showed
   target-rate-neutral, but within-band ranking untested).'
@@ -68,3 +68,50 @@ feature_engineering:
 - op: indicator
   name: weekend_screen_time_missing
   column: weekend_screen_time
+results:
+  status: completed
+  oof_metric: 0.9550864285856424
+  fold_metrics:
+  - 0.9536280234285403
+  - 0.9567901934559592
+  - 0.9548662811335602
+  runtime_seconds: 14.629988193511963
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: lightgbm
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening:
+    row_fraction: 0.12
+    seed: 42
+    rows: 82964
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9550864285856424
+    fold_metrics:
+    - 0.9536280234285403
+    - 0.9567901934559592
+    - 0.9548662811335602
+  artifacts:
+  - experiments/output/EXP-111/oof_predictions.csv
+  - experiments/output/EXP-111/results.json
+  decision: null
+  reasoning: null
