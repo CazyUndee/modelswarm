@@ -1,6 +1,6 @@
 experiment_id: EXP-115
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN batch 2 vs control EXP-100 under identical reduced conditions
   (12% rows / 3 folds): SOFT monotonicity via monotone_penalty 5: middle ground between
   unconstrained (best) and hard constraints (-0.'
@@ -59,3 +59,50 @@ metadata:
   design_notes: 'SOFT monotonicity via monotone_penalty 5: middle ground between unconstrained
     (best) and hard constraints (-0.0127). Tests whether mild prior pressure helps
     where hard fails.'
+results:
+  status: completed
+  oof_metric: 0.9474286631741864
+  fold_metrics:
+  - 0.9462564171623402
+  - 0.9487905617303862
+  - 0.947244322145355
+  runtime_seconds: 13.67813777923584
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: lightgbm
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening:
+    row_fraction: 0.12
+    seed: 42
+    rows: 82964
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9474286631741864
+    fold_metrics:
+    - 0.9462564171623402
+    - 0.9487905617303862
+    - 0.947244322145355
+  artifacts:
+  - experiments/output/EXP-115/oof_predictions.csv
+  - experiments/output/EXP-115/results.json
+  decision: null
+  reasoning: null
