@@ -210,7 +210,7 @@ results:
   artifacts:
   - experiments/output/EXP-035/oof_predictions.csv
   - experiments/output/EXP-035/results.json
-  decision: inconclusive
+  decision: promoted
   reasoning: >-
     colsample 0.3 scored OOF 0.966518 - NEW BEST absolute (+0.00010 over
     EXP-031's col 0.5), below promotion margin alone. The descent did NOT turn
