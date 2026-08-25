@@ -1,0 +1,45 @@
+# GHA Status Board — canonical Actions tracking
+
+RULE: every pushed experiment/analysis gets a row here immediately. Update on every check.
+An experiment is NOT finished until its GHA status has been explicitly verified in this file.
+Read this file at the START of every research cycle. Do not trust memory/notifications.
+
+Last full check: 2026-08-25 21:10 UTC
+
+## RUNNING
+
+| ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
+|---|---|---|---|---|---|---|---|---|---|---|
+| EXP-121 | experiment-runner | 32894173771 | 867150a | 20:14Z | in_progress (47m) | pending | pending (TabM x3, ETA ~22:15Z) | not yet | when done: pull results, blend v3 | 21:10Z |
+| EXP-122 | experiment-runner | 32897449661 | d113e0b | 20:48Z | in_progress (13m) | pending | pending (10-fold, ETA ~22:20Z) | not yet | when done: compare vs EXP-120a | 21:10Z |
+
+## QUEUED
+
+| ID | Workflow | Run ID | Notes |
+|---|---|---|---|
+| (none) | | | |
+
+## COMPLETED
+
+| ID | Run ID | Result / OOF | Artifacts | Follow-up |
+|---|---|---|---|---|
+| EXP-118 slack | 32881022807 | OOF 0.967227 (+0.00071) | exp-EXP-118-artifacts | superseded by 119/120a |
+| EXP-119 TE m=50 | 32882085543 | **OOF 0.967959 CHAMPION** | %TEMP%\exp119_art | promoted |
+| EXP-120a m=10 | 32891009744 / job 97942744828 | **OOF 0.968041** best smoothing | %TEMP%\exp120a_art + GHA artifact | blend v3 ingredient; formal champ stays 119 |
+| EXP-120b m=200 | 32891009744 / job 97942744721 | ~0.96778 REJECTED | GHA artifact | none |
+| analysis: blend_strategy_compare | 32898312819 | FAILED INSIDE (no kagglehub) — refixed workflow | — | re-dispatch after push |
+| analysis: greedy_blend_74 (v1 stale paths) | 32898316603 | FAILED INSIDE — superseded by fixed dispatch | — | see re-dispatch row |
+| earlier session runs (EXP-007..117) | various | see experiments/*.yaml | mostly expired | historical |
+
+## FAILED / CANCELLED
+
+| ID | Run ID | Reason | Resolution |
+|---|---|---|---|
+| analysis greedy (pre-fix) | 32898316603 | local paths + no kagglehub + tee-masked failure | fixed script+workflow; re-dispatched as 32898400579-lineage |
+
+## Re-dispatch queue
+- [x] analysis.yml kagglehub dep + pipefail fix (this commit)
+- [ ] re-dispatch blend_strategy_compare.py after push
+- [ ] re-dispatch greedy_blend_74.py after push
+- [ ] EXP-121 lands -> run blend_v3.py inputs (needs artifacts download)
+- [ ] EXP-122 lands -> fold-count verdict -> possibly promote config for final

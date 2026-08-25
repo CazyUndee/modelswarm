@@ -8,7 +8,12 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** STANDING REMINDER (2026-08-25): while any experiment runs, sweep Kaggle for NEW
+- **Compute:** GHA.md = CANONICAL ACTIONS BOARD (2026-08-25): every pushed experiment/analysis gets a row
+(root GHA.md) at push time; record run ID when GitHub creates it; verify status before calling
+anything finished; read GHA.md at the start of every cycle and re-check RUNNING/QUEUED rows.
+Never rely on memory or notifications for Actions state.
+
+STANDING REMINDER (2026-08-25): while any experiment runs, sweep Kaggle for NEW
 discussions, recently published notebooks, leaderboard movement, and strong competitors
 (Krishanki-style jumps). Extract mechanisms we have not tested; compare every discovery
 against REGISTRY.md before queueing. Idle time = research time.
