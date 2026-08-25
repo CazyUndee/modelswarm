@@ -244,5 +244,6 @@ results:
   artifacts:
   - experiments/output/EXP-119/oof_predictions.csv
   - experiments/output/EXP-119/results.json
-  decision: null
+  decision: 'PROMOTED CHAMPION: OOF 0.967959 (+0.00144 vs EXP-035). Slack + 1D TE
+    both confirmed. Next: smoothing sweep m in {10,200}.'
   reasoning: null
