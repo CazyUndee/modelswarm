@@ -1,4 +1,8 @@
 # ModelSwarm Research State
+> **SESSION STATUS 2026-08-25 (evening):** Champion EXP-119 OOF 0.967959 (slack + 1D TE).
+> Best LB 0.97050–0.97053 via blend with public OOF library; top 0.97172.
+> Running: EXP-120a/b TE smoothing sweep, EXP-121 self-owned TabM x3, three research agents.
+> Full arc + policies: HISTORY.md. Experiment locks: competitions/s6e8/experiments/REGISTRY.md.
 
 > Last updated: 2026-08-25 (EXP-038 landed; single-variable search space exhausted)
 > Current competition: Kaggle Playground Series S6E8
