@@ -10,14 +10,17 @@ import pandas as pd
 from scipy.optimize import minimize
 from sklearn.metrics import roc_auc_score
 
-lib = os.environ.get("S6E8_LIB", "/tmp/s6e8_ooflib")
+import kagglehub
+
+lib = os.environ.get("S6E8_LIB") or kagglehub.dataset_download("szymonkapiski/s6e8-oof-library-47-models")
+OWN = os.path.join(os.path.dirname(__file__), "data")
+champ_oof = np.load(os.path.join(OWN, "own_champ_m10_oof.npy")).astype(np.float64)
+champ_test = np.load(os.path.join(OWN, "own_champ_m10_test.npy")).astype(np.float64)
 tr = pd.read_csv("competitions/s6e8/data/train.csv")
 y = tr["addicted_label"].values
 
 MEMBERS = ["oof_naji05", "oof_naji03", "oof_tabm_seed3", "oof_lookup",
            "oof_tabm_x12", "oof_pub_rmlp", "oof_latwide_xgb"]
-champ_oof = np.load(os.path.join(lib, "own_champ_m10_oof.npy"))
-champ_test = np.load(os.path.join(lib, "own_champ_m10_test.npy"))
 
 M = np.column_stack([champ_oof] + [np.load(os.path.join(lib, "oof", f"{n}.npy")) for n in MEMBERS])
 T = np.column_stack([champ_test] + [np.load(os.path.join(lib, "oof", f"test_{n[4:]}.npy")) for n in MEMBERS])
