@@ -7,7 +7,7 @@
 - **Name:** Kaggle Playground Series S6E8 — Smartphone Addiction Prediction
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
-- **Current Champion:** EXP-006 — 5-fold regularized LightGBM (OOF 0.96421)
+- **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
 - **Compute:** GitHub Actions ONLY — local training is prohibited and its results are void
 
 ## Data Location
