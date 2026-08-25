@@ -1,0 +1,136 @@
+competition: s6e8
+experiment_id: EXP-118
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: 'DGP constraint recovery: daily_screen_time >= social + gaming + work_study
+  holds in 100.00000% of all 987,671 train+test rows (verified locally: 0 violations,
+  459 exact-boundary rows), so free_time_slack = daily - (social + gaming + work) is
+  a latent generator input, not an arbitrary derived feature. Community evidence (discussion
+  735861) reports +0.0008 on EVERY model family from exactly this construction (LGBM
+  0.96726 -> 0.96809, XGB 0.96755 -> 0.96835, CAT 0.96700 -> 0.96787). Our EXP-110
+  diff-feature falsification tested sleep_debt / screen_minus_social / social_minus_gaming
+  but NEVER this constraint slack - the rejection was correct for arbitrary diffs and
+  blind to the algebraically meaningful one. Single-variable A/B vs champion EXP-035
+  (OOF 0.966518): identical members/features except adding free_time_slack.'
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-035
+  created_at: '2026-08-25T16:40:00Z'
+  design_notes: 'Leaderboard intelligence: top LB ~0.9712; community blends score ~+0.001
+    above their OOF on public split (OOF 0.96943 -> LB 0.97062), implying our champion
+    OOF 0.966518 sits ~LB 0.9675 - a real gap of ~+0.004 exists above us. This feature
+    is the largest single documented lever. One variable only: clean attribution.'
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 123
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 2024
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 99
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  name: ensemble
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 120
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
