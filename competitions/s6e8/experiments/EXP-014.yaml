@@ -1,6 +1,6 @@
 experiment_id: EXP-014
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'The capacity optimum lies between 64 and 255 leaves: num_leaves 96 with
   lr 0.04, min_child_samples 30, 1500 trees (5 seeds) lands above EXP-012 (0.964038),
   locating the peak of the leaf-count curve.'
@@ -207,9 +207,7 @@ results:
   - experiments/output/EXP-014/oof_predictions.csv
   - experiments/output/EXP-014/results.json
   decision: rejected
-  reasoning: >-
-    Midpoint control: nl96/lr0.04 blend OOF 0.963986, -0.00005 vs champion
-    EXP-012 (nl127, 0.964038). Curve shape so far: nl64 0.96366 -> nl96
-    0.96399 -> nl127 0.96404; still rising but flattening sharply past 96.
-    Members tight (0.96354-0.96361). Peak is near 127 leaves unless EXP-013
-    (nl255) lands above.
+  reasoning: 'Midpoint control: nl96/lr0.04 blend OOF 0.963986, -0.00005 vs champion
+    EXP-012 (nl127, 0.964038). Curve shape so far: nl64 0.96366 -> nl96 0.96399 ->
+    nl127 0.96404; still rising but flattening sharply past 96. Members tight (0.96354-0.96361).
+    Peak is near 127 leaves unless EXP-013 (nl255) lands above.'

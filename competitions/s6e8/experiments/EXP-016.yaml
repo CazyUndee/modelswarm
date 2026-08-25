@@ -1,6 +1,6 @@
 experiment_id: EXP-016
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'A probability blend of two nl127 LightGBM seeds (40% weight each) and
   two logistic-regression members (10% each) exploits cross-class error decorrelation
   (corr ~0.92) enough to approach or beat the pure-GBDT champion (EXP-012: 0.964038)
@@ -160,5 +160,8 @@ results:
   artifacts:
   - experiments/output/EXP-016/oof_predictions.csv
   - experiments/output/EXP-016/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: 'Weighted linear stack OOF 0.961869 (-0.0022 vs then-champion): the ~0.05
+    AUC quality gap of logistic members cannot be offset by diversity weighting (corr
+    ~0.84 despite quality). Linear stacking eliminated. Re-recorded after accidental
+    rerun overwrote the original decision text.'

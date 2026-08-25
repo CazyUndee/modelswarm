@@ -105,7 +105,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -210,9 +210,8 @@ results:
   - experiments/output/EXP-026/oof_predictions.csv
   - experiments/output/EXP-026/results.json
   decision: promoted
-  reasoning: >-
-    NEW CHAMPION. max_bin 2048: OOF 0.966155 (+0.00014 over 1024 bins).
-    Bin-resolution curve decelerating into an asymptote:
-    255/0.96411 -> 511/0.96520 -> 1024/0.96602 -> 2048/0.96616.
-    Further doublings projected <= +0.00005 - below run-worthiness.
-    Members 0.965862-0.965946. This closes the histogram-resolution lever.
+  reasoning: 'NEW CHAMPION. max_bin 2048: OOF 0.966155 (+0.00014 over 1024 bins).
+    Bin-resolution curve decelerating into an asymptote: 255/0.96411 -> 511/0.96520
+    -> 1024/0.96602 -> 2048/0.96616. Further doublings projected <= +0.00005 - below
+    run-worthiness. Members 0.965862-0.965946. This closes the histogram-resolution
+    lever.'

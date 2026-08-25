@@ -23,17 +23,37 @@ new work requires a genuinely new hypothesis (see "Open Ideas").
 
 | Stage | ID | Config delta | OOF | Gain |
 |-------|----|--------------|-----|------|
-| Baseline | EXP-010 | legacy config reproduced (nl64, bagging off) | 0.963127 | — |
-| +seeds | EXP-009 | 5-seed average | 0.963303 | +0.00018 |
-| +bagging | EXP-011 | subsample_freq 1 | 0.963664 | +0.00036 |
+| Baseline | EXP-010 | legacy config reproduced (nl64, unbagged, seed42) | 0.963127 | — |
+| +seeds+bagging | EXP-011 | bagged 5-seed average (subsample_freq 1) | 0.963664 | +0.00054 * |
 | +capacity | EXP-013 | num_leaves 255, lr 0.02, 3000t | 0.964109 | +0.00007 |
 | +**bins** | EXP-022 | max_bin 511 | 0.965203 | +0.00109 |
 | +**bins²** | EXP-024 | max_bin 1024 | 0.966016 | +0.00081 |
 | +**bins³** | **EXP-026** | **max_bin 2048** | **0.966155** | +0.00014 |
 
+\* Conflated step: bagging and seed-averaging were introduced together. Sub-attribution
+from the fixed-runner measurement pair: single bagged seed ≈ 0.963303 (EXP-009 v1,
+see Measurement Incidents) → 5-seed average 0.963664 ⇒ seed averaging ≈ +0.00036;
+residual +0.00018 attributable to bagging, though no clean isolated A/B exists.
+(EXP-012's nl127 run also sits in this ladder at 0.964038.)
+
 Total verified progress this session: **+0.00303 over the re-baselined start**
 (0.963127 → 0.966155). The single largest lever was histogram resolution
-(max_bin), worth more than seeds+bagging+capacity combined.
+(max_bin), worth more than everything else combined.
+
+## Measurement Incidents (documented for integrity)
+
+1. **Degenerate-blend bug (fixed)**: before member-keying was added, ensemble
+   members sharing a name collided in the blend dict, so a "5-seed average"
+   silently recorded only the last member. Detected by forensics on EXP-009's
+   collapsed record (blend folds == last member's folds). All affected results
+   superseded by post-fix reruns.
+2. **Rerun-wiped decisions (fixed)**: bundling decision edits into queue pushes
+   triggered accidental matrix reruns whose `record_results` nullified five
+   records' decisions. Guard added: `record_results.py` now preserves existing
+   non-null decision/reasoning and sets truthful top-level status.
+3. **Config-drift copy**: an accidental rerun briefly made EXP-009.yaml a
+   duplicate of EXP-011 (identical scores exposed it). Restored from git history
+   with a truthful dual-run record.
 
 ## Champion Configuration (EXP-026)
 
@@ -61,7 +81,7 @@ Submission artifacts per experiment live in Actions artifacts
 |----|-------------|-------------|----------|
 | EXP-007 | LightGBM + engineered ratios | 0.962917 | Rejected |
 | EXP-008 | LGBM+XGB+CatBoost blend | 0.962273 | Rejected |
-| EXP-009 | 5-seed nl64 unbagged | 0.963303 | Inconclusive+ |
+| EXP-009 | Bagged 5-seed nl64 (authoritative v2 run) | 0.963664 | Inconclusive+ |
 | EXP-010 | Legacy champion reproduction | 0.963127 | Promoted as verified baseline |
 | EXP-011 | Bagged 5-seed nl64 | 0.963664 | Promoted (superseded) |
 | EXP-012 | nl127 | 0.964038 | Promoted (superseded) |
@@ -84,8 +104,8 @@ Submission artifacts per experiment live in Actions artifacts
 | Lever | Verdict | Evidence |
 |-------|---------|----------|
 | **Histogram resolution (max_bin)** | **STRONGEST POSITIVE (+0.0020 total)** | EXP-022/024/026 ladder |
-| Seed averaging (→5) | Positive (+0.0002) | EXP-009 vs 010 |
-| Row bagging | Positive (+0.0004) | EXP-011 vs 009 |
+| Seed averaging (→5) | Positive (~+0.00036) | single bagged seed 0.963303 → 5-seed avg 0.963664 |
+| Seeds+bagging combined | Positive (+0.00054 vs baseline) | EXP-010 → EXP-011 (sub-levers not separable) |
 | Leaf capacity to 255 | Positive (+0.0004), ceiling robust | EXP-012/013; 025/027 confirm ceiling |
 | Micro-grid mcs/col/L2 | FLAT (±0.0002) | EXP-019/020/021 |
 | Seed scaling (→10) | Exhausted (+0.00005) | EXP-015 |

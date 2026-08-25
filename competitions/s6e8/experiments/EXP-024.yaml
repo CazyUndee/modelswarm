@@ -105,7 +105,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -210,11 +210,9 @@ results:
   - experiments/output/EXP-024/oof_predictions.csv
   - experiments/output/EXP-024/results.json
   decision: promoted
-  reasoning: >-
-    NEW CHAMPION. max_bin 511->1024 gains +0.0008 OOF (0.965203 -> 0.966016).
-    Bin-resolution curve still rising steeply: 255->0.96411, 511->0.96520,
-    1024->0.96602. All folds >= 0.9653; members 0.965742-0.965820. LightGBM's
-    default max_bin=255 was severely underspecifying split granularity for
-    these continuous features. Continuation queued (max_bin 2048) + capacity
-    re-probe at high bins (nl511), since the old leaf ceiling was measured at
-    coarse resolution.
+  reasoning: 'NEW CHAMPION. max_bin 511->1024 gains +0.0008 OOF (0.965203 -> 0.966016).
+    Bin-resolution curve still rising steeply: 255->0.96411, 511->0.96520, 1024->0.96602.
+    All folds >= 0.9653; members 0.965742-0.965820. LightGBM''s default max_bin=255
+    was severely underspecifying split granularity for these continuous features.
+    Continuation queued (max_bin 2048) + capacity re-probe at high bins (nl511), since
+    the old leaf ceiling was measured at coarse resolution.'

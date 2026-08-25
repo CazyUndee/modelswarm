@@ -1,6 +1,6 @@
 experiment_id: EXP-013
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Continuing the verified capacity trend (num_leaves 255, min_child_samples
   80, lr 0.02, 3000 trees, colsample 0.7), averaged over 5 seeds, beats champion EXP-012
   (OOF 0.964038) rather than overfitting.
@@ -207,5 +207,8 @@ results:
   artifacts:
   - experiments/output/EXP-013/oof_predictions.csv
   - experiments/output/EXP-013/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: 'nl255 capacity probe: blend OOF 0.964108 (+0.00007 over EXP-012) - trend
+    promotion within a monotone four-point capacity curve. Superseded by max_bin lever
+    (EXP-022+). Text re-recorded after accidental rerun overwrote it (numbers reproduced
+    identically).'

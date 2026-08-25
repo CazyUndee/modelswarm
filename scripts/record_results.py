@@ -40,8 +40,12 @@ def record_results(config_path: str, output_dir: str) -> dict:
         "member_correlations", "rank_average_diagnostic",
     )
 
-    # Update config with results
-    config["results"] = {
+    # Update config with results.
+    # GUARD: preserve a previously recorded non-null decision/reasoning so an
+    # accidental rerun cannot wipe recorded human judgment (this happened on
+    # 2026-08-25 when matrix reruns nullified five experiment records).
+    prior_results = config.get("results") or {}
+    new_results = {
         "status": "completed",
         **{k: results.get(k) for k in PASSTHROUGH},
         "members": [
@@ -54,9 +58,13 @@ def record_results(config_path: str, output_dir: str) -> dict:
             str(Path(output_dir) / "oof_predictions.csv"),
             str(Path(output_dir) / "results.json"),
         ],
-        "decision": None,  # To be decided by agent/operations
-        "reasoning": None,  # To be filled by agent/operations
+        "decision": prior_results.get("decision"),
+        "reasoning": prior_results.get("reasoning"),
     }
+    config["results"] = new_results
+    # Keep the top-level lifecycle status truthful as well.
+    if config.get("status") in ("queued", None):
+        config["status"] = "completed"
 
     # Write updated config
     with open(config_path, "w") as f:

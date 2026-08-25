@@ -1,6 +1,6 @@
 experiment_id: EXP-018
 competition: s6e8
-status: queued
+status: completed
 hypothesis: LightGBM GOSS boosting (top_rate 0.2, other_rate 0.1) at nl255 champion
   capacity, averaged over 5 seeds, matches or beats GBDT-mode EXP-013 (0.964109) while
   training several times faster.
@@ -218,10 +218,9 @@ results:
   - experiments/output/EXP-018/oof_predictions.csv
   - experiments/output/EXP-018/results.json
   decision: rejected
-  reasoning: >-
-    GOSS blend OOF 0.963781 (-0.00033 vs champion EXP-013 0.964109) at the
-    same nl255 capacity. Members consistent (0.96334-0.96343). Systematically
-    below GBDT mode; one-side sampling loses a little accuracy here even
-    though it trains faster. Boosting-mode search closed: gbdt > goss > dart
-    on this dataset. GOSS remains viable only as a cheap proxy for future
-    large-scale sweeps where rank order matters more than absolute AUC.
+  reasoning: 'GOSS blend OOF 0.963781 (-0.00033 vs champion EXP-013 0.964109) at the
+    same nl255 capacity. Members consistent (0.96334-0.96343). Systematically below
+    GBDT mode; one-side sampling loses a little accuracy here even though it trains
+    faster. Boosting-mode search closed: gbdt > goss > dart on this dataset. GOSS
+    remains viable only as a cheap proxy for future large-scale sweeps where rank
+    order matters more than absolute AUC.'

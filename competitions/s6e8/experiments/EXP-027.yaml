@@ -106,7 +106,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -211,10 +211,8 @@ results:
   - experiments/output/EXP-027/oof_predictions.csv
   - experiments/output/EXP-027/results.json
   decision: rejected
-  reasoning: >-
-    Capacity-at-fine-bins probe rejected: nl511/mcs120/lr0.015/4000t @ max_bin
-    1024 scored 0.965673 (-0.0003 vs champion EXP-024 nl255@1024 = 0.966016).
-    Confirms EXP-025 at higher resolution: leaf ceiling ~255 is robust across
-    bin settings. Capacity lever fully closed. Combined with EXP-026's
-    asymptote, the (bins x leaves) surface is mapped: optimum ~nl255 with
-    max_bin as high as memory allows.
+  reasoning: 'Capacity-at-fine-bins probe rejected: nl511/mcs120/lr0.015/4000t @ max_bin
+    1024 scored 0.965673 (-0.0003 vs champion EXP-024 nl255@1024 = 0.966016). Confirms
+    EXP-025 at higher resolution: leaf ceiling ~255 is robust across bin settings.
+    Capacity lever fully closed. Combined with EXP-026''s asymptote, the (bins x leaves)
+    surface is mapped: optimum ~nl255 with max_bin as high as memory allows.'

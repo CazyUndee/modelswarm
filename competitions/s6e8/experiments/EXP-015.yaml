@@ -1,6 +1,6 @@
 experiment_id: EXP-015
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Doubling the seed ensemble from 5 to 10 members (nl127 champion config)
   adds a further variance-reduction gain over EXP-012's 0.964038, testing whether
   the seed lever is exhausted or scalable.
@@ -366,5 +366,8 @@ results:
   artifacts:
   - experiments/output/EXP-015/oof_predictions.csv
   - experiments/output/EXP-015/results.json
-  decision: null
-  reasoning: null
+  decision: rejected
+  reasoning: 'Seed scaling exhausted: 10-seed nl127 blend OOF 0.964092 vs identical-config
+    5-seed (EXP-012) 0.964038 => +0.00005 for doubling seeds. Member spread tiny (std
+    ~0.00004). Re-recorded after accidental rerun overwrote the original decision
+    text.'

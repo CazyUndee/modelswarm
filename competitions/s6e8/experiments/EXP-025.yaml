@@ -107,7 +107,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -212,8 +212,7 @@ results:
   - experiments/output/EXP-025/oof_predictions.csv
   - experiments/output/EXP-025/results.json
   decision: rejected
-  reasoning: >-
-    Capacity re-probe at high bins failed: nl511/mcs120/lr0.015/4000t scored
-    0.964897 (-0.0003 vs EXP-022's nl255 @ same max_bin 511). The leaf ceiling
-    at ~255 does not move up with finer histogram resolution. Members tight
-    (0.964639-0.964702). EXP-027 will confirm at 1024 bins.
+  reasoning: 'Capacity re-probe at high bins failed: nl511/mcs120/lr0.015/4000t scored
+    0.964897 (-0.0003 vs EXP-022''s nl255 @ same max_bin 511). The leaf ceiling at
+    ~255 does not move up with finer histogram resolution. Members tight (0.964639-0.964702).
+    EXP-027 will confirm at 1024 bins.'

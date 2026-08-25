@@ -1,6 +1,6 @@
 experiment_id: EXP-008
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Probability averaging of LightGBM + XGBoost + CatBoost OOF predictions
   on the canonical 12-feature raw set will beat champion EXP-006 (OOF 0.96421) because
   family-level error decorrelation adds ensemble signal that no single GBDT captures.
@@ -136,13 +136,12 @@ results:
   - experiments/output/EXP-008/oof_predictions.csv
   - experiments/output/EXP-008/results.json
   decision: rejected
-  reasoning: >-
-    GHA-verified blend OOF 0.962273 (-0.00194 vs champion 0.96421). Members:
-    LGBM 0.96322, XGB 0.96302, CatBoost 0.95681. Cross-family correlations are
-    near-saturated (LGBM~XGB 0.995), so blending adds nothing while the weak
-    CatBoost member drags the average down. KEY SIDE-FINDING: the champion-style
-    LGBM member scored 0.96322, NOT 0.96421 — the legacy EXP-006 record has no
-    folds/artifacts and its listed 'subsample: 0.8' lacks subsample_freq
-    (default 0 = row-bagging disabled). Champion number is now suspect;
-    EXP-010 will reproduce the champion config faithfully on GHA before any
-    further promotion comparisons. rank_average diagnostic: 0.96217 (worse).
+  reasoning: 'GHA-verified blend OOF 0.962273 (-0.00194 vs champion 0.96421). Members:
+    LGBM 0.96322, XGB 0.96302, CatBoost 0.95681. Cross-family correlations are near-saturated
+    (LGBM~XGB 0.995), so blending adds nothing while the weak CatBoost member drags
+    the average down. KEY SIDE-FINDING: the champion-style LGBM member scored 0.96322,
+    NOT 0.96421 — the legacy EXP-006 record has no folds/artifacts and its listed
+    ''subsample: 0.8'' lacks subsample_freq (default 0 = row-bagging disabled). Champion
+    number is now suspect; EXP-010 will reproduce the champion config faithfully on
+    GHA before any further promotion comparisons. rank_average diagnostic: 0.96217
+    (worse).'

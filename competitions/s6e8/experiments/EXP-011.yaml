@@ -1,6 +1,6 @@
 experiment_id: EXP-011
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Probability-averaging five bagged LightGBM runs (subsample_freq=1, seeds
   42/123/7/2024/99) on canonical raw features combines both verified-positive levers
   and exceeds the re-baselined champion (0.963127) by >= 0.0003.
@@ -207,11 +207,10 @@ results:
   - experiments/output/EXP-011/oof_predictions.csv
   - experiments/output/EXP-011/results.json
   decision: promoted
-  reasoning: >-
-    NEW CHAMPION. Blend OOF 0.963664 = +0.00054 over verified baseline
-    (EXP-010, 0.963127) — clears the 0.0005 margin; +0.00036 over EXP-009
-    (same seeds, no row bagging), confirming bagging x seed-averaging are
-    additive. Members tightly clustered 0.96322-0.96335 (seed std ~0.00005).
-    Champion lineage: EXP-010 (verified baseline) -> EXP-011 (bagged 5-seed
-    ensemble). Next probes: capacity (EXP-012, in flight) and linear-member
-    stacking for decorrelation (corr within family ~0.997 at full scale).
+  reasoning: 'NEW CHAMPION. Blend OOF 0.963664 = +0.00054 over verified baseline (EXP-010,
+    0.963127) — clears the 0.0005 margin; +0.00036 over EXP-009 (same seeds, no row
+    bagging), confirming bagging x seed-averaging are additive. Members tightly clustered
+    0.96322-0.96335 (seed std ~0.00005). Champion lineage: EXP-010 (verified baseline)
+    -> EXP-011 (bagged 5-seed ensemble). Next probes: capacity (EXP-012, in flight)
+    and linear-member stacking for decorrelation (corr within family ~0.997 at full
+    scale).'

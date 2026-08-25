@@ -1,6 +1,6 @@
 experiment_id: EXP-012
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Doubling tree capacity (num_leaves 127) with matched regularization (min_child_samples
   40), slower learning (0.03), and longer training (2000 trees), averaged over 5 seeds,
   beats the seed-bagged baseline family (EXP-009/EXP-011 ~0.9633) rather than overfitting.
@@ -207,5 +207,8 @@ results:
   artifacts:
   - experiments/output/EXP-012/oof_predictions.csv
   - experiments/output/EXP-012/results.json
-  decision: null
-  reasoning: null
+  decision: promoted
+  reasoning: 'nl127 capacity probe: blend OOF 0.964038 (+0.00037 over EXP-011 0.963664).
+    Promoted at the time under the trend rule; superseded by EXP-013/022/024/026.
+    Decision text re-recorded after an accidental matrix rerun overwrote it (rerun
+    reproduced identical numbers - deterministic config, no data impact).'

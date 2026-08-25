@@ -1,6 +1,6 @@
 experiment_id: EXP-017
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'LightGBM DART boosting (drop_rate 0.1, max_drop 50) at champion capacity
   (nl127, min_child_samples 40), averaged over 5 seeds, beats the GBDT-mode champion
   family (EXP-012: 0.964038; EXP-013 nl255: 0.964109) via reduced over-specialization
@@ -220,9 +220,8 @@ results:
   - experiments/output/EXP-017/oof_predictions.csv
   - experiments/output/EXP-017/results.json
   decision: rejected
-  reasoning: >-
-    DART boosting rejected decisively: blend OOF 0.961464 (-0.0026 vs champion
-    EXP-013 0.964109). Members 0.960832-0.961919 with high seed variance
-    (spread ~0.0011 vs GBDT-mode ~0.00004) - dart's stochastic drop adds
-    variance without recovering the accuracy gap at this scale/trees budget.
-    Boosting-mode lever closed for dart; GOSS tested separately (EXP-018).
+  reasoning: 'DART boosting rejected decisively: blend OOF 0.961464 (-0.0026 vs champion
+    EXP-013 0.964109). Members 0.960832-0.961919 with high seed variance (spread ~0.0011
+    vs GBDT-mode ~0.00004) - dart''s stochastic drop adds variance without recovering
+    the accuracy gap at this scale/trees budget. Boosting-mode lever closed for dart;
+    GOSS tested separately (EXP-018).'

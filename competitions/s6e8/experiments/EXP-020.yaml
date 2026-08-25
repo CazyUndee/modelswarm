@@ -100,7 +100,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -205,5 +205,5 @@ results:
   - experiments/output/EXP-020/oof_predictions.csv
   - experiments/output/EXP-020/results.json
   decision: rejected
-  reasoning: >-
-    colsample 0.7->0.8 costs -0.000188; feature subsampling at 0.7 contributes at nl255.
+  reasoning: colsample 0.7->0.8 costs -0.000188; feature subsampling at 0.7 contributes
+    at nl255.

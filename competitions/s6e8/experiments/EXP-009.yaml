@@ -1,6 +1,6 @@
 experiment_id: EXP-009
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'Seed diversity alone reduces prediction variance: probability-averaging
   five LightGBM runs of the champion-style configuration (seeds 42/123/7/2024/99)
   will match or slightly beat the best single seed and quantify champion seed-sensitivity
@@ -208,5 +208,13 @@ results:
   artifacts:
   - experiments/output/EXP-009/oof_predictions.csv
   - experiments/output/EXP-009/results.json
-  decision: null
-  reasoning: null
+  decision: inconclusive
+  reasoning: 'TWO RUNS, both GHA: (v1, pre-keying-fix runner) recorded 0.963303 but
+    the runner''s dict-collision bug made the ''blend'' degenerate to the last member
+    (seed 99 alone) - so v1 measures a SINGLE bagged seed, not an ensemble. (v2, fixed
+    runner, accidental rerun) properly averaged 5 seeds: 0.963664 - identical to EXP-011
+    as expected, since this config already contained subsample_freq: 1 (the planned
+    unbagged control never existed; created bagged by mistake). VERDICT: proper 5-seed
+    averaging adds +0.00036 over a single seed (0.963303 -> 0.963664). Config drift
+    note: this file''''s members carry subsample_freq 1; the bagging A/B attribution
+    formerly claimed in STATE.md is void - see EXP-010/011 records.'

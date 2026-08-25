@@ -1,6 +1,6 @@
 experiment_id: EXP-023
 competition: s6e8
-status: queued
+status: completed
 hypothesis: Self-training on confident test predictions (p<=0.01 or p>=0.99, weight
   0.3) adds real signal from the 296k-row unlabeled test set and beats champion EXP-013
   (0.964109), because the decision boundary region is small relative to the confidently-classified
@@ -84,11 +84,10 @@ metadata:
   author: agent-orchestrator
   parent_experiment: EXP-013
   created_at: '2026-08-24T20:45:00Z'
-  design_notes: "3 seeds to keep double-fit cost sane (~2x EXP-013). Integrity note:\
-    \ base models see fold-train only, so OOF remains leak-free w.r.t. validation\
-    \ rows; mild optimism vs true LB possible if pseudo labels are wrong \u2014 weight\
-    \ kept conservative (0.3). If OOF improves but LB would not, the gap shows in\
-    \ public score after submission."
+  design_notes: '3 seeds to keep double-fit cost sane (~2x EXP-013). Integrity note:
+    base models see fold-train only, so OOF remains leak-free w.r.t. validation rows;
+    mild optimism vs true LB possible if pseudo labels are wrong — weight kept conservative
+    (0.3). If OOF improves but LB would not, the gap shows in public score after submission.'
 results:
   status: completed
   oof_metric: 0.9638470929197858
@@ -158,5 +157,7 @@ results:
   - experiments/output/EXP-023/oof_predictions.csv
   - experiments/output/EXP-023/results.json
   decision: rejected
-  reasoning: >-
-    Pseudo-labeling (self-training, w=0.3) scored 0.963847 (-0.0003 vs pre-existing champion). Confident test rows added no real signal - consistent with near-saturating feature structure where confident predictions are already correct in training. Lever closed; infrastructure retained for future datasets.
+  reasoning: Pseudo-labeling (self-training, w=0.3) scored 0.963847 (-0.0003 vs pre-existing
+    champion). Confident test rows added no real signal - consistent with near-saturating
+    feature structure where confident predictions are already correct in training.
+    Lever closed; infrastructure retained for future datasets.
