@@ -8,7 +8,20 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** GHA.md = CANONICAL ACTIONS BOARD (2026-08-25): every pushed experiment/analysis gets a row
+- **Compute:** PRIORITIZATION RULE (2026-08-25): when a prepared score-producing pipeline (blend,
+submission, promotion) becomes unblocked by a finished experiment, EXECUTE IT IMMEDIATELY
+before creating additional tooling or infrastructure. Infrastructure only when it blocks
+execution.
+
+OVERNIGHT AUTONOMOUS OPERATION (2026-08-25): during unattended windows run the loop
+check state -> consume results -> research -> hypothesize -> prepare -> queue -> monitor ->
+update docs -> repeat, for the entire window. Never sleep-wait minutes for a result; do
+independent work between checks. Protect the best validated LB/OOF: promote only on the
+>0.0005 OOF bar or a genuinely better OOS blend. End-of-window deliverable: concise report
+(completed / running / best OOF+LB+rank / discoveries / promoted / rejected / next frontier /
+blockers). Keep GHA.md, REGISTRY.md, STATE.md, HISTORY.md current throughout.
+
+GHA.md = CANONICAL ACTIONS BOARD (2026-08-25): every pushed experiment/analysis gets a row
 (root GHA.md) at push time; record run ID when GitHub creates it; verify status before calling
 anything finished; read GHA.md at the start of every cycle and re-check RUNNING/QUEUED rows.
 Never rely on memory or notifications for Actions state.
