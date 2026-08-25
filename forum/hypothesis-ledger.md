@@ -153,13 +153,13 @@
 
 ---
 
-## Open questions (updated)
-
-- Q1 Bayes/noise floor → ANSWERED as well as possible without LB: ~79% of champion errors invariant across config spectrum; cross-model convergence at ~0.9665; contradiction-shaped FN/FP (features contradict labels). Floor estimated ≈ 0.9665 ± small.
-- Q2 Where does the champion lose rank? → ANSWERED: mid-band [0.25,0.9], within-band AUC 0.682, missing-day-screen rows −0.034 AUC.
-- Q3 Is seed-99 systematically stronger? → Not confirmed; seed variance ~0.00004 at champion config. Closed.
-- Q4 Generation-order artifacts? → Not detected in distribution checks; low priority.
-- Q5 NEW: Does the public LB confirm OOF↔LB transfer at ~0.9665? → BLOCKED on Kaggle credentials. Single highest-value external action.
+## L22. Leaderboard-intelligence pivot: DGP-constraint slack + 1-D target encoding
+- **Trigger:** User reports S6E8 public LB top ≈ 0.9712. Verified context: community blend OOF 0.96943 → LB 0.97062 (+0.0012 OOF→LB transfer), so champion EXP-035 OOF 0.966518 ≈ LB ~0.9675 — a REAL gap of ~+0.004 sits above us. The "no headroom" verdicts (L19/L21) were correct for the closed feature×family space but the space itself had untested levers visible only from community evidence.
+- **Lever 1 — free_time_slack (+0.0008 community-wide):** `daily_screen_time_hours ≥ social + gaming + work_study` holds in 100.00000% of all 987,671 train+test rows (verified locally on committed data: 0 violations, 331+128 exact-boundary rows). The slack is a latent generator input. Our EXP-110 diff falsification tested sleep_debt/screen_minus_social/social_minus_gaming — never this algebraic constraint. Queued as EXP-118 (champion ensemble + slack, one variable).
+- **Lever 2 — 1-D target encoding (+0.0030 community-measured, largest known):** exact-value target rates wildly non-monotonic but replicate r=0.9975 across independent halves (digit-1 of daily_screen swings positive rate 0.6513→0.7365). Implemented leak-free fold-wise TE in the runner (`_target_encode_fit/_apply`, smoothing m=50 default, NaN kept as explicit group against the pandas≥3 silent-drop trap; 4 unit tests). Queued as EXP-119 (= EXP-118 + te_<col> for the 12 canonical features).
+- **Also confirmed by community (matches our falsifications exactly):** ratios/indicators/linear-combos null, 2-way TE null (+0.00003), pseudo-labeling −0.00004, stacking over weighted average +0.00003, hyperparameter search transfers for LightGBM only. max_bin high = +0.0022 (we have bins2048 ✓).
+- **Next-phase candidate:** architecture-diverse NN members (lookup-transformer LB 0.97041 solo; PLR+lookup embeddings with attention, rank corr vs trees 0.963–0.969 → largest blend weight 0.223 despite weaker solo score). This is the only direction that satisfies "decorrelated AND competitive" per independent community measurement — consistent with our L21 finding that tree-family diversity produces nothing. Requires new NN member type in runner; decision gated on EXP-118/119 results.
+- **Status:** EXP-118 + EXP-119 running in parallel on GHA. Promotion gate unchanged (>+0.0005).
 
 ---
 
