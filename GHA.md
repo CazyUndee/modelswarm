@@ -51,6 +51,8 @@ Last full check: 2026-08-25 22:35 UTC
 | EXP-125 REDISPATCH | 32906272823 | running | — |
 | EXP-126 | 32905105822 CANCELLED (same bug) -> REDISPATCH 32906275742 | running | — |
 
+| LEAK INCIDENT: EXP-124 v1/v2 | 32906270220 | OOF 1.0 - pair_grid encoded addicted_label; FE-generated cols were also silently dropped by config.features filter (both fixed, regression tests) | — | superseded by EXP-126 redispatch |
+
 ## FAILED / CANCELLED
 
 | ID | Run ID | Reason | Resolution |
