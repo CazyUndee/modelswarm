@@ -1,6 +1,6 @@
 experiment_id: EXP-102
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN vs EXP-100 control under identical reduced conditions (12% rows
   / 3 folds / 600 trees): colsample_bytree=0.45.'
 phase: 4
@@ -49,4 +49,47 @@ metadata:
   parent_experiment: EXP-035
   created_at: '2026-08-25T08:20:00Z'
   design_notes: colsample bracket refinement between optimum 0.3 and 0.5.
-# retrigger: lost to fail-fast cascade + push race (2026-08-25)
+results:
+  status: completed
+  oof_metric: 0.965313513201858
+  fold_metrics:
+  - 0.9647588562845932
+  - 0.9656379747896819
+  - 0.9655460620264128
+  runtime_seconds: 58.184494495391846
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: lightgbm
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.965313513201858
+    fold_metrics:
+    - 0.9647588562845932
+    - 0.9656379747896819
+    - 0.9655460620264128
+  artifacts:
+  - experiments/output/EXP-102/oof_predictions.csv
+  - experiments/output/EXP-102/results.json
+  decision: null
+  reasoning: null
