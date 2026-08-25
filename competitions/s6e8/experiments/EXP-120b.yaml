@@ -144,14 +144,14 @@ target_encoding:
   smoothing: 200
 results:
   status: completed
-  oof_metric: 0.9677777998578548
+  oof_metric: 0.9679578860073875
   fold_metrics:
-  - 0.9670159572281847
-  - 0.967938428638525
-  - 0.9680592729968783
-  - 0.9684515541867013
-  - 0.9674212854456345
-  runtime_seconds: 2106.417763233185
+  - 0.9672001860688151
+  - 0.9680839114527706
+  - 0.9682151720152679
+  - 0.9686226522772695
+  - 0.9676694046775906
+  runtime_seconds: 2081.6144964694977
   features_used:
   - age
   - daily_screen_time_hours
@@ -173,72 +173,75 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9981871675048662
-    lightgbm[0]~lightgbm[2]: 0.998186388535712
-    lightgbm[0]~lightgbm[3]: 0.9981523324086239
-    lightgbm[0]~lightgbm[4]: 0.9966098097925497
-    lightgbm[1]~lightgbm[2]: 0.9981663943266144
-    lightgbm[1]~lightgbm[3]: 0.9981676673960287
-    lightgbm[1]~lightgbm[4]: 0.9965726461993887
-    lightgbm[2]~lightgbm[3]: 0.9981675228208694
-    lightgbm[2]~lightgbm[4]: 0.9965530453168768
-    lightgbm[3]~lightgbm[4]: 0.9964911407543661
-  rank_average_diagnostic: 0.9677766368911371
+    lightgbm[0]~lightgbm[1]: 0.9983114848529923
+    lightgbm[0]~lightgbm[2]: 0.9982710300923922
+    lightgbm[0]~lightgbm[3]: 0.9982930683930359
+    lightgbm[0]~lightgbm[4]: 0.9967716220447811
+    lightgbm[1]~lightgbm[2]: 0.998260327052851
+    lightgbm[1]~lightgbm[3]: 0.9982808744821229
+    lightgbm[1]~lightgbm[4]: 0.9967101178095367
+    lightgbm[2]~lightgbm[3]: 0.9982580861721937
+    lightgbm[2]~lightgbm[4]: 0.9966784598513658
+    lightgbm[3]~lightgbm[4]: 0.996650102190314
+  rank_average_diagnostic: 0.9679579087153374
   screening: null
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.9675622494421119
+    oof_auc: 0.9677406226155477
     fold_metrics:
-    - 0.9668188267462837
-    - 0.9677597336759227
-    - 0.967804470529322
-    - 0.9682398426935483
-    - 0.9671885060028886
+    - 0.9669468967849072
+    - 0.9678679529473617
+    - 0.968022486446905
+    - 0.9684075944764133
+    - 0.9674560113853626
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9675537615606059
+    oof_auc: 0.9677337665400011
     fold_metrics:
-    - 0.9667820280177699
-    - 0.9677735202911312
-    - 0.9678576707071627
-    - 0.9681966827074154
-    - 0.967160879717169
+    - 0.9669375182938961
+    - 0.9678942839666543
+    - 0.968015973972409
+    - 0.9683994333320063
+    - 0.9674278393432361
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.967536470514837
+    oof_auc: 0.9677490531055647
     fold_metrics:
-    - 0.9667662372715017
-    - 0.9676773478796561
-    - 0.9678421133829193
-    - 0.9682037980196629
-    - 0.9671894790274447
+    - 0.9670322051771583
+    - 0.9678424886341963
+    - 0.967955726225452
+    - 0.968417682874844
+    - 0.9675050581660302
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9675628462628514
+    oof_auc: 0.9677741695290383
     fold_metrics:
-    - 0.9668786497666431
-    - 0.9676911560610298
-    - 0.9677915320987107
-    - 0.9682336773074545
-    - 0.967232291346734
+    - 0.9670048838902967
+    - 0.9679681932450607
+    - 0.9680415098344994
+    - 0.9683986569500537
+    - 0.9674618436970874
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9673313476708381
+    oof_auc: 0.9675239741702119
     fold_metrics:
-    - 0.9665125603040567
-    - 0.9674045739459352
-    - 0.9676783962490116
-    - 0.9680313090382895
-    - 0.9670238197573311
+    - 0.9668289750225381
+    - 0.9675814512613777
+    - 0.9677814746540706
+    - 0.9681836032087108
+    - 0.9672469133559002
   artifacts:
-  - experiments/output/EXP-120b/oof_predictions.csv
-  - experiments/output/EXP-120b/results.json
-  decision: 'PROMOTED CHAMPION: OOF 0.967959 (+0.00144 vs EXP-035). Slack + 1D TE
-    both confirmed. Next: smoothing sweep m in {10,200}.'
+  - experiments/output/EXP-119/oof_predictions.csv
+  - experiments/output/EXP-119/results.json
+  decision: 'REJECT m=200: true OOF ~0.96778 (-0.00018 vs m=50); high smoothing blunts
+    exact-value signal.'
   reasoning: null
+  results_note: 'yaml oof_metric was stale (inherited from EXP-119 via shallow-copy
+    bug in queueing script; true value from GHA log: 0.96778). See HISTORY.md incident
+    2026-08-25.'
