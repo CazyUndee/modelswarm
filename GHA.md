@@ -17,6 +17,10 @@ Last full check: 2026-08-25 21:10 UTC
 
 | ID | Workflow | Run ID | Notes |
 |---|---|---|---|
+| EXP-123 nested TE + freq (m=10) | (this push) | queued | 5x LGBM + nested/freq TE | when done: compare vs EXP-120a 0.968041 |
+
+| ID | Workflow | Run ID | Notes |
+|---|---|---|---|
 | (none) | | | |
 
 ## COMPLETED
