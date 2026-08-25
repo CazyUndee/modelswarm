@@ -12,10 +12,13 @@ from scipy.optimize import minimize
 from sklearn.metrics import roc_auc_score
 
 t0 = time.time()
-lib = r"C:\Users\ROONE~1.DES\AppData\Local\Temp\s6e8_ooflib"
-tr = pd.read_csv(r"competitions\s6e8\data\train.csv")
+import kagglehub
+
+lib = os.environ.get("S6E8_LIB") or kagglehub.dataset_download("szymonkapiski/s6e8-oof-library-47-models")
+OWN = os.path.join(os.path.dirname(__file__), "data", "own_champ_m10_oof.npy")
+tr = pd.read_csv("competitions/s6e8/data/train.csv")
 y = tr["addicted_label"].values
-champ = pd.read_csv(os.path.join(os.environ["TEMP"], "exp119_art", "oof_predictions.csv"))["prediction"].values
+champ = np.load(OWN).astype(np.float64)
 
 names = ["champ"] + [f[:-4] for f in os.listdir(os.path.join(lib, "oof")) if f.startswith("oof_")]
 V = {"champ": champ}
