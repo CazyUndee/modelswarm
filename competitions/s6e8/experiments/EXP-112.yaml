@@ -1,6 +1,6 @@
 experiment_id: EXP-112
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN batch 2 vs control EXP-100 under identical reduced conditions
   (12% rows / 3 folds): XGBoost @ hist max_bin 1024 + col 0.'
 phase: 4
@@ -50,3 +50,50 @@ metadata:
   created_at: '2026-08-25T11:30:00Z'
   design_notes: 'XGBoost @ hist max_bin 1024 + col 0.3: family re-test at modern bin
     settings (earlier test pre-dated max_bin discovery).'
+results:
+  status: completed
+  oof_metric: 0.955390306352327
+  fold_metrics:
+  - 0.9531962444939056
+  - 0.9577814320287271
+  - 0.9551933154947322
+  runtime_seconds: 13.716482162475586
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: xgboost
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening:
+    row_fraction: 0.12
+    seed: 42
+    rows: 82964
+  members:
+  - member_index: 0
+    name: xgboost
+    key: xgboost[0]
+    oof_auc: 0.955390306352327
+    fold_metrics:
+    - 0.9531962444939056
+    - 0.9577814320287271
+    - 0.9551933154947322
+  artifacts:
+  - experiments/output/EXP-112/oof_predictions.csv
+  - experiments/output/EXP-112/results.json
+  decision: null
+  reasoning: null
