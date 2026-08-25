@@ -144,14 +144,14 @@ target_encoding:
   smoothing: 10
 results:
   status: completed
-  oof_metric: 0.9679578860073875
+  oof_metric: 0.9680413068959532
   fold_metrics:
-  - 0.9672001860688151
-  - 0.9680839114527706
-  - 0.9682151720152679
-  - 0.9686226522772695
-  - 0.9676694046775906
-  runtime_seconds: 2081.6144964694977
+  - 0.9673254824448552
+  - 0.9681902620794118
+  - 0.9682784433386067
+  - 0.9686718132392004
+  - 0.9677401282126068
+  runtime_seconds: 2019.362675189972
   features_used:
   - age
   - daily_screen_time_hours
@@ -173,72 +173,72 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9983114848529923
-    lightgbm[0]~lightgbm[2]: 0.9982710300923922
-    lightgbm[0]~lightgbm[3]: 0.9982930683930359
-    lightgbm[0]~lightgbm[4]: 0.9967716220447811
-    lightgbm[1]~lightgbm[2]: 0.998260327052851
-    lightgbm[1]~lightgbm[3]: 0.9982808744821229
-    lightgbm[1]~lightgbm[4]: 0.9967101178095367
-    lightgbm[2]~lightgbm[3]: 0.9982580861721937
-    lightgbm[2]~lightgbm[4]: 0.9966784598513658
-    lightgbm[3]~lightgbm[4]: 0.996650102190314
-  rank_average_diagnostic: 0.9679579087153374
+    lightgbm[0]~lightgbm[1]: 0.9983191980380368
+    lightgbm[0]~lightgbm[2]: 0.9983354393107976
+    lightgbm[0]~lightgbm[3]: 0.9983480956351208
+    lightgbm[0]~lightgbm[4]: 0.9968320337031873
+    lightgbm[1]~lightgbm[2]: 0.998287953894219
+    lightgbm[1]~lightgbm[3]: 0.9983115930900194
+    lightgbm[1]~lightgbm[4]: 0.9967220685290835
+    lightgbm[2]~lightgbm[3]: 0.9983079922770326
+    lightgbm[2]~lightgbm[4]: 0.996768885512513
+    lightgbm[3]~lightgbm[4]: 0.9967107204540433
+  rank_average_diagnostic: 0.9680407329709164
   screening: null
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.9677406226155477
+    oof_auc: 0.9678512674689008
     fold_metrics:
-    - 0.9669468967849072
-    - 0.9678679529473617
-    - 0.968022486446905
-    - 0.9684075944764133
-    - 0.9674560113853626
+    - 0.9671116919733629
+    - 0.9680041209542137
+    - 0.9681009492308351
+    - 0.968452681970289
+    - 0.9676016684675081
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9677337665400011
+    oof_auc: 0.9678140795196046
     fold_metrics:
-    - 0.9669375182938961
-    - 0.9678942839666543
-    - 0.968015973972409
-    - 0.9683994333320063
-    - 0.9674278393432361
+    - 0.9671077433353474
+    - 0.9679503412808242
+    - 0.9681083129345636
+    - 0.9684827403841126
+    - 0.9674289866749288
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9677490531055647
+    oof_auc: 0.9678326328635143
     fold_metrics:
-    - 0.9670322051771583
-    - 0.9678424886341963
-    - 0.967955726225452
-    - 0.968417682874844
-    - 0.9675050581660302
+    - 0.9671393141716609
+    - 0.9679701131412158
+    - 0.9680264855751195
+    - 0.9685062997705789
+    - 0.967539013551501
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9677741695290383
+    oof_auc: 0.9678539663911948
     fold_metrics:
-    - 0.9670048838902967
-    - 0.9679681932450607
-    - 0.9680415098344994
-    - 0.9683986569500537
-    - 0.9674618436970874
+    - 0.9671431575160456
+    - 0.9680528696218071
+    - 0.9681092557565686
+    - 0.9683784347373856
+    - 0.9675899142801292
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9675239741702119
+    oof_auc: 0.9676089568176891
     fold_metrics:
-    - 0.9668289750225381
-    - 0.9675814512613777
-    - 0.9677814746540706
-    - 0.9681836032087108
-    - 0.9672469133559002
+    - 0.9669071138065486
+    - 0.9677089560127499
+    - 0.9678178770725808
+    - 0.9682660783142742
+    - 0.9673433511262963
   artifacts:
-  - experiments/output/EXP-119/oof_predictions.csv
-  - experiments/output/EXP-119/results.json
+  - experiments/output/EXP-120a/oof_predictions.csv
+  - experiments/output/EXP-120a/results.json
   decision: 'PROMOTED CHAMPION: OOF 0.967959 (+0.00144 vs EXP-035). Slack + 1D TE
     both confirmed. Next: smoothing sweep m in {10,200}.'
   reasoning: null
