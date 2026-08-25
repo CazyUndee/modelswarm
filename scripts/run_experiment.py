@@ -80,6 +80,30 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict) -> pd.DataFrame:
 
     for op in ops:
         kind = op.get("op", "ratio")
+        if kind == "pair_grid":
+            # generator op: expands to many named columns, no single name needed
+            nums = [c for c in df.columns
+                    if c != "id" and pd.api.types.is_numeric_dtype(df[c])]
+            if op.get("exclude"):
+                nums = [c for c in nums if c not in set(op["exclude"])]
+            limit = int(op.get("max_pairs", 40))
+            made = 0
+            done = False
+            for i in range(len(nums)):
+                for j in range(i + 1, len(nums)):
+                    if made >= limit:
+                        done = True
+                        break
+                    a, b = nums[i], nums[j]
+                    ca = (df[a] * 100).round()
+                    cb = (df[b] * 100).round()
+                    df[f"pair_{a}__{b}"] = (ca.fillna(-1) * int(1e7)
+                                            + cb.fillna(-1)).astype("int64")
+                    made += 1
+                if done:
+                    break
+            print(f"  FE pair_grid: {made} pair columns")
+            continue
         name = op.get("name")
         if not name:
             print(f"⚠️  Skipping FE op without name: {op}")
@@ -475,7 +499,15 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
                           shuffle=True, random_state=val_config.get("random_state", 42))
 
     te_cfg = config.get("target_encoding") or {}
-    te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
+    _te_requested = te_cfg.get("columns", [])
+    import fnmatch
+    te_cols = []
+    for spec in _te_requested:
+        if any(ch in spec for ch in "*?[]"):
+            te_cols.extend(c for c in X.columns if fnmatch.fnmatch(c, spec))
+        elif spec in X.columns:
+            te_cols.append(spec)
+    te_cols = list(dict.fromkeys(te_cols))
     te_smoothing = float(te_cfg.get("smoothing", 50))
     te_nested = bool(te_cfg.get("nested", False))
     if te_nested:
@@ -621,7 +653,15 @@ def predict_test(train: pd.DataFrame, test: pd.DataFrame, config: dict) -> np.nd
     # Target encoding: fit on FULL train, apply to train + test (submission path
     # has no holdout, mirroring the fold-level fit-on-train-only discipline).
     te_cfg = config.get("target_encoding") or {}
-    te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
+    import fnmatch as _fnm
+    _te_requested = te_cfg.get("columns", [])
+    te_cols = []
+    for spec in _te_requested:
+        if any(ch in spec for ch in "*?[]"):
+            te_cols.extend(c for c in X.columns if _fnm.fnmatch(c, spec))
+        elif spec in X.columns:
+            te_cols.append(spec)
+    te_cols = list(dict.fromkeys(te_cols))
     if te_cols:
         if te_cfg.get("nested", False):
             # submission models train on FULL data: their own training rows get
