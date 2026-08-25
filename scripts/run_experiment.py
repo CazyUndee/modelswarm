@@ -53,8 +53,13 @@ def load_data(competition: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     return train, test
 
 
-def apply_feature_engineering(df: pd.DataFrame, config: dict) -> pd.DataFrame:
+def apply_feature_engineering(df: pd.DataFrame, config: dict,
+                              fit_frame: pd.DataFrame | None = None) -> pd.DataFrame:
     """Apply feature engineering from config.
+
+    fit_frame: reference frame for statistics (medians etc.). Pass TRAIN here
+    when transforming test so imputation stats never come from the wrong split.
+    """
 
     Supports two formats:
     1. Structured op list (preferred):
@@ -80,6 +85,44 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict) -> pd.DataFrame:
 
     for op in ops:
         kind = op.get("op", "ratio")
+        if kind == "impute_median":
+            # Unsupervised median fill; medians come from fit_frame (TRAIN) when
+            # provided so test rows are never filled with test-derived stats.
+            ref = df if fit_frame is None else fit_frame
+            for c in op.get("columns", []):
+                if c in df.columns:
+                    df[c] = df[c].fillna(ref[c].median())
+            continue
+        if kind == "budget_constraint":
+            # Budget identity as a CONSTRAINT (raphdraft 0.96943-LB pipeline):
+            # daily >= sum(components); missing components are bounded by
+            # daily - observed_others. Produces bound/slack/violation views.
+            daily_c = op["daily"]
+            comps = list(op["components"])
+            day_h = float(op.get("day_hours", 0.0))
+            comp_raw = df[comps]
+            observed = comp_raw.sum(axis=1, skipna=True)
+            n_missing = comp_raw.isna().sum(axis=1)
+            daily_raw = df[daily_c]
+            prefix = op.get("prefix", "bud_")
+            df[f"{prefix}implied_daily_lower"] = observed.astype("float64")
+            df[f"{prefix}n_observed"] = (
+                len(comps) + 1 - df[[daily_c] + comps].isna().sum(axis=1)).astype("int8")
+            df[f"{prefix}n_missing"] = n_missing.astype("int8")
+            slack = daily_raw - observed
+            df[f"{prefix}slack"] = slack.astype("float64")
+            df[f"{prefix}slack_per_missing"] = (
+                slack / n_missing.replace(0, np.nan)).astype("float64")
+            for c in comps:
+                room = daily_raw - comp_raw.drop(columns=[c]).sum(axis=1, skipna=True)
+                med = df[c].median()
+                df[f"{prefix}viol_{c}"] = np.where(
+                    df[c].isna(), room - med, 0.0).astype("float64")
+            if day_h > 0:
+                acc = df[comps].fillna(df[comps].median()).sum(axis=1)
+                df[f"{prefix}unaccounted"] = (day_h - acc - df[daily_c].fillna(0)).astype("float64")
+            continue
+        name = op.get("name")
         if kind == "pair_grid":
             # generator op: expands to many named columns, no single name needed
             nums = [c for c in df.columns
@@ -771,7 +814,7 @@ def main():
 
     print("\n[2/5] Applying feature engineering...")
     train = apply_feature_engineering(train, config)
-    test = apply_feature_engineering(test, config)
+    test = apply_feature_engineering(test, config, fit_frame=train)
     print(f"  Features after engineering: {train.shape[1]}")
 
     print("\n[3/5] Training (stratified CV)...")
