@@ -1,6 +1,6 @@
 experiment_id: EXP-109
 competition: s6e8
-status: queued
+status: completed
 hypothesis: 'SCREEN batch 2 vs control EXP-100 under identical reduced conditions
   (12% rows / 3 folds): RE-SCREEN L8 ratios at champion optimum (rejected at bins255-era
   config; cheap re-test now that bins/colsample changed).'
@@ -72,3 +72,54 @@ feature_engineering:
   name: notif_per_hour
   numerator: notifications_per_day
   denominator: daily_screen_time_hours
+results:
+  status: completed
+  oof_metric: 0.9527797911019045
+  fold_metrics:
+  - 0.9511379264800073
+  - 0.9549584457002782
+  - 0.9522935200011908
+  runtime_seconds: 21.442015647888184
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - social_ratio
+  - gaming_ratio
+  - weekend_ratio
+  - notif_per_hour
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: lightgbm
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening:
+    row_fraction: 0.12
+    seed: 42
+    rows: 82964
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9527797911019045
+    fold_metrics:
+    - 0.9511379264800073
+    - 0.9549584457002782
+    - 0.9522935200011908
+  artifacts:
+  - experiments/output/EXP-109/oof_predictions.csv
+  - experiments/output/EXP-109/results.json
+  decision: null
+  reasoning: null
