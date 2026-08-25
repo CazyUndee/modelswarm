@@ -182,3 +182,14 @@
 - **Result:** MED-B (nl255/bins2048/col0.5/2000t, single seed) reaches −0.00035 of champion at ~85% of its runtime — NO cheap knee exists; most of the gain comes from bins2048+nl255 which ARE the expensive components.
 - **Conclusion:** REJECTED — no free lunch tier. Screening at FAST level (−0.0035) preserves ranking but underestimates absolute scores; acceptable for relative comparisons only (as used in EXP-100..108).
 - **Follow-ups:** screening funnel stays as-is (12% rows/3 folds/600t for hypothesis elimination; full-data confirmation only for survivors).
+
+## L21. Sibling-GBM family diversity (XGBoost / HGB / CatBoost) vs champion
+- **Hypothesis:** A different GBM implementation makes decorrelated errors of comparable quality; blending harvests the disputed rows L19 left open.
+- **Method (local, single-seed, same protocol StratifiedKFold5/seed42):** tuned siblings mirroring champion capacity — XGBoost `hist/lossguide/max_leaves255/lr0.02/3000r/sub0.8/col0.3`; sklearn HistGradientBoosting `1500i/lr0.03/leaves127/mcs80`; CatBoost `2500i/lr0.03/d6/Bernoulli0.8/rsm0.3` (codes-encoded cats, mirrors runner). Blend scan w∈{0.5..0.95}, gated rules, in-sample stacker upper bounds.
+- **Evidence & results:**
+  - XGBoost full OOF **0.964021** (−0.00250); champ~XGB r=**0.99303**; best blend (w=0.95) −0.000032.
+  - HistGradientBoosting full OOF **0.963387** (−0.00313); champ~HGB r=**0.98857**; best blend −0.000003 (exactly flat).
+  - CatBoost full OOF **0.956467** (−0.01005); champ~CAT r=**0.97053** (most decorrelated); best blend −0.000106; MID-band AUC collapses to 0.594.
+  - Mechanism: champ-only-error sets are boundary coin-flips — e.g. vs HGB, 8,349 champ-only errors have 77% predictions in [0.4,0.6] and ~50/50 labels (pop 71%); sibling "wins" there carry >0.25 margin only 2% of the time.
+  - Upper bounds: in-sample logit-stack 0.966468 (< champion); in-sample GBM-stack over {champ,hgb,medb} 0.966912 (+0.0004 optimistic bound ⇒ ~0 true). All gated mix rules ≤ champion (+0.000015 max via medb gate).
+- **Conclusion: FAMILY AXIS CLOSED — recoverable diversity = ZERO across XGBoost, CatBoost, HGB.** Decorrelation exists (r 0.971–0.993) but is dominated by the quality gap in every combiner: global blends peak at w=1.0, gated rules ≤ +0.00002, in-sample stackers ≤ optimistic +0.0004. Remaining error mass is symmetric aleatoric boundary noise shared by all implementations, not model-specific deficiency. Combined with L19 (config pool) the entire accessible model space converges on the same ~50k-row invariant error core; EXP-035 stands as the effective Bayes projection for this feature set.
