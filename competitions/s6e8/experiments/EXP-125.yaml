@@ -1,0 +1,206 @@
+competition: s6e8
+experiment_id: EXP-125
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: budget_constraint
+  daily: daily_screen_time_hours
+  components:
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  day_hours: 24.0
+- op: impute_median
+  columns:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+- op: ratio
+  name: productive_ratio
+  numerator: work_study_hours
+  denominator: daily_screen_time_hours
+- op: sum
+  name: leisure_hours
+  terms:
+  - social_media_hours
+  - gaming_hours
+- op: ratio
+  name: leisure_ratio
+  numerator: leisure_hours
+  denominator: daily_screen_time_hours
+- op: ratio
+  name: sleep_screen_ratio
+  numerator: sleep_hours
+  denominator: daily_screen_time_hours
+- op: ratio
+  name: weekend_binge_ratio
+  numerator: weekend_screen_time
+  denominator: daily_screen_time_hours
+- op: ratio
+  name: notif_per_open
+  numerator: notifications_per_day
+  denominator: app_opens_per_day
+- op: sum
+  name: accounted_hours
+  terms:
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+- op: pair_grid
+hypothesis: 'raphdraft 0.96943-LB feature block on top of pair-lattice: median-imputed
+  dense view + ratios-from-imputed (productive/leisure/sleep/screen) + 24h composition
+  (accounted/unaccounted) + budget-identity-as-constraint features (implied lower
+  bound, n_observed/n_missing, slack, slack_per_missing, per-component violation of
+  median fill). Their pipeline CV 0.96848 > our best single 0.968041 - this block
+  is the main delta we lack. Single variable vs EXP-124: + impute_median/ratio/budget
+  FE block.'
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-124
+  created_at: '2026-08-25T21:35:00Z'
+  design_notes: Runner gains target_encoding.nested/inner_folds/frequency knobs +
+    _nested_target_encode_train (StratifiedKFold inner splits, seed 42) + freq maps
+    in stats. Unit-tested for own-label exclusion on lonely levels (test_nested_te.py).
+    Budget-bound imputation (missing components bounded by daily-others) deliberately
+    NOT included here - one variable at a time; queued as follow-up if nested confirms.
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 123
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 2024
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 99
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  name: ensemble
+status: queued
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - pair_*
+  - pair_*
+  frequency: true
+  inner_folds: 5
+  inner_seed: 42
+  nested: true
+  smoothing: 10
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 180
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+results: {}
+runtime_note: pair TE adds 36 cols x bincount refits - cheap per raphdraft measurement
