@@ -211,5 +211,7 @@ results:
   artifacts:
   - experiments/output/EXP-041/oof_predictions.csv
   - experiments/output/EXP-041/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    CV-split variance probe A (cv_seed 123): OOF 0.966519 vs seed-42 baseline 0.966518 (+0.000001). Measurement run - no improvement intended. Combined with EXP-042: split-noise sigma ~1e-5, so ALL session margin judgments (ties/flats) are trustworthy.
   reasoning: null

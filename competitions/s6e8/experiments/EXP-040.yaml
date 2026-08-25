@@ -213,5 +213,7 @@ results:
   artifacts:
   - experiments/output/EXP-040/oof_predictions.csv
   - experiments/output/EXP-040/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    nl511/mcs120/lr0.015/4000t @ col0.3/max_bin2048: OOF 0.966185 (-0.00033 vs EXP-035). Leaf ceiling ~255 holds even under aggressive feature subsampling - capacity x colsample interaction hypothesis dead.
   reasoning: null

@@ -211,5 +211,7 @@ results:
   artifacts:
   - experiments/output/EXP-042/oof_predictions.csv
   - experiments/output/EXP-042/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    CV-split variance probe B (cv_seed 2024): OOF 0.966498 vs seed-42 baseline 0.966518 (-0.00002). See EXP-041: split-noise negligible; margin calibration validated.
   reasoning: null

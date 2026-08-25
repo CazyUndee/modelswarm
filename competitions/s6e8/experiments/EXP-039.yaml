@@ -224,5 +224,7 @@ results:
   artifacts:
   - experiments/output/EXP-039/oof_predictions.csv
   - experiments/output/EXP-039/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    Monotone constraints on the 5 monotone-decile features HURT badly: OOF 0.953856 (-0.0127 vs champion). The DGP is NOT strictly monotone - synthetic generator injects non-monotonicity (interactions/noise). Structural prior contradicted by data; entire constraints direction closed. High-information rejection.
   reasoning: null
