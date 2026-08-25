@@ -90,6 +90,20 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   m=10 wins slightly; champion formally stays EXP-119 (<+0.0005 bar). m=10 vectors downloaded
   at %TEMP%/exp120a_art for blend v3.
 
+## Overnight session additions (2026-08-25 evening)
+
+- LB submissions: champ anchor 0.96801 -> blends 0.97050/0.97053 -> greedy-74 5-member 0.97054.
+  Public-LB plateau ~0.9705 with library blends; honest OOS fitting gains do NOT transfer to
+  public split. Rank 534/2913 (top 18%); r500=0.97068, r100=0.97125, #1=0.97181.
+- Blend-space axis CLOSED: probability-space weighting beats rank/logit (GHA analysis).
+- Fold-count axis CONFIRMED: 10-fold +0.0003 over 5-fold (EXP-122 0.968223 best single).
+- Nested TE REJECTED in our context: -0.00062 (EXP-123) despite raphdraft success - their gain
+  came from their pipeline context (XGB depth-wise, lambda grid, imputation interplay).
+- EXP-121 cancelled at old 120-min job cap -> cap raised to 200; requeued as EXP-127 (x2 @420s).
+- New mechanisms implemented+queued: pair_grid FE op (Deotte/latwide), budget_constraint block,
+  impute_median pinned to train stats (raphdraft block) - EXP-124/125 (nested-handicapped) and
+  EXP-126 (clean max-strength combo, strongest candidate).
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).

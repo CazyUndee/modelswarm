@@ -23,3 +23,9 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 4. Blend submissions must attribute member sources in the submission message.
 | EXP-122 | 10-fold champion variant (fold-count axis) | EXP-120a | GHA | RUNNING run 32897449661 | pending | orchestrator |
 | EXP-123 | NESTED TE + frequency columns (m=10) | EXP-120a | GHA | RUNNING (queued push f32f50d) | pending | orchestrator |
+| EXP-122b | 10-fold champion variant | EXP-120a | GHA | DONE | **OOF 0.968223 best single** (+0.0003 vs 5-fold) | orchestrator |
+| EXP-123b | nested TE + freq (m=50) | EXP-119 | GHA | DONE | **0.967339 REJECTED** (-0.00062; inner-OOF hurt) | orchestrator |
+| EXP-124 | pair-lattice nested TE (36 pairs) | EXP-123-lineage | GHA | RUNNING | pending (nested-confounded) | orchestrator |
+| EXP-125 | raphdraft budget/ratio block (nested) | EXP-124 | GHA | RUNNING | pending (nested-confounded) | orchestrator |
+| EXP-126 | pairs + budget on PLAIN TE @ 10-fold | EXP-122 | GHA | RUNNING (push a404859) | strongest candidate | orchestrator |
+| EXP-127 | TabM x2 @420s retry | EXP-121(cancelled at old cap) | GHA | QUEUED (cap raised 200m) | pending | orchestrator |
