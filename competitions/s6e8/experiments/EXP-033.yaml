@@ -211,5 +211,10 @@ results:
   artifacts:
   - experiments/output/EXP-033/oof_predictions.csv
   - experiments/output/EXP-033/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    lr 0.025 bracket: OOF 0.966267 vs best-known EXP-030 (lr 0.02) 0.966270 -
+    a statistical tie (-0.000003). The lr axis is FLAT at nl255/max_bin2048/
+    colsample0.6; no sensitivity at this granularity. Awaits EXP-032 (lr
+    0.015) to close the bracket.
   reasoning: null
