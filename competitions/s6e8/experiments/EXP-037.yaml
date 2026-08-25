@@ -210,5 +210,7 @@ results:
   artifacts:
   - experiments/output/EXP-037/oof_predictions.csv
   - experiments/output/EXP-037/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    colsample 0.1 scored OOF 0.960087 (-0.0064 vs EXP-035) - extreme feature starvation collapses single-tree quality beyond what seed blending recovers. Bracket complete: colsample axis fully mapped, optimum 0.3.
   reasoning: null
