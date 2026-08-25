@@ -53,29 +53,31 @@ def fake_tabm(monkeypatch):
 
 
 def test_tabm_member_schema_consistency(fake_tabm):
-    rng = np.random.RandomState(0)
-    n = 60
+    # Explicit disjoint NaN patterns: 'b' missing only in train rows,
+    # 'c' missing only in pred rows -> indicator columns must exist in BOTH
+    # frames regardless of where missingness falls.
+    tr_rows, pr_rows = 40, 20
     X = pd.DataFrame({
-        # NaNs fall on DIFFERENT rows in train vs pred -> indicator sets must match anyway
-        "a": np.where(rng.rand(n) < 0.1, np.nan, rng.rand(n)),
-        "b": np.where(rng.rand(n) < 0.15, np.nan, rng.rand(n)),
-        "g": rng.choice(["M", "F"], n),
+        "a": np.linspace(0, 1, tr_rows + pr_rows),
+        "b": 1.0,
+        "c": 2.0,
+        "g": ["M"] * (tr_rows + pr_rows),
     })
-    y = pd.Series(rng.rand(n) < 0.5, dtype=int)
-    X_pred = X.iloc[:25].copy()
-    # guarantee a column that is fully present in train but missing in pred rows
-    X.loc[X_pred.index, "b"] = 1.0
-    assert X["b"].isna().any() and not X_pred["b"].isna().any()
+    y = pd.Series(np.random.RandomState(0).rand(tr_rows + pr_rows) < 0.5, dtype=int)
+    X.loc[5, "b"] = np.nan            # train-only missingness
+    X.iloc[tr_rows + 3, X.columns.get_loc("c")] = np.nan   # pred-only missingness
+
+    X_train, X_pred = X.iloc[:tr_rows], X.iloc[tr_rows:]
 
     preds = fake_tabm._fit_member_predict(
         "tabm", {"random_state": 0, "time_to_fit_in_seconds": 5},
-        X, y, X_pred, cat_cols=["g"])
+        X_train, y.iloc[:tr_rows], X_pred, cat_cols=["g"])
     assert len(preds) == len(X_pred)
     assert _FakeTabM.last_ctor.get("device") == "cpu"
     assert "time_to_fit_in_seconds" not in _FakeTabM.last_ctor
-    # unconditional indicators: one per numeric col
-    assert "a_imputed" in _FakeTabM.train_columns
+    # unconditional indicators present even where a frame had no NaNs
     assert "b_imputed" in _FakeTabM.train_columns
+    assert "c_imputed" in _FakeTabM.train_columns
 
 
 def test_tabm_time_budget_goes_to_fit(fake_tabm):

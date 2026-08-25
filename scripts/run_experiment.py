@@ -808,6 +808,16 @@ def main():
     test = apply_feature_engineering(test, config, fit_frame=train)
     print(f"  Features after engineering: {train.shape[1]}")
 
+    # Generator FE ops (pair_grid etc.) create columns not listed in
+    # config['features'] — register them so train_model actually uses them.
+    _known = set(config.get("features", [])) | {"id", "addicted_label"}
+    generated = [c for c in train.columns if c not in _known]
+    if generated:
+        config["features"] = list(config.get("features", [])) + generated
+        test = test.reindex(columns=config["features"] + ["id"], fill_value=np.nan) \
+            if "id" in test.columns else test.reindex(columns=config["features"], fill_value=np.nan)
+        print(f"  Registered {len(generated)} generated features: {generated[:6]}...")
+
     print("\n[3/5] Training (stratified CV)...")
     start_time = time.time()
     pl_enabled = bool(config.get("training", {}).get("pseudo_label"))
