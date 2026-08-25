@@ -210,5 +210,11 @@ results:
   artifacts:
   - experiments/output/EXP-034/oof_predictions.csv
   - experiments/output/EXP-034/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    colsample 0.4 scored OOF 0.966373 (-0.00004 vs EXP-031's col 0.5 =
+    0.966415). Descent TURNED: at max_bin2048/nl255 the colsample optimum is
+    ~0.5 +/- 0.05 (curve: 0.7->0.966155, 0.6->0.966270, 0.5->0.966415,
+    0.4->0.966373). Members tight (0.966145-0.966166). EXP-035 (0.3)
+    completes the bracket from the aggressive side.
   reasoning: null
