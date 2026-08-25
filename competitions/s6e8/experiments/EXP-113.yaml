@@ -1,0 +1,42 @@
+experiment_id: EXP-113
+competition: s6e8
+status: queued
+hypothesis: 'SCREEN batch 2 vs control EXP-100 under identical reduced conditions
+  (12% rows / 3 folds): MLP standalone screen: does a neural member reach ~0.'
+phase: 4
+model:
+  name: mlp
+  parameters:
+    hidden_layer_sizes:
+    - 64
+    - 32
+    max_iter: 150
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+validation:
+  strategy: stratified_kfold
+  n_folds: 3
+  random_state: 42
+training:
+  compute: github_actions
+  predict_test: false
+  screening:
+    row_fraction: 0.12
+    seed: 42
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-035
+  created_at: '2026-08-25T11:30:00Z'
+  design_notes: 'MLP standalone screen: does a neural member reach ~0.96+? If yes
+    it becomes a stack candidate despite decorrelation quality-gap risk.'
