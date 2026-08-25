@@ -1,0 +1,124 @@
+competition: s6e8
+experiment_id: EXP-038
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+hypothesis: Single-variable A/B vs champion EXP-035 (nl255/max_bin2048/bagged/lr0.02/colsample0.3,
+  OOF 0.966518) changing only min_data_in_bin 3->1. At 2048-bin resolution, allowing
+  bins with a single sample sharpens tail split points; the last untested single-variable
+  axis.
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-035
+  created_at: '2026-08-25T07:30:00Z'
+  design_notes: Pairs naturally with the max_bin lever (both control split granularity).
+    Overfit risk low at nl255/mcs80; watch fold spread for divergence.
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+      min_data_in_bin: 1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 123
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+      min_data_in_bin: 1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+      min_data_in_bin: 1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 2024
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+      min_data_in_bin: 1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 99
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+      min_data_in_bin: 1
+  name: ensemble
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 120
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
