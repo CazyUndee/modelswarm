@@ -21,3 +21,5 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 2. One variable per experiment vs its parent unless explicitly batched.
 3. Authoritative OOF numbers come from GHA runs only; local numbers are directional.
 4. Blend submissions must attribute member sources in the submission message.
+| EXP-122 | 10-fold champion variant (fold-count axis) | EXP-120a | GHA | RUNNING run 32897449661 | pending | orchestrator |
+| EXP-123 | NESTED TE + frequency columns (m=10) | EXP-120a | GHA | RUNNING (queued push f32f50d) | pending | orchestrator |
