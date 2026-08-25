@@ -4,7 +4,7 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-25 22:20 UTC
+Last full check: 2026-08-25 22:35 UTC
 
 ## RUNNING
 
@@ -45,6 +45,10 @@ Last full check: 2026-08-25 22:20 UTC
 | earlier session runs (EXP-007..117) | various | see experiments/*.yaml | mostly expired | historical |
 
 | EXP-121 TabM x3 @600s | 32894173771 | CANCELLED at old 120-min job cap (~2h in) | requeued as EXP-127 x2 @420s under new 200-min cap |
+
+| EXP-124 REDISPATCH | 32906270220 | running (FE-registration fix landed) | — |
+| EXP-125 REDISPATCH | 32906272823 | running | — |
+| EXP-126 | 32905105822 CANCELLED (same bug) -> REDISPATCH 32906275742 | running | — |
 
 ## FAILED / CANCELLED
 
