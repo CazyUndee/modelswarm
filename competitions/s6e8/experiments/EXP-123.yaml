@@ -1,0 +1,153 @@
+competition: s6e8
+experiment_id: EXP-123
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- name: free_time_slack
+  op: diff
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: 'NESTED target encoding (inner-CV out-of-fold encodings for training rows)
+  + level-frequency columns, per the 0.96943-LB public pipeline (raphdraft). Our current
+  TE lets each training row''s own label sit inside its own level mean - self-referential
+  and mildly optimistic; nested encoding removes that and their 2-model CV (0.96848)
+  exceeds our best single (0.968041). Also adds freq_<col> = log1p(level count) as
+  a companion feature. Single variable vs EXP-120a: TE block upgraded to nested+freq;
+  smoothing stays m=10. Values sit on a 0.01 grid so levels have hundreds of rows
+  - inner-fold estimates stay stable.'
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-120a
+  created_at: '2026-08-25T21:35:00Z'
+  design_notes: Runner gains target_encoding.nested/inner_folds/frequency knobs +
+    _nested_target_encode_train (StratifiedKFold inner splits, seed 42) + freq maps
+    in stats. Unit-tested for own-label exclusion on lonely levels (test_nested_te.py).
+    Budget-bound imputation (missing components bounded by daily-others) deliberately
+    NOT included here - one variable at a time; queued as follow-up if nested confirms.
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 123
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 7
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 2024
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 99
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  name: ensemble
+status: queued
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  frequency: true
+  inner_folds: 5
+  inner_seed: 42
+  nested: true
+  smoothing: 10
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 180
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold

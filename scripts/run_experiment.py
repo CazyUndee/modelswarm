@@ -119,12 +119,14 @@ def _target_encode_fit(df_fit: pd.DataFrame, y_fit: pd.Series,
     prior = float(pd.Series(y_fit).mean())
     m = float(smoothing)
     maps: dict[str, pd.Series] = {}
+    freq: dict[str, pd.Series] = {}
     for c in cols:
         tmp = pd.DataFrame({"v": df_fit[c].to_numpy(), "y": np.asarray(y_fit)})
         g = tmp.groupby("v", dropna=False)["y"].agg(["sum", "count"])
         enc = (g["sum"] + m * prior) / (g["count"] + m)
         maps[c] = enc.astype("float64")
-    return {"prior": prior, "m": m, "maps": maps}
+        freq[c] = g["count"].astype("float64")
+    return {"prior": prior, "m": m, "maps": maps, "freq": freq}
 
 
 def _target_encode_apply(df_apply: pd.DataFrame, stats: dict,
@@ -132,6 +134,7 @@ def _target_encode_apply(df_apply: pd.DataFrame, stats: dict,
     """Add te_<col> columns using maps fitted on a disjoint frame."""
     out = df_apply.copy()
     prior = stats["prior"]
+    freq = stats.get("freq", {})
     for c in cols:
         enc = stats["maps"][c]
         col = out[c]
@@ -142,7 +145,40 @@ def _target_encode_apply(df_apply: pd.DataFrame, stats: dict,
                 if len(nan_group) else prior
             vals[col.isna()] = nan_val
         out[f"te_{c}"] = vals.fillna(prior).astype("float64")
+        if c in freq:
+            cnt = col.map(freq[c])
+            out[f"freq_{c}"] = np.log1p(cnt.fillna(0.0)).astype("float64")
     return out
+
+
+def _nested_target_encode_train(X_fit: pd.DataFrame, y_fit: pd.Series,
+                                cols: list[str], smoothing: float,
+                                n_inner: int, seed: int) -> tuple[pd.DataFrame, dict]:
+    """Leak-free TE for TRAINING rows via inner-CV out-of-fold encodings.
+
+    Each training row is encoded using maps fitted WITHOUT its own label
+    (inner-split), so no row's target contributes to its own encoding.
+    Returns (encoded frame, full-fit stats for transforming val/test).
+    """
+    from sklearn.model_selection import StratifiedKFold
+
+    out = X_fit.copy()
+    for c in cols:
+        out[f"te_{c}"] = np.nan
+        out[f"freq_{c}"] = np.nan
+    skf = StratifiedKFold(n_splits=n_inner, shuffle=True, random_state=seed)
+    y_arr = np.asarray(y_fit)
+    for tr_i, va_i in skf.split(out, y_arr):
+        stats_i = _target_encode_fit(out.iloc[tr_i][cols], pd.Series(y_arr[tr_i]),
+                                     cols, smoothing)
+        # reuse apply logic minus freq duplication: compute manually
+        enc_frames = _target_encode_apply(out.iloc[va_i][cols], stats_i, cols)
+        for c in cols:
+            out.iloc[va_i, out.columns.get_loc(f"te_{c}")] = enc_frames[f"te_{c}"].to_numpy()
+            out.iloc[va_i, out.columns.get_loc(f"freq_{c}")] = enc_frames[f"freq_{c}"].to_numpy()
+    # full-fit stats for validation/test transforms
+    stats_full = _target_encode_fit(X_fit, y_fit, cols, smoothing)
+    return out, stats_full
 
 
 def _get_members(model_config: dict) -> list[dict]:
@@ -441,6 +477,9 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
     te_cfg = config.get("target_encoding") or {}
     te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
     te_smoothing = float(te_cfg.get("smoothing", 50))
+    te_nested = bool(te_cfg.get("nested", False))
+    if te_nested:
+        print("  TE mode: NESTED (inner-CV out-of-fold encodings for train rows)")
     if te_cols:
         print(f"  Target encoding: {len(te_cols)} cols, smoothing={te_smoothing} "
               f"(fold-train fit only)")
@@ -461,7 +500,12 @@ def train_model(train: pd.DataFrame, config: dict, test: pd.DataFrame | None = N
         # --- Leak-free target encoding (fit on fold-train ONLY) ---
         if te_cols:
             te_stats = _target_encode_fit(X_train, y_train, te_cols, te_smoothing)
-            X_train = _target_encode_apply(X_train, te_stats, te_cols)
+            if te_nested:
+                X_train, te_stats = _nested_target_encode_train(
+                    X_train, y_train, te_cols, te_smoothing,
+                    int(te_cfg.get("inner_folds", 5)), int(te_cfg.get("inner_seed", 42)))
+            else:
+                X_train = _target_encode_apply(X_train, te_stats, te_cols)
             X_val = _target_encode_apply(X_val, te_stats, te_cols)
             if use_pseudo:
                 X_test_al = _target_encode_apply(X_test_al, te_stats, te_cols)
@@ -579,9 +623,16 @@ def predict_test(train: pd.DataFrame, test: pd.DataFrame, config: dict) -> np.nd
     te_cfg = config.get("target_encoding") or {}
     te_cols = [c for c in te_cfg.get("columns", []) if c in X.columns]
     if te_cols:
+        if te_cfg.get("nested", False):
+            # submission models train on FULL data: their own training rows get
+            # inner-OOF encodings (leak-free), test rows get full-fit encodings.
+            X, _ = _nested_target_encode_train(
+                X, y, te_cols, float(te_cfg.get("smoothing", 50)),
+                int(te_cfg.get("inner_folds", 5)), int(te_cfg.get("inner_seed", 42)))
         te_stats = _target_encode_fit(X, y, te_cols, float(te_cfg.get("smoothing", 50)))
-        X = _target_encode_apply(X, te_stats, te_cols)
         X_test = _target_encode_apply(X_test, te_stats, te_cols)
+        if not te_cfg.get("nested", False):
+            X = _target_encode_apply(X, te_stats, te_cols)
         print(f"  Target encoding (submission): {len(te_cols)} cols")
 
     pl_cfg = config.get("training", {}).get("pseudo_label")
