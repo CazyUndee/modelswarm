@@ -29,10 +29,23 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Detect changed experiments
+      - name: Detect experiments (dispatch or push)
         id: detect
         run: |
-          # Find experiment configs that changed in this push
+          # Manual dispatch: run exactly the requested experiment.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            EXP_ID="${{ inputs.experiment_id }}"
+            COMP_ID="${{ inputs.competition_id }}"
+            PATH_GLOB="competitions/${COMP_ID}/experiments/${EXP_ID}.yaml"
+            if [ ! -f "$PATH_GLOB" ]; then
+              echo "::error::Experiment config not found: $PATH_GLOB"
+              exit 1
+            fi
+            echo "experiments=[{\"id\":\"$EXP_ID\",\"competition\":\"$COMP_ID\",\"path\":\"$PATH_GLOB\"}]" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Push: find experiment configs that changed in this push
           CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E 'competitions/.*/experiments/.*\.ya?ml$' || true)
 
           if [ -z "$CHANGED" ]; then

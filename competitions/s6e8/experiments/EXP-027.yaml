@@ -115,3 +115,4 @@ validation:
   n_folds: 5
   random_state: 42
   strategy: stratified_kfold
+# retrigger: previous run cancelled by infrastructure (2026-08-25)
