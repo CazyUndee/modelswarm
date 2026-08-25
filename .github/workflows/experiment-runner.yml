@@ -68,7 +68,7 @@ jobs:
     needs: detect-experiments
     if: needs.detect-experiments.outputs.experiments != '[]'
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 200
     permissions:
       contents: write
     strategy:

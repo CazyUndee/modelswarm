@@ -1,0 +1,75 @@
+competition: s6e8
+experiment_id: EXP-127
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: 'EXP-121 retry, right-sized for the 200-min job cap: TWO TabM members
+  (seeds 42/123) with per-fit budget 420s -> ~14 fits x 420s + TE/nested overhead
+  fits comfortably; prior attempt (x3 @600s) was cancelled at the old 120-min cap
+  after 2h. Same feature set (raw+slack+TE m=50 plain). Community TabM singles: OOF
+  ~0.9685-0.9687.'
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-121
+  created_at: '2026-08-25T19:55:00Z'
+  design_notes: '3 seed-averaged members (community: NN seed-avg worth +0.0013 vs
+    +0.0002 for GBDT). Runner gains tabm member type: median-impute (train-fold stats)
+    + missing-indicator cols (constrained-imputation recipe) + category dtype. Per-fold
+    time budget 600s keeps run under timeout; GHA CPU 4-core.'
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+  - name: tabm
+    parameters:
+      random_state: 42
+      time_to_fit_in_seconds: 420
+  - name: tabm
+    parameters:
+      random_state: 123
+      time_to_fit_in_seconds: 420
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 190
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  smoothing: 50
+results: {}
