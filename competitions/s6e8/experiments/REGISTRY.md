@@ -10,8 +10,8 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | BLEND-v2 | EXP-119 + library members, OOS weights | — | local analysis | SUBMITTED | held-out 0.969387 (LB pending) | orchestrator |
 | BLEND-v1 | champ + public OOF library members (OOS-fitted weights) | — | local analysis | SUBMITTED | **LB 0.97053** (held-out est 0.96939) | orchestrator |
 | CHAMP-LB | EXP-035 anchor submission | — | — | DONE | **LB 0.96801** | orchestrator |
-| EXP-120a | TE smoothing m=10 | EXP-119 | GHA | RUNNING | — | orchestrator |
-| EXP-120b | TE smoothing m=200 | EXP-119 | GHA | RUNNING | — | orchestrator |
+| EXP-120a | TE smoothing m=10 | EXP-119 | GHA | DONE | **OOF 0.968041 (best m)** keep-as-blend-ingredient | orchestrator |
+| EXP-120b | TE smoothing m=200 | EXP-119 | GHA | DONE | ~0.96778 REJECTED | orchestrator |
 | EXP-121 | weekend_slack secondary constraint | EXP-118 | GHA | PLANNED (low prior: constraint only 99.69%) | — | unassigned |
 | NN-TABM | Reproduce TabM (pytabkit); local CPU too slow for full OOF -> evaluate GHA-CPU member type or time-boxed local | — | TBD | TOOLING READY (pytabkit installed; API mapped; needs NaN-impute recipe) | smoke interrupted on CPU | orchestrator |
 | NN-LOOKUP | Reproduce lookup-transformer (per-value embeddings + attention) | — | LOCAL | PLANNED | — | unassigned |

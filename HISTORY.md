@@ -77,6 +77,19 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
 - %TEMP%\opencode\ — analysis scripts (lib_blend_scan.py, make_blend_v1.py, sibling_blend_analysis.py).
 - forum/hypothesis-ledger.md L1–L23; REGISTRY.md = experiment lock board (update before queueing!).
 
+## Incident log / hard rules learned
+
+- SHALLOW-COPY YAML BUG (hit 3x on 2026-08-25): cloning an experiment yaml via dict(base)
+  carries the source results block verbatim -> stale numbers look like real ones and mask
+  GHA truth. RULE: when creating experiments from a template ALWAYS c['results'] = {} and
+  c['status'] = chr(39)queuedchr(39). Verify by grepping the new file for oof_metric before commit.
+- Result-commit races: matrix jobs push results with retries; orchestrator rapid doc-pushes
+  caused 6-retry exhaustion under fetch-depth:2 (now fixed to fetch-depth:0). When yaml values
+  look wrong, TRUST THE JOB LOGS first: gh api repos/CazyUndee/modelswarm/actions/jobs/<id>/logs.
+- TE smoothing TRUE verdict (from logs): m=10 OOF 0.968041 > m=50 0.967959 > m=200 0.96778.
+  m=10 wins slightly; champion formally stays EXP-119 (<+0.0005 bar). m=10 vectors downloaded
+  at %TEMP%/exp120a_art for blend v3.
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).
