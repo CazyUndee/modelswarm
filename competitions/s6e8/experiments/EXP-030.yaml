@@ -211,5 +211,11 @@ results:
   artifacts:
   - experiments/output/EXP-030/oof_predictions.csv
   - experiments/output/EXP-030/results.json
-  decision: null
+  decision: inconclusive
+  reasoning: >-
+    colsample 0.6 scored OOF 0.966270 (+0.00012 vs champion EXP-026) - new best
+    absolute number but below the 0.0005 promotion margin. Confirms a LIVE
+    downward colsample gradient at nl255/max_bin2048: 0.8 -> -0.00019,
+    0.7 -> baseline, 0.6 -> +0.00012. Members tight (0.966001-0.966067).
+    Next: probe 0.5; if the gradient persists, combine with other positives.
   reasoning: null
