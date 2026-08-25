@@ -93,5 +93,7 @@ results:
   artifacts:
   - experiments/output/EXP-106/oof_predictions.csv
   - experiments/output/EXP-106/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] extra_trees: 0.940107 (-0.0252) - CATASTROPHIC. Random-threshold splits destroy this dataset structure. Axis closed permanently.
   reasoning: null

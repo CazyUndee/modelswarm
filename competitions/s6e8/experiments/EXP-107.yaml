@@ -92,5 +92,7 @@ results:
   artifacts:
   - experiments/output/EXP-107/oof_predictions.csv
   - experiments/output/EXP-107/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] path_smooth 5 screen: +0.000002 - tie.
   reasoning: null

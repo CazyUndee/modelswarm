@@ -91,5 +91,7 @@ results:
   artifacts:
   - experiments/output/EXP-105/oof_predictions.csv
   - experiments/output/EXP-105/results.json
-  decision: null
+  decision: inconclusive
+  reasoning: >-
+    [SCREEN - relative ranking only] reg_alpha 0.5 screen: +0.000068 - weakest positive signal in batch, inside screen noise. Only candidate worth a full-data confirmation IF other levers align.
   reasoning: null

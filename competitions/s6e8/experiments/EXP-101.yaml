@@ -91,5 +91,7 @@ results:
   artifacts:
   - experiments/output/EXP-101/oof_predictions.csv
   - experiments/output/EXP-101/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] colsample 0.35 screen: +0.000000 vs control - exact tie. No refinement gain between 0.3 and 0.4.
   reasoning: null

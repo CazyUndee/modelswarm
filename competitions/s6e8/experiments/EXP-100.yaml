@@ -92,5 +92,7 @@ results:
   artifacts:
   - experiments/output/EXP-100/oof_predictions.csv
   - experiments/output/EXP-100/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] CONTROL screen (champion params @ 12%% rows/3 folds/600t): OOF 0.965310. Anchors the batch; not comparable to full-data OOFs.
   reasoning: null

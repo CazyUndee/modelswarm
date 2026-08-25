@@ -92,5 +92,7 @@ results:
   artifacts:
   - experiments/output/EXP-103/oof_predictions.csv
   - experiments/output/EXP-103/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] max_bin 1024 @ col 0.3 screen: -0.000129. Confirms 2048 optimum on the colsample-descent config too.
   reasoning: null

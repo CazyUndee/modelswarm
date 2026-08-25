@@ -91,5 +91,7 @@ results:
   artifacts:
   - experiments/output/EXP-102/oof_predictions.csv
   - experiments/output/EXP-102/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    [SCREEN - relative ranking only] colsample 0.45 screen: +0.000004 - tie.
   reasoning: null
