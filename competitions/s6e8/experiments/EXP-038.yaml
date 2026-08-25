@@ -217,5 +217,10 @@ results:
   artifacts:
   - experiments/output/EXP-038/oof_predictions.csv
   - experiments/output/EXP-038/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    min_data_in_bin 3->1 scored OOF 0.966525 vs champion EXP-035 0.966518 -
+    statistical dead heat (+0.000007). Split-granularity via bin count was the
+    lever; per-bin sample minimum adds nothing on top. This closes the LAST
+    untested single-variable hyperparameter axis at the champion optimum.
   reasoning: null
