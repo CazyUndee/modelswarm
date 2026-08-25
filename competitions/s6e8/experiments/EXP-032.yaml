@@ -212,5 +212,7 @@ results:
   artifacts:
   - experiments/output/EXP-032/oof_predictions.csv
   - experiments/output/EXP-032/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    lr 0.015 @ col 0.6: OOF 0.966290 vs same-config lr 0.02 (EXP-030) 0.966270 - statistical tie (+0.00002). Combined with EXP-033 (lr 0.025 tie), the lr axis is FLAT at this capacity. Closed.
   reasoning: null

@@ -210,5 +210,7 @@ results:
   artifacts:
   - experiments/output/EXP-031/oof_predictions.csv
   - experiments/output/EXP-031/results.json
-  decision: null
+  decision: inconclusive
+  reasoning: >-
+    colsample 0.5: OOF 0.966415 (+0.00015 over EXP-030) - NEW BEST absolute, below promotion margin. Gradient still descending nearly linearly at max_bin2048/nl255: 0.7->baseline, 0.6->+0.00012, 0.5->+0.00026 cumulative. Members 0.966149-0.966211.
   reasoning: null
