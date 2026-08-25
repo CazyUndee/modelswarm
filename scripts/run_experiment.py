@@ -116,10 +116,9 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict,
         name = op.get("name")
         if kind == "pair_grid":
             # generator op: expands to many named columns, no single name needed
+            _forbidden = {"id", "addicted_label"} | set(op.get("exclude", []))
             nums = [c for c in df.columns
-                    if c != "id" and pd.api.types.is_numeric_dtype(df[c])]
-            if op.get("exclude"):
-                nums = [c for c in nums if c not in set(op["exclude"])]
+                    if c not in _forbidden and pd.api.types.is_numeric_dtype(df[c])]
             limit = int(op.get("max_pairs", 40))
             made = 0
             done = False

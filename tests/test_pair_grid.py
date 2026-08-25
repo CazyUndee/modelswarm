@@ -40,3 +40,17 @@ def test_pair_grid_max_pairs_and_exclude():
     out = apply_feature_engineering(df, cfg)
     pairs = [c for c in out.columns if c.startswith("pair_")]
     assert pairs == ["pair_n1__n2"]
+
+
+def test_pair_grid_never_touches_target():
+    # REGRESSION: pair_grid once encoded addicted_label itself -> AUC 1.0 leak.
+    df = pd.DataFrame({
+        "id": [1, 2, 3],
+        "daily": [1.0, 2.0, 3.0],
+        "addicted_label": [0, 1, 1],
+    })
+    cfg = {"feature_engineering": [{"op": "pair_grid"}]}
+    out = apply_feature_engineering(df, cfg)
+    bad = [c for c in out.columns if c.startswith("pair_") and "addicted" in c]
+    assert not bad, f"target leaked into FE columns: {bad}"
+    assert "pair_daily__addicted_label" not in out.columns
