@@ -37,7 +37,7 @@ def record_results(config_path: str, output_dir: str) -> dict:
     PASSTHROUGH = (
         "oof_metric", "fold_metrics", "runtime_seconds", "features_used",
         "categorical_features", "model_name", "blend_method",
-        "member_correlations", "rank_average_diagnostic",
+        "member_correlations", "rank_average_diagnostic", "screening",
     )
 
     # Update config with results.
