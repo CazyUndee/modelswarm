@@ -143,18 +143,42 @@
 - **Result:** PENDING (sweep running).
 - **Follow-up:** winning MEDIUM becomes the standard screening tier; nuclear reserved for final verification.
 
-## L18. Ensemble diversity value at aggressive colsample (from EXP-035 evidence)
+## L18. Ensemble diversity value at aggressive colsample
 - **Hypothesis:** At col 0.3 the champion's blend exceeds its best member by more than at conservative colsample (diversity-value hypothesis).
-- **Evidence:** EXP-035 members spanned 0.965742–0.965820 while blend hit 0.966518 (+0.0007 over best member) — compare against nl64-era where averaging added less.
+- **Evidence:** EXP-035 members spanned 0.965742–0.965820 while blend hit 0.966518 (+0.00070 over best member) — vs EXP-011-era member/blend gap (+0.00036 at col 0.7).
 - **Experiment:** analysis of existing records (no new run).
-- **Result:** pending formal comparison vs EXP-011-era member/blend gap (+0.00036).
-- **Conclusion:** PENDING — if confirmed, diversity-per-tree is a first-class lever alongside colsample itself.
+- **Result:** diversity gain at col 0.3 ≈ +0.00070, roughly 2× the +0.00036 seen at col 0.7. Cross-config agreement analysis (L19) shows this intra-ensemble signal is already fully captured by the probability-average — ensembles over EXTERNAL configs cannot add further.
+- **Conclusion:** CONFIRMED — per-tree feature restriction increases member diversity value; the probability-average captures all of it. Diversity-per-tree is real but already harvested by the champion design.
+- **Follow-ups:** none — any new diversity must come from a different model family or new features.
 
 ---
 
-## Open questions derived from evidence (not yet experiments)
+## Open questions (updated)
 
-- Q1: What is the Bayes/noise floor? → partially answered by L16: no duplicates; residual profile shows contradiction-shaped overlap. Floor inferred from model convergence ≈ 0.9665+.
-- Q2: Where does the champion lose rank? → ANSWERED (residual analysis): 67% of errors in mid-band [0.25,0.9] with within-band AUC 0.682; missing-feature rows −0.03 AUC; contradiction-shaped FN/FP profiles.
-- Q3: Is seed-99 systematically stronger at aggressive configs? (pattern hunt across records — pending)
-- Q4: Do train/test generation-order artifacts exist? (id-vs-feature correlation check — pending)
+- Q1 Bayes/noise floor → ANSWERED as well as possible without LB: ~79% of champion errors invariant across config spectrum; cross-model convergence at ~0.9665; contradiction-shaped FN/FP (features contradict labels). Floor estimated ≈ 0.9665 ± small.
+- Q2 Where does the champion lose rank? → ANSWERED: mid-band [0.25,0.9], within-band AUC 0.682, missing-day-screen rows −0.034 AUC.
+- Q3 Is seed-99 systematically stronger? → Not confirmed; seed variance ~0.00004 at champion config. Closed.
+- Q4 Generation-order artifacts? → Not detected in distribution checks; low priority.
+- Q5 NEW: Does the public LB confirm OOF↔LB transfer at ~0.9665? → BLOCKED on Kaggle credentials. Single highest-value external action.
+
+---
+
+## L19. Cross-config error agreement: irreducible vs recoverable error
+- **Hypothesis:** If different configs make DIFFERENT mistakes, diversity/stacking has recoverable headroom; if they share errors, the champion sits near the information ceiling.
+- **Motivation:** 67% of errors concentrate in mid-band [0.25,0.9] with within-band AUC 0.682; needed to know whether that band is config-limited or data-limited.
+- **Method:** Local analysis over 7 prediction vectors spanning the full config spectrum (FAST nl64/bins255 → champion nl255/bins2048/col0.3 5-seed blend): pairwise correlations, per-row error-agreement across configs, realistic ensembles (mean/rank/logistic-stack) over the 6 non-champion vectors.
+- **Result:**
+  - Correlations 0.986–0.9997 (MED-C~NUC-REF 0.99972; champion~NUC 0.99907).
+  - Error agreement: **50,885 rows (7.4%) err under ALL 7 configs**; 607,520 err under none; only 32,964 disputed.
+  - **79% of champion errors are invariant across the entire config spectrum**; only 339 unique.
+  - Ensembles over all 6 non-champion vectors: mean 0.965844, rank 0.965820, logistic-stack 0.966346 (in-sample, optimistic) — ALL below champion 0.966518.
+  - MID band: better configs rank MID monotonically better (FAST 0.718 → champ 0.751); 36,681 all-config errors remain in MID.
+- **Conclusion:** RECOVERABLE DIVERSITY EXHAUSTED. ~79% of error mass is invariant across a 10× compute/config spectrum; no combination of existing-config predictions beats the champion; the seed-averaged blend already captures all available inter-config signal. Remaining error is dominated by intrinsic feature-label overlap (contradiction-shaped FN/FP), not model deficiency.
+- **Follow-ups:** only new *information* changes this — LB public score, or features not derivable from the current 12. Config-space research on this feature set is complete.
+
+## L20. Compute economics tier decomposition
+- **Hypothesis:** A MEDIUM tier captures most of the champion's gain at ≤25% runtime.
+- **Evidence:** Concurrent-session local sweep (single-seed, 5-fold): FAST 0.963017@200s → MED-A 0.965803@2757s → MED-B 0.966165@2435s → MED-C 0.966064@1599s → NUC-REF 0.966099@2113s; champion blend (GHA, 5-seed) 0.966518.
+- **Result:** MED-B (nl255/bins2048/col0.5/2000t, single seed) reaches −0.00035 of champion at ~85% of its runtime — NO cheap knee exists; most of the gain comes from bins2048+nl255 which ARE the expensive components.
+- **Conclusion:** REJECTED — no free lunch tier. Screening at FAST level (−0.0035) preserves ranking but underestimates absolute scores; acceptable for relative comparisons only (as used in EXP-100..108).
+- **Follow-ups:** screening funnel stays as-is (12% rows/3 folds/600t for hypothesis elimination; full-data confirmation only for survivors).
