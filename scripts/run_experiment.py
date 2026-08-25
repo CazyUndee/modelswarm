@@ -59,19 +59,10 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict,
 
     fit_frame: reference frame for statistics (medians etc.). Pass TRAIN here
     when transforming test so imputation stats never come from the wrong split.
-    """
 
-    Supports two formats:
-    1. Structured op list (preferred):
-       feature_engineering:
-         - {op: ratio,   name: social_ratio, numerator: social_media_hours, denominator: daily_screen_time_hours}
-         - {op: product, name: screen_x_social, terms: [daily_screen_time_hours, social_media_hours]}
-         - {op: sum,     name: total_leisure, terms: [social_media_hours, gaming_hours]}
-         - {op: diff,    name: sleep_debt, terms: [sleep_hours, daily_screen_time_hours]}
-    2. Legacy dict format:
-       feature_engineering:
-         ratios:
-           - {name: ..., numerator: ..., denominator: ...}
+    Supported ops (structured list): ratio | product | sum | diff | indicator |
+    impute_median | budget_constraint | pair_grid. Legacy dict format
+    {feature_engineering: {ratios: [...]}} is still accepted.
     """
     df = df.copy()
     fe = config.get("feature_engineering", []) or []
