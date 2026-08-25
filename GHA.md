@@ -4,7 +4,7 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-25 21:43 UTC
+Last full check: 2026-08-25 22:20 UTC
 
 ## RUNNING
 
@@ -43,6 +43,8 @@ Last full check: 2026-08-25 21:43 UTC
 | analysis: blend_strategy_compare | 32898312819 -> REDISPATCH 32899786716 | v1/v2 failed inside; v4 DONE: prob 0.969383 > rank 0.969310 > logit 0.969065 -> probability-space confirmed optimal; axis closed | recorded in HISTORY |
 | analysis: greedy_blend_74 | 32898316603 -> 32898911375 (failed: vectors untracked) -> REDISPATCH 32899790301 | artifact pending | consume selection curve |
 | earlier session runs (EXP-007..117) | various | see experiments/*.yaml | mostly expired | historical |
+
+| EXP-121 TabM x3 @600s | 32894173771 | CANCELLED at old 120-min job cap (~2h in) | requeued as EXP-127 x2 @420s under new 200-min cap |
 
 ## FAILED / CANCELLED
 
