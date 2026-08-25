@@ -106,7 +106,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -115,3 +115,100 @@ validation:
   n_folds: 5
   random_state: 42
   strategy: stratified_kfold
+results:
+  status: completed
+  oof_metric: 0.9600873705210956
+  fold_metrics:
+  - 0.9594952467416755
+  - 0.9599696445312778
+  - 0.9604866504668991
+  - 0.9607653233811417
+  - 0.9597196847023103
+  runtime_seconds: 2135.2797758579254
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9999593016594429
+    lightgbm[0]~lightgbm[2]: 0.9999576268061146
+    lightgbm[0]~lightgbm[3]: 0.9999616411977815
+    lightgbm[0]~lightgbm[4]: 0.9999550662381945
+    lightgbm[1]~lightgbm[2]: 0.9999517630112456
+    lightgbm[1]~lightgbm[3]: 0.9999586228111491
+    lightgbm[1]~lightgbm[4]: 0.9999447351832617
+    lightgbm[2]~lightgbm[3]: 0.9999513063710342
+    lightgbm[2]~lightgbm[4]: 0.9999642390466285
+    lightgbm[3]~lightgbm[4]: 0.9999510003806441
+  rank_average_diagnostic: 0.9600875383214273
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9600873492289042
+    fold_metrics:
+    - 0.9595011614528122
+    - 0.9599645853626063
+    - 0.9604872408723903
+    - 0.9607682104563828
+    - 0.959716865087737
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9600789362049792
+    fold_metrics:
+    - 0.9594915865828366
+    - 0.9599608549234402
+    - 0.9604780384627765
+    - 0.9607612527040021
+    - 0.9597036631616058
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9600828004941834
+    fold_metrics:
+    - 0.9594846448147902
+    - 0.9599686778596308
+    - 0.9604924636901987
+    - 0.9607572776791492
+    - 0.9597125426766985
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.960081469600274
+    fold_metrics:
+    - 0.9594844486895453
+    - 0.9599619573350691
+    - 0.960480247599267
+    - 0.9607576323791391
+    - 0.9597228478567137
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.9600783287990367
+    fold_metrics:
+    - 0.9594837096043729
+    - 0.9599670413682604
+    - 0.9604677803259386
+    - 0.9607557000507241
+    - 0.9597169812924949
+  artifacts:
+  - experiments/output/EXP-037/oof_predictions.csv
+  - experiments/output/EXP-037/results.json
+  decision: null
+  reasoning: null
