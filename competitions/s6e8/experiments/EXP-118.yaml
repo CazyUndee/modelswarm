@@ -137,14 +137,14 @@ validation:
   strategy: stratified_kfold
 results:
   status: completed
-  oof_metric: 0.9672268851240574
+  oof_metric: 0.9672221953818483
   fold_metrics:
-  - 0.9665788559649364
-  - 0.9672934823149915
-  - 0.9673626571858049
-  - 0.9679266745709706
-  - 0.9669752801672991
-  runtime_seconds: 2839.5582132339478
+  - 0.9665720778460272
+  - 0.9672841076297741
+  - 0.9673779714466786
+  - 0.9679131147810779
+  - 0.9669684527571888
+  runtime_seconds: 2649.457188844681
   features_used:
   - age
   - daily_screen_time_hours
@@ -166,69 +166,69 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9982471782127949
-    lightgbm[0]~lightgbm[2]: 0.9982808125907406
-    lightgbm[0]~lightgbm[3]: 0.9983028768204927
-    lightgbm[0]~lightgbm[4]: 0.9928227531546264
-    lightgbm[1]~lightgbm[2]: 0.9982073997480647
-    lightgbm[1]~lightgbm[3]: 0.9982577546554753
-    lightgbm[1]~lightgbm[4]: 0.9926719803505754
-    lightgbm[2]~lightgbm[3]: 0.9982683502606876
-    lightgbm[2]~lightgbm[4]: 0.993058109677981
-    lightgbm[3]~lightgbm[4]: 0.9931365885152722
-  rank_average_diagnostic: 0.9672227083633149
+    lightgbm[0]~lightgbm[1]: 0.9982423778381205
+    lightgbm[0]~lightgbm[2]: 0.9983070669981537
+    lightgbm[0]~lightgbm[3]: 0.9983101748415303
+    lightgbm[0]~lightgbm[4]: 0.9928221797327516
+    lightgbm[1]~lightgbm[2]: 0.998209277655497
+    lightgbm[1]~lightgbm[3]: 0.9982508287257166
+    lightgbm[1]~lightgbm[4]: 0.9926191071148527
+    lightgbm[2]~lightgbm[3]: 0.9983244401169667
+    lightgbm[2]~lightgbm[4]: 0.9931034766132326
+    lightgbm[3]~lightgbm[4]: 0.9931602568828767
+  rank_average_diagnostic: 0.9672184043822352
   screening: null
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.9668422679377559
+    oof_auc: 0.9668356183091883
     fold_metrics:
-    - 0.9662423502068167
-    - 0.9668566872912913
-    - 0.9670079204063777
-    - 0.9675035598539696
+    - 0.966234778706742
+    - 0.9668617796972291
+    - 0.9669824474667463
+    - 0.9675012393345783
     - 0.966602922064646
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9668211327887547
+    oof_auc: 0.966820020418901
     fold_metrics:
-    - 0.9661415872467574
-    - 0.9668669012809201
-    - 0.9670431635800707
-    - 0.9674774384070604
-    - 0.9665859006048347
+    - 0.9661240125980354
+    - 0.9668700309120914
+    - 0.9670534341491686
+    - 0.9674611336248979
+    - 0.9665980049288203
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9668844669708538
+    oof_auc: 0.9668826094148895
     fold_metrics:
-    - 0.9662231103964101
-    - 0.9669847233314895
-    - 0.9670233627956457
-    - 0.9675916084178179
-    - 0.9666126269379862
+    - 0.9662179281737366
+    - 0.9669778827975606
+    - 0.9670251926213456
+    - 0.967585105077227
+    - 0.9666127055918615
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9668807227826007
+    oof_auc: 0.9668858779591276
     fold_metrics:
-    - 0.9662822724772316
-    - 0.9669583742981056
-    - 0.9670204582137525
-    - 0.9675176887369081
-    - 0.9666313277848992
+    - 0.9662820783817434
+    - 0.9669767430891519
+    - 0.9670263386727441
+    - 0.9675184105691482
+    - 0.9666292909032476
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.966530937409318
+    oof_auc: 0.9665201754750646
     fold_metrics:
-    - 0.9658732409736421
-    - 0.9665806360615963
-    - 0.9665969377991235
-    - 0.9673224690172573
-    - 0.9662815557768836
+    - 0.9658587832701122
+    - 0.9665435696589127
+    - 0.9666353583032714
+    - 0.9673139303380967
+    - 0.9662554591821799
   artifacts:
   - experiments/output/EXP-118/oof_predictions.csv
   - experiments/output/EXP-118/results.json
