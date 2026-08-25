@@ -210,5 +210,12 @@ results:
   artifacts:
   - experiments/output/EXP-036/oof_predictions.csv
   - experiments/output/EXP-036/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    colsample 0.2 scored OOF 0.965517 (-0.00100 vs EXP-035's col 0.3 =
+    0.966518) - the descent hits a CLIFF below 0.3. Colsample axis at
+    max_bin2048/nl255 now mapped: 0.7->0.966155, 0.6->0.966270,
+    0.5->0.966415, 0.4->0.966373, 0.3->0.966518 (best), 0.2->0.965517.
+    Optimum region ~col 0.3-0.5 with best point 0.3. EXP-037 (0.1) completes
+    the bracket for the record.
   reasoning: null
