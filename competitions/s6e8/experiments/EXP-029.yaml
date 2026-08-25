@@ -211,5 +211,7 @@ results:
   artifacts:
   - experiments/output/EXP-029/oof_predictions.csv
   - experiments/output/EXP-029/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    subsample 0.7 scored 0.966029 (-0.00013 vs champion). Row-bag fraction 0.8 is locally optimal; axis closed.
   reasoning: null

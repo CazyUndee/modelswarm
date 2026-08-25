@@ -211,5 +211,7 @@ results:
   artifacts:
   - experiments/output/EXP-028/oof_predictions.csv
   - experiments/output/EXP-028/results.json
-  decision: null
+  decision: rejected
+  reasoning: >-
+    max_bin 4096 OOF 0.966155 - bit-exact tie with champion EXP-026 (2048 bins). Asymptote EMPIRICALLY confirmed: 255/0.96411 -> 511/0.96520 -> 1024/0.96602 -> 2048/0.96616 -> 4096/0.96616. Histogram-resolution lever closed.
   reasoning: null
