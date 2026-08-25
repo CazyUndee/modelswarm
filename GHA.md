@@ -4,13 +4,14 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-25 21:10 UTC
+Last full check: 2026-08-25 21:31 UTC
 
 ## RUNNING
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
-| EXP-121 | experiment-runner | 32894173771 | 867150a | 20:14Z | in_progress (47m) | pending | pending (TabM x3, ETA ~22:15Z) | not yet | when done: pull results, blend v3 | 21:10Z |
+| EXP-121 | experiment-runner | 32894173771 | 867150a | 20:14Z | in_progress (1h16m+) | pending | TabM x3, ETA ~22:15Z | not yet | when done: pull results, blend v3 IMMEDIATELY | 21:31Z |
+| EXP-124 | experiment-runner | (new push 6882f18) | 6882f18 | 21:30Z | queued/starting | pending | pair-lattice nested TE | not yet | compare vs EXP-123 | 21:31Z |
 | EXP-122 | experiment-runner | 32897449661 | d113e0b | 20:48Z | in_progress (13m) | pending | pending (10-fold, ETA ~22:20Z) | not yet | when done: compare vs EXP-120a | 21:10Z |
 
 ## QUEUED
