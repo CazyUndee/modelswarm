@@ -8,7 +8,18 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** GitHub Actions ONLY — local training is prohibited and its results are void
+- **Compute:** CONTINUOUS-RESEARCH MANDATE (2026-08-25): never idle while remote compute runs - mine
+discussions/leaderboards, maintain a ranked hypothesis frontier, prepare follow-up scripts and
+YAMLs BEFORE results arrive, consume results immediately on arrival, update REGISTRY.md.
+A failed implementation closes only that implementation, never the hypothesis family.
+
+LAPTOP = CONTROLLER ONLY (2026-08-25): no heavy or prolonged computation locally EVEN IF it is
+not a model - no large weight searches, repeated AUC over huge matrices, exhaustive correlation
+scans, long optimizations, or multi-minute scripts. If an analysis may exceed ~30-60s of real
+CPU: prepare the script locally, commit it, execute on GHA (experiment yaml or dispatchable
+analysis workflow), consume artifacts. Inspecting already-produced artifacts is fine.
+
+GitHub Actions ONLY — local training is prohibited and its results are void
 
 ## Data Location
 
