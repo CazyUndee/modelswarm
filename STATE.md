@@ -137,9 +137,12 @@ Train/test distributions verified clean (KS p≥0.14 all numerics) — CV tracks
 ## Open Ideas (require new evidence before queueing)
 
 1. Kaggle public score for the champion submission — validates CV↔LB transfer
-   empirically. BLOCKED on credentials not present in this environment.
+   empirically. BLOCKED on credentials not present in this environment. Single
+   highest-value external action remaining.
 2. Micro-refinement of colsample within [0.25, 0.35] — projected ≤ ±0.0001.
-3. Stacking over stored OOF artifacts — members correlate ≥0.995, low EV.
+3. Stacking/blending over config pool — CLOSED by evidence (ledger L19): 79% of
+   champion errors invariant across the full config spectrum; every ensemble over
+   the pool scores below the champion. No recoverable diversity exists.
 4. Any new lever must beat +0.0005 to justify a promotion claim per rules.
 
 ## Agent Activity
