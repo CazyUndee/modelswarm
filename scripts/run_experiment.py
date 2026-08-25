@@ -179,75 +179,6 @@ def _catboost_frame(df_target: pd.DataFrame, medians: dict[str, float],
 def _fit_member_predict(model_name: str, params: dict,
                         X_train: pd.DataFrame, y_train: pd.Series,
                         X_pred: pd.DataFrame, cat_cols: list[str],
-                        eval_set: tuple | None = None) -> np.ndarray:
-    """Fit one model member; return positive-class probabilities for X_pred.
-
-    Categorical handling per family:
-      - lightgbm: native category dtype + native NaN handling
-      - xgboost:  category dtype with enable_categorical=True (hist), native NaN
-      - catboost: ordinal codes (NaN → separate bucket via NaN code) +
-                  numerics median-filled with TRAINING statistics only
-    eval_set=(X_val, y_val) enables early stopping where supported.
-    """
-    if model_name == "lightgbm":
-        import lightgbm as lgb
-        X_tr, X_pr = _align_categoricals(X_train, X_pred, cat_cols)
-        ctor = {k: v for k, v in params.items()
-                if k not in ("eval_metric", "early_stopping_rounds")}
-        model = lgb.LGBMClassifier(**ctor)
-        es = params.get("early_stopping_rounds")
-        if es and eval_set is not None:
-            X_ev, y_ev = _align_categoricals(eval_set[0], X_train, cat_cols)[0], eval_set[1]
-            model.fit(X_tr, y_train, eval_set=[(X_ev, y_ev)],
-                      callbacks=[lgb.early_stopping(es, verbose=False)])
-        else:
-            model.fit(X_tr, y_train)
-        return model.predict_proba(X_pr)[:, 1]
-
-    if model_name == "xgboost":
-        import xgboost as xgb
-        X_tr, X_pr = _align_categoricals(X_train, X_pred, cat_cols)
-        ctor = {k: v for k, v in params.items()
-                if k not in ("eval_metric", "early_stopping_rounds")}
-        ctor.setdefault("tree_method", "hist")
-        ctor.setdefault("enable_categorical", True)
-        ctor.setdefault("eval_metric", "auc")
-        model = xgb.XGBClassifier(**ctor)
-        es = params.get("early_stopping_rounds")
-        if es and eval_set is not None:
-            X_ev = _align_categoricals(eval_set[0], X_train, cat_cols)[0]
-            model.set_params(early_stopping_rounds=es)
-            model.fit(X_tr, y_train, eval_set=[(X_ev, eval_set[1])], verbose=False)
-        else:
-            model.fit(X_tr, y_train, verbose=False)
-        return model.predict_proba(X_pr)[:, 1]
-
-    if model_name == "catboost":
-        from catboost import CatBoostClassifier
-        medians = {c: (X_train[c].median() if c not in cat_cols else 0.0)
-                   for c in X_train.columns}
-        codes_tr = {c: pd.Categorical(X_train[c]).codes for c in cat_cols}
-        vocab = {c: pd.Categorical(X_train[c]).categories for c in cat_cols}
-        X_tr = _catboost_frame(X_train, medians, codes_tr)
-
-        def encode(df: pd.DataFrame) -> pd.DataFrame:
-            codes = {c: pd.Categorical(df[c], categories=vocab[c]).codes for c in cat_cols}
-            return _catboost_frame(df, medians, codes)
-
-        ctor = {("thread_count" if k == "n_jobs" else k): v
-                for k, v in params.items() if k != "eval_metric"}
-        es = params.get("early_stopping_rounds")
-        model = CatBoostClassifier(**ctor)
-        if es and eval_set is not None:
-            model.fit(X_tr, y_train, eval_set=[(encode(eval_set[0]), eval_set[1])],
-                      early_stopping_rounds=es, verbose=False)
-        else:
-            model.fit(X_tr, y_train, verbose=False)
-        return model.predict_proba(encode(X_pred))[:, 1]
-
-def _fit_member_predict(model_name: str, params: dict,
-                        X_train: pd.DataFrame, y_train: pd.Series,
-                        X_pred: pd.DataFrame, cat_cols: list[str],
                         eval_set: tuple | None = None,
                         sample_weight: np.ndarray | None = None) -> np.ndarray:
     """Fit one model member; return positive-class probabilities for X_pred.
@@ -265,7 +196,14 @@ def _fit_member_predict(model_name: str, params: dict,
         import lightgbm as lgb
         X_tr, X_pr = _align_categoricals(X_train, X_pred, cat_cols)
         ctor = {k: v for k, v in params.items()
-                if k not in ("eval_metric", "early_stopping_rounds")}
+                if k not in ("eval_metric", "early_stopping_rounds",
+                             "monotone_constraints")}
+        # monotone_constraints: accept a name-keyed dict and align to column order
+        mc = params.get("monotone_constraints")
+        if isinstance(mc, dict):
+            ctor["monotone_constraints"] = [int(mc.get(c, 0)) for c in X_tr.columns]
+        elif mc is not None:
+            ctor["monotone_constraints"] = mc
         model = lgb.LGBMClassifier(**ctor)
         es = params.get("early_stopping_rounds")
         fit_kwargs = {"sample_weight": sample_weight} if sample_weight is not None else {}
