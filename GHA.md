@@ -25,6 +25,13 @@ Last full check: 2026-08-25 21:43 UTC
 |---|---|---|---|
 | (none) | | | |
 
+
+| EXP-123 nested TE | 32899563848 | **OOF 0.967339 REJECTED** (-0.00062 vs plain TE; inner-OOF hurt our context) | exp-EXP-123-artifacts | pairs/budget must be retested on plain TE -> EXP-126 |
+| EXP-124 pair-lattice (nested) | 32901353003 | in progress (~37m) — confounded by nested knob | pending | read with EXP-123 caveat |
+| EXP-125 budget block (nested) | 32901893862 | in progress (~24m) — confounded by nested knob | pending | same |
+| EXP-126 max-strength combo | (push a404859) | QUEUED: plain TE m=10 + pairs + budget @ 10-fold | — | strongest candidate |
+| EXP-122 10-fold | 32897449661 | **OOF 0.968223 KEEP** (+0.0003 vs 5-fold; best single) | exp-EXP-122-artifacts | fold-count axis confirmed |
+
 ## COMPLETED
 
 | ID | Run ID | Result / OOF | Artifacts | Follow-up |
