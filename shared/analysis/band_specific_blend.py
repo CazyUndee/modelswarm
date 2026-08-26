@@ -139,16 +139,16 @@ for seed in [42, 123, 7, 2024, 99]:
     g_pred = np.clip(M[:, cols] @ gw, 1e-9, 1 - 1e-9)
     g_auc = roc_auc_score(y[hi], g_pred[hi])
     
-    # Band-specific (3-band)
+    # Band-specific: fit per-band on training fold, predict on full
     bs_preds = np.zeros(N)
     for bm, _ in bands:
-        bs_preds[bm] = np.clip(M[bm][:, cols] @ gw, 1e-9, 1 - 1e-9)  # Use same weights as global for fair comparison
-    # Actually, fit per-band on training fold
-    bs_preds2 = np.zeros(N)
-    for bm, _ in bands:
-        bw = fit_weights(cols, y[fi][bm[fi]], M[fi][bm[fi]])
-        bs_preds2[bm] = np.clip(M[bm][:, cols] @ bw, 1e-9, 1 - 1e-9)
-    bs_auc = roc_auc_score(y[hi], bs_preds2[hi])
+        band_fi = fi[bm[fi]]  # integer indices of training rows in this band
+        if len(band_fi) < 100:
+            continue
+        bw = fit_weights(cols, y[band_fi], M[band_fi])
+        band_all = np.where(bm)[0]  # all row indices in this band
+        bs_preds[band_all] = np.clip(M[band_all][:, cols] @ bw, 1e-9, 1 - 1e-9)
+    bs_auc = roc_auc_score(y[hi], bs_preds[hi])
     
     print(f"  seed={seed}: global={g_auc:.6f} band-specific={bs_auc:.6f} Δ={bs_auc-g_auc:+.6f}")
 
