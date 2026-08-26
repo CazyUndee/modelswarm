@@ -115,10 +115,17 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict,
             continue
         name = op.get("name")
         if kind == "pair_grid":
-            # generator op: expands to many named columns, no single name needed
+            # generator op: expands to many named columns, no single name needed.
+            # IMPORTANT: only meaningful on coarse-grid columns (0.01/0.1 quantized
+            # screen-time cols). Continuous derived features create near-unique
+            # levels -> self-referential TE -> collapse (EXP-126 incident).
             _forbidden = {"id", "addicted_label"} | set(op.get("exclude", []))
-            nums = [c for c in df.columns
-                    if c not in _forbidden and pd.api.types.is_numeric_dtype(df[c])]
+            if op.get("columns"):
+                nums = [c for c in op["columns"] if c in df.columns]
+            else:
+                nums = [c for c in df.columns
+                        if c not in _forbidden and pd.api.types.is_numeric_dtype(df[c])]
+            res = float(op.get("resolution", 100))  # cells per unit; 100 = 0.01 grid
             limit = int(op.get("max_pairs", 40))
             made = 0
             done = False
@@ -128,8 +135,8 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict,
                         done = True
                         break
                     a, b = nums[i], nums[j]
-                    ca = (df[a] * 100).round()
-                    cb = (df[b] * 100).round()
+                    ca = (df[a] * res).round()
+                    cb = (df[b] * res).round()
                     df[f"pair_{a}__{b}"] = (ca.fillna(-1) * int(1e7)
                                             + cb.fillna(-1)).astype("int64")
                     made += 1
