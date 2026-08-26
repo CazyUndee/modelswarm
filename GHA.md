@@ -12,6 +12,7 @@ Last full check: 2026-08-26 14:30 UTC
 |---|---|---|---|---|---|---|---|---|---|---|
 | EXP-132 lookup-transformer | experiment-runner | 32980487428 | b533500 | 14:28Z | in_progress (2m) | training | pending — exact-value embeddings + transformer (Priority 1 frontier attack) | — | consume OOF, measure correlation vs greedy74/frontier, test blend | 14:30Z |
 | analysis: nn_stacking | nn-stacking.yml | 32979891974 | 98043af | ~15:22Z | DONE | — | **POSITIVE** NN complementarity confirmed; 4-model stack OOF 0.96942 | stacking-analysis-32979891974 | reported to forum | 15:30Z |
+| analysis: frontier_attack_v2 | analysis.yml | 32982682506 | 8e8c7df | ~16:00Z | queued | — | Frontier+owned blend complementarity | pending | when done: report | 16:00Z |
 
 ## RUNNING (overnight batch II) — COMPLETED
 
