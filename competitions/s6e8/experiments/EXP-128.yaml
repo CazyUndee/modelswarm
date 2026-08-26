@@ -128,7 +128,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -153,4 +153,147 @@ target_encoding:
   - academic_work_impact
   - pair_*
   smoothing: 10
-results: {}
+results:
+  status: completed
+  oof_metric: 0.9673409065353733
+  fold_metrics:
+  - 0.9665776125551362
+  - 0.9666479862702639
+  - 0.9675393497874274
+  - 0.9675636077666745
+  - 0.9671832747904273
+  - 0.9679081268063365
+  - 0.9677259994103846
+  - 0.9680740336396587
+  - 0.9679737468625875
+  - 0.9662195220584768
+  runtime_seconds: 4549.376595020294
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  - pair_daily_screen_time_hours__social_media_hours
+  - pair_daily_screen_time_hours__gaming_hours
+  - pair_daily_screen_time_hours__work_study_hours
+  - pair_daily_screen_time_hours__sleep_hours
+  - pair_daily_screen_time_hours__weekend_screen_time
+  - pair_social_media_hours__gaming_hours
+  - pair_social_media_hours__work_study_hours
+  - pair_social_media_hours__sleep_hours
+  - pair_social_media_hours__weekend_screen_time
+  - pair_gaming_hours__work_study_hours
+  - pair_gaming_hours__sleep_hours
+  - pair_gaming_hours__weekend_screen_time
+  - pair_work_study_hours__sleep_hours
+  - pair_work_study_hours__weekend_screen_time
+  - pair_sleep_hours__weekend_screen_time
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9984714357361286
+    lightgbm[0]~lightgbm[2]: 0.9985071945712775
+    lightgbm[0]~lightgbm[3]: 0.9985154089509085
+    lightgbm[0]~lightgbm[4]: 0.9984771205833621
+    lightgbm[1]~lightgbm[2]: 0.9985211275342523
+    lightgbm[1]~lightgbm[3]: 0.9985157296856776
+    lightgbm[1]~lightgbm[4]: 0.9985453860877845
+    lightgbm[2]~lightgbm[3]: 0.9985627167632758
+    lightgbm[2]~lightgbm[4]: 0.99855503876232
+    lightgbm[3]~lightgbm[4]: 0.9985507718707853
+  rank_average_diagnostic: 0.9673383236697316
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9671957514846125
+    fold_metrics:
+    - 0.9664279300044177
+    - 0.966620550660148
+    - 0.9674465266328822
+    - 0.9673541682994607
+    - 0.9669548523681681
+    - 0.9676950481046802
+    - 0.9676199482088791
+    - 0.9678802454625887
+    - 0.9678404607853563
+    - 0.9661566775702225
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9671637524566179
+    fold_metrics:
+    - 0.9663278899437384
+    - 0.9664260189603662
+    - 0.9673486066842707
+    - 0.9674324277353966
+    - 0.967056916171152
+    - 0.9677274861853487
+    - 0.9675902614230418
+    - 0.9679214600824315
+    - 0.9677946945029099
+    - 0.9660147408358857
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9671717766494006
+    fold_metrics:
+    - 0.9664550844890945
+    - 0.9664881649356498
+    - 0.9673325673108282
+    - 0.9673754698945751
+    - 0.9670283609580688
+    - 0.9677850045866246
+    - 0.9675169689990575
+    - 0.9679377811165433
+    - 0.9677729835289792
+    - 0.9660356876454185
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9671896551079673
+    fold_metrics:
+    - 0.9664197733071034
+    - 0.9664248853245692
+    - 0.9673527190318528
+    - 0.9674292196577294
+    - 0.9670642729163501
+    - 0.9677556689435434
+    - 0.9675465177634646
+    - 0.9679185717810335
+    - 0.967915346544968
+    - 0.9660730821508323
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.967174453863402
+    fold_metrics:
+    - 0.9664243271332636
+    - 0.9664968788093764
+    - 0.9673762665858022
+    - 0.967417751363633
+    - 0.9670331551730386
+    - 0.9677753309081547
+    - 0.9675484744202093
+    - 0.9679119924212433
+    - 0.9677555877544667
+    - 0.9660189405499148
+  artifacts:
+  - experiments/output/EXP-128/oof_predictions.csv
+  - experiments/output/EXP-128/results.json
+  decision: null
+  reasoning: null
