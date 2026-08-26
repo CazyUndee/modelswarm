@@ -43,7 +43,13 @@ feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
                 "weekend_screen_time", "gender", "stress_level",
                 "academic_work_impact"]
 
-X = tr[feature_cols].values
+X_df = tr[feature_cols].copy()
+# Encode gender: Male=1, Female=0
+if X_df["gender"].dtype == object:
+    X_df["gender"] = (X_df["gender"] == "Male").astype(float)
+    print(f"  Encoded gender: Male=1, Female=0")
+
+X = X_df.values.astype(np.float32)
 
 # Free time slack feature
 X_slack = np.column_stack([X, X[:, 1] - X[:, 2] - X[:, 3] - X[:, 4]])  # daily - social - gaming - work
