@@ -71,6 +71,7 @@ independently-validated alternative for private robustness.
 | earlier session runs (EXP-007..117) | various | see experiments/*.yaml | mostly expired | historical |
 
 | EXP-121 TabM x3 @600s | 32894173771 | CANCELLED at old 120-min job cap (~2h in) | requeued as EXP-127 x2 @420s under new 200-min cap |
+| EXP-127 TabM x2 @420s | 32905414796 | FAILED: 3h18m silent (buffered stdout), cancelled at 200-min cap; TabM-CPU-on-GHA not viable | ABANDONED — library already holds tabm_seed3 (0.96867, best NN single) |
 
 | EXP-124 REDISPATCH | 32906270220 | running (FE-registration fix landed) | — |
 | EXP-125 REDISPATCH | 32906272823 | running | — |
