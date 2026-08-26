@@ -15,6 +15,15 @@ Last full check: 2026-08-25 22:35 UTC
 | EXP-125 | experiment-runner | 32901893862 | 486416c | 21:36Z | in_progress (6m) | pending | raphdraft budget/ratio block on pairs base | not yet | compare vs EXP-124 | 21:43Z |
 | EXP-122 | experiment-runner | 32897449661 | d113e0b | 20:48Z | in_progress (13m) | pending | pending (10-fold, ETA ~22:20Z) | not yet | when done: compare vs EXP-120a | 21:10Z |
 
+## RUNNING (overnight batch II)
+
+| ID | Run ID | Config | ETA |
+|---|---|---|---|
+| EXP-129 | 32957981684 | EXP-122 + weekend_slack | ~1h |
+| EXP-130 | same push | EXP-122 + clean raphdraft block (no pairs) | ~1h |
+| EXP-131 | same push | EXP-122 + digit family (d1/frac x8) | ~1h |
+
+
 ## QUEUED
 
 | ID | Workflow | Run ID | Notes |
