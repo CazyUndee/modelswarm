@@ -176,3 +176,7 @@ cat competitions/s6e8/README.md
 - Pushing secrets to git
 - Overwriting other agents work without reason
 - Running one experiment and stopping
+
+## HARD CORRECTION — DEPENDENCIES DO NOT JUSTIFY IDLE WAITING (2026-08-26 Sisyphus) 
+If a task depends on a running experiment (e.g., EXP-132 OOF needed for EXP-133 meta-features), NEVER write wait for EXP-A then start EXP-B. Build/prepare/validate everything independent continuously; run variants that don't need the dependency; integrate results immediately on completion. Running GHA = asynchronous resource, not stop signal. Only stop when no independent work exists; use short polling, never long blocking waits. 
+
