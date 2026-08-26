@@ -1,11 +1,20 @@
-# Hypothesis Queue v2 — Updated 2026-08-26 17:15 UTC
+# Hypthesis Queue v2 — Updated 2026-08-26 17:50 UTC
 
 ## Current Frontier
 - **Live LB top:** 0.97186 (Chris Deotte)
-- **Naji_19_blend:** OOF 0.970099 (projected LB ~0.97138)
+- **Naji_19_blend:** OOF 0.970099 (projected LB ~0.97138) — **SUBSUMES ALL OWNED MODELS**
 - **Tamerlan full blend:** OOF 0.969487 (reported 0.969476)
 - **Best owned blend:** OOF 0.969587 (tabm_seed3 + naji03 on top of Tamerlan)
 - **Gap to frontier:** +0.00127 (from best owned OOF to 0.97186 LB)
+
+## CRITICAL FINDING (2026-08-26 17:45)
+**Naji Ama's OOF blend (0.970099) subsumes all owned models.**
+- Forward selection selects ONLY naji_19_blend (no other models help)
+- Adding owned_EXP122: Δ=-0.001832 (hurts)
+- Adding owned_EXP130: Δ=-0.001483 (hurts)
+- Adding lib_lookup: Δ=-0.001433 (hurts)
+- Adding lib_tabm_seed3: Δ=-0.001423 (hurts)
+- **Consequence: stacking owned + Naji is pointless. Need genuinely new signal.**
 
 ## Key Intelligence (This Session)
 
@@ -33,6 +42,7 @@
 | EXP-132 | lookup-transformer (exact-value embeddings + transformer) | Tamerlan #1 model (20.2% weight) | RUNNING | orchestrator |
 | EXP-133 | Meta-feature polynomial interaction stack | Community evidence CV 0.96947 | PREPARED | orchestrator |
 | TabFM | Google tabular foundation model (in-context learning) | Released June 2026, scikit-learn API | RUNNING | buffy |
+| FT-Transformer | Feature Tokenizer + Transformer via pytorch-tabular | Distinct NN architecture | RUNNING (v3) | buffy |
 | H3 | Rank-space blending beats prob-space | Tamerlan uses rank-space | READY | orchestrator |
 | H4 | CatBoost training setup matters | 16.9% weight in Tamerlan vs our 0% | READY | orchestrator |
 | H5 | DL architecture inference | dl_s7/dl_s23 unpublished | READY | orchestrator |
@@ -45,13 +55,14 @@
 - Digit family standalone: tied (+0.000013)
 - Pair lattice clean: -0.00088
 - Nested TE: -0.00062
+- **Stacking owned + Naji: SUBSUMED (all owned models dominated)**
 
 ## Priority Next Actions
 1. **Consume EXP-132** when it lands — compare our lookup-transformer vs Tamerlan's
-2. **Consume TabFM results** — test if foundation model adds value
+2. **Consume TabFM + FT-Transformer results** — test if new NN architectures add value
 3. **Build EXP-133** with lookup-transformer OOF included (orchestrator handling)
-4. **Investigate what DL models are** — search for similar architectures
-5. **Test our models on top of Naji_19_blend** — can we improve the strongest blend?
+4. **If new NN architectures work**: blend with Naji_19_blend to test complementarity
+5. **If new NN architectures fail**: investigate what Chris Deotte's 0.97186 approach is
 
 ## Files Available
 - Tamerlan: `/tmp/blend_npy/blend_data/` (9 OOF + test npy, blend_config.json)
