@@ -295,5 +295,8 @@ results:
   artifacts:
   - experiments/output/EXP-128/oof_predictions.csv
   - experiments/output/EXP-128/results.json
-  decision: null
+  decision: 'REJECTED: OOF 0.9673409 (-0.00088 vs EXP-122 0.968223). Grid6 pairs @0.1
+    res hurt even in clean plain-TE form - the latwide/latr1 recipe does not transfer
+    to this LGBM colsample-0.3 lineage. Pair-lattice axis CLOSED (nested: -0.00062
+    via EXP-123; clean: -0.00088).'
   reasoning: null

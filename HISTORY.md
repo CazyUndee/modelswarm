@@ -123,6 +123,19 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
 4. donmarch14 digit/float categorical families: partially covered by our TE-on-exact-values;
    digit-specific columns (d1/frac) still untested standalone (EXP candidate).
 
+## OVERNIGHT FINAL STATE (03:15Z, mission hour ~5.3 of 8-10)
+
+- ALL RUNS TERMINAL. No experiments in flight.
+- Best LB: **vault NN 0.97128** (~top-100). Runner-up: greedy74 blend 0.97054.
+- Best owned single OOF: **EXP-122 (10-fold m=10 TE) 0.968223**.
+- Rejected tonight: nested TE (-0.00062), grid-pairs clean (-0.00088), pair-leak voids x2,
+  max-strength combo collapse 0.9074 (RCA: continuous features in pair grid + pre-fix checkout),
+  TabM-on-GHA-CPU x2 (timeout infrastructure).
+- Final-selection plan (deadline Aug 31 23:59 UTC): select vault NN + greedy74 as the two
+  distinct submissions. MANUAL STEP REQUIRED on Kaggle before deadline.
+- Morning options: FM members sit ready for OOF-validated blends; band-local method unexplored;
+  hamzah meta-feature single (LB 0.97059) replicable on GHA if desired.
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).
