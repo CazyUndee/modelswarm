@@ -169,7 +169,7 @@ model:
       subsample_freq: 1
       verbose: -1
   name: ensemble
-status: queued
+status: completed
 target_encoding:
   columns:
   - age
@@ -199,5 +199,189 @@ validation:
   n_folds: 10
   random_state: 42
   strategy: stratified_kfold
-results: {}
+results:
+  status: completed
+  oof_metric: 0.9073974767808912
+  fold_metrics:
+  - 0.9056558177876513
+  - 0.9083678394681426
+  - 0.906258387331813
+  - 0.908561571939464
+  - 0.9089265390376411
+  - 0.9082697123043761
+  - 0.9067373699710002
+  - 0.9073922573001996
+  - 0.9070548882709927
+  - 0.9069755969202082
+  runtime_seconds: 3573.1423890590668
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  - bud_implied_daily_lower
+  - bud_n_observed
+  - bud_n_missing
+  - bud_slack
+  - bud_slack_per_missing
+  - bud_viol_social_media_hours
+  - bud_viol_gaming_hours
+  - bud_viol_work_study_hours
+  - bud_unaccounted
+  - productive_ratio
+  - leisure_hours
+  - leisure_ratio
+  - sleep_screen_ratio
+  - weekend_binge_ratio
+  - notif_per_open
+  - accounted_hours
+  - pair_age__daily_screen_time_hours
+  - pair_age__social_media_hours
+  - pair_age__gaming_hours
+  - pair_age__work_study_hours
+  - pair_age__sleep_hours
+  - pair_age__notifications_per_day
+  - pair_age__app_opens_per_day
+  - pair_age__weekend_screen_time
+  - pair_age__bud_implied_daily_lower
+  - pair_age__bud_n_observed
+  - pair_age__bud_n_missing
+  - pair_age__bud_slack
+  - pair_age__bud_slack_per_missing
+  - pair_age__bud_viol_social_media_hours
+  - pair_age__bud_viol_gaming_hours
+  - pair_age__bud_viol_work_study_hours
+  - pair_age__bud_unaccounted
+  - pair_age__free_time_slack
+  - pair_age__productive_ratio
+  - pair_age__leisure_hours
+  - pair_age__leisure_ratio
+  - pair_age__sleep_screen_ratio
+  - pair_age__weekend_binge_ratio
+  - pair_age__notif_per_open
+  - pair_age__accounted_hours
+  - pair_daily_screen_time_hours__social_media_hours
+  - pair_daily_screen_time_hours__gaming_hours
+  - pair_daily_screen_time_hours__work_study_hours
+  - pair_daily_screen_time_hours__sleep_hours
+  - pair_daily_screen_time_hours__notifications_per_day
+  - pair_daily_screen_time_hours__app_opens_per_day
+  - pair_daily_screen_time_hours__weekend_screen_time
+  - pair_daily_screen_time_hours__bud_implied_daily_lower
+  - pair_daily_screen_time_hours__bud_n_observed
+  - pair_daily_screen_time_hours__bud_n_missing
+  - pair_daily_screen_time_hours__bud_slack
+  - pair_daily_screen_time_hours__bud_slack_per_missing
+  - pair_daily_screen_time_hours__bud_viol_social_media_hours
+  - pair_daily_screen_time_hours__bud_viol_gaming_hours
+  - pair_daily_screen_time_hours__bud_viol_work_study_hours
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9877643474586044
+    lightgbm[0]~lightgbm[2]: 0.9866260358265238
+    lightgbm[0]~lightgbm[3]: 0.9887262795724076
+    lightgbm[0]~lightgbm[4]: 0.9910869942909931
+    lightgbm[1]~lightgbm[2]: 0.9875618013309964
+    lightgbm[1]~lightgbm[3]: 0.9881917924068213
+    lightgbm[1]~lightgbm[4]: 0.9907832855567842
+    lightgbm[2]~lightgbm[3]: 0.9926452601602062
+    lightgbm[2]~lightgbm[4]: 0.9895564020853268
+    lightgbm[3]~lightgbm[4]: 0.9915430117099105
+  rank_average_diagnostic: 0.9074787528262126
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9006373810451369
+    fold_metrics:
+    - 0.8994715696280243
+    - 0.9014382252645601
+    - 0.8986457611126816
+    - 0.9017669060659188
+    - 0.9022186275082008
+    - 0.9032953123873027
+    - 0.9005084460844097
+    - 0.899922333514517
+    - 0.8996329538261585
+    - 0.8996022103539468
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9069413701174531
+    fold_metrics:
+    - 0.9046040838786078
+    - 0.9080475021044625
+    - 0.9050421772801134
+    - 0.9089542382101817
+    - 0.9090455967292088
+    - 0.906419361491958
+    - 0.9060201522654447
+    - 0.9080224377785439
+    - 0.9072097752094697
+    - 0.907008506520766
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9065585281549405
+    fold_metrics:
+    - 0.9043621475284763
+    - 0.9072855278393793
+    - 0.9065754257848773
+    - 0.9073870359431924
+    - 0.9082882695901148
+    - 0.9076668935596897
+    - 0.9059022992168004
+    - 0.9062316827928978
+    - 0.9056683219394105
+    - 0.9064761927675764
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9113711419993376
+    fold_metrics:
+    - 0.9097071652090944
+    - 0.9121575783555057
+    - 0.9105327017330376
+    - 0.9121476090587881
+    - 0.9126963315517507
+    - 0.9131221053366767
+    - 0.910800143923876
+    - 0.9098098832944574
+    - 0.91208022672212
+    - 0.9108081597293293
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.9045331444318512
+    fold_metrics:
+    - 0.9035862666881846
+    - 0.9060466465940803
+    - 0.9032851681490212
+    - 0.9055553768441249
+    - 0.9055280048881507
+    - 0.9042173381647736
+    - 0.9033536335455727
+    - 0.9059057248883987
+    - 0.9037556133493231
+    - 0.9043708602921254
+  artifacts:
+  - experiments/output/EXP-126/oof_predictions.csv
+  - experiments/output/EXP-126/results.json
+  decision: null
+  reasoning: null
 runtime_note: pair TE adds 36 cols x bincount refits - cheap per raphdraft measurement
