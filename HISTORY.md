@@ -104,6 +104,10 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   impute_median pinned to train stats (raphdraft block) - EXP-124/125 (nested-handicapped) and
   EXP-126 (clean max-strength combo, strongest candidate).
 
+- BREAKTHROUGH 00:30Z: anthonytherrien vault NN verified at **LB 0.97128 solo** (rank ~top-100).
+  All admixtures with greedy74/EXP-122 hurt monotonically -> NN direction saturates public pack.
+  Final-selection plan: keep vault NN + one diversified blend for private-LB insurance.
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).

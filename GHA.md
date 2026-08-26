@@ -32,6 +32,15 @@ Last full check: 2026-08-25 22:35 UTC
 | EXP-126 max-strength combo | (push a404859) | QUEUED: plain TE m=10 + pairs + budget @ 10-fold | — | strongest candidate |
 | EXP-122 10-fold | 32897449661 | **OOF 0.968223 KEEP** (+0.0003 vs 5-fold; best single) | exp-EXP-122-artifacts | fold-count axis confirmed |
 
+## BEST SUBMISSION
+
+| rank | submission | LB | notes |
+|---|---|---|---|
+| 1 | **vault NN (anthonytherrien submission.csv)** | **0.97128** | ~top-100; spearman 0.990 vs greedy74; every admixture tested hurt (n50/n65/a85/a75 all worse) -> pure NN optimal so far |
+| 2 | greedy74 | 0.97054 | superseded as blend base |
+| 3 | blend v1/v2 | 0.97053/0.97050 | historical |
+
+
 ## COMPLETED
 
 | ID | Run ID | Result / OOF | Artifacts | Follow-up |
