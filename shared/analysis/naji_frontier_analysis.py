@@ -78,7 +78,15 @@ print("PAIRWISE SPEARMAN CORRELATIONS (Naji models)")
 print("=" * 70)
 
 naji_keys = [k for k in keys if k.startswith("naji_")]
-M_naji = np.column_stack([V[k] for k inaji_keys])
+
+# Sigmoid-transform logit-space OOF vectors to probability space
+import scipy.special
+for k in list(V.keys()):
+    if k.startswith("naji_") and V[k].min() < 0:
+        V[k] = scipy.special.expit(V[k])
+        print(f"  {k}: sigmoid-transformed to probability space")
+
+M_naji = np.column_stack([V[k] for k in naji_keys])
 
 print(f"\n{'Pair':<40} {'Spearman':>10} {'AUC Δ':>10}")
 print("-" * 65)
