@@ -111,6 +111,10 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   0.97128 IS Naji's blend. Any final pick using it MUST credit "Naji Ama — Ensemble of
   Ensembles" (and note it is public-work-derived, not ours).
 
+- Band-local mechanism INDEPENDENTLY REJECTED (GHA analysis 10:30Z): band LGBMs [3,6h)
+  0.9028 / [6,7.8h) 0.9191 vs base-blend in-band 0.9176/0.9341; splice costs -0.0018..-0.0020
+  global. Confirms raykkretzschmar caution on our own composition. Axis closed.
+
 ## Frontier additions (00:50Z mining pass)
 
 1. raykkretzschmar/s6e8-fm-lattice-blend-members: 7 Factorization Machines, aligned OOF+test
