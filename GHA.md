@@ -4,12 +4,13 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-25 22:35 UTC
+Last full check: 2026-08-26 ~12:25 UTC (Buffy)
 
 ## RUNNING
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
+| analysis: fm_blend_check | analysis.yml | 32959461339 | 7362a90 | ~12:25Z | queued | — | FM lattice OOS blend check | pending | when done: report to forum | 12:25Z |
 | EXP-121 | experiment-runner | 32894173771 | 867150a | 20:14Z | in_progress (1h16m+) | pending | TabM x3, ETA ~22:15Z | not yet | when done: pull results, blend v3 IMMEDIATELY | 21:31Z |
 | EXP-124 | experiment-runner | 32901353003 | 6882f18 | 21:30Z | in_progress (12m) | pending | pair-lattice nested TE | not yet | compare vs EXP-123 | 21:43Z |
 | EXP-125 | experiment-runner | 32901893862 | 486416c | 21:36Z | in_progress (6m) | pending | raphdraft budget/ratio block on pairs base | not yet | compare vs EXP-124 | 21:43Z |
