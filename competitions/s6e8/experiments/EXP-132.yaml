@@ -1,0 +1,77 @@
+competition: s6e8
+experiment_id: EXP-132
+features:
+- academic_work_impact
+- age
+- app_opens_per_day
+- daily_screen_time_hours
+- free_time_slack
+- gaming_hours
+- gender
+- notifications_per_day
+- sleep_hours
+- social_media_hours
+- stress_level
+- weekend_screen_time
+- work_study_hours
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: Lookup-transformer with exact-value embeddings + transformer attention over feature tokens. Each feature value is tokenized as exact string (0.01 grid preserved), embedded, then 4-layer transformer attends over the 13 feature tokens. This architecture treats the quantized numeric structure as discrete vocabulary, complementing tree splits that threshold continuous values. Expected to be decorrelated (rank corr 0.963-0.969 per library) and provide complementary signal for frontier attack.
+metadata:
+  author: agent-orchestrator
+  parent_experiment: EXP-130
+  created_at: '2026-08-26T12:30:00Z'
+  design_notes: 'First lookup-transformer test: d_model=32, nhead=4, num_layers=2, dropout=0.1, lr=1e-3, batch=1024, epochs=30, patience=5. 5-fold CV, fold-safe vocab built from train split only. No target leakage. Test preprocessing identical to train.'
+model:
+  blend: probability_average
+  members:
+  - name: lookup_transformer
+    parameters:
+      d_model: 32
+      nhead: 4
+      num_layers: 2
+      dropout: 0.1
+      lr: 0.001
+      batch_size: 1024
+      epochs: 30
+      patience: 5
+      random_state: 42
+  - name: lookup_transformer
+    parameters:
+      d_model: 32
+      nhead: 4
+      num_layers: 2
+      dropout: 0.1
+      lr: 0.001
+      batch_size: 1024
+      epochs: 30
+      patience: 5
+      random_state: 123
+  - name: lookup_transformer
+    parameters:
+      d_model: 32
+      nhead: 4
+      num_layers: 2
+      dropout: 0.1
+      lr: 0.001
+      batch_size: 1024
+      epochs: 30
+      patience: 5
+      random_state: 7
+  name: ensemble
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 180
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold

@@ -452,6 +452,23 @@ def _fit_member_predict(model_name: str, params: dict,
                       time_to_fit_in_seconds=t_budget)
         return model.predict_proba(_tabm_frame(X_pred))[:, 1]
 
+    if model_name == "lookup_transformer":
+        from scripts.models.lookup_transformer import train_lookup_transformer, predict_lookup_transformer
+        # Use all available columns as lookup tokens (exact-value embeddings)
+        columns = list(X_train.columns)
+        if eval_set is None:
+            # Dummy split for API compatibility: train on full, no validation
+            # In CV, eval_set is always provided; this branch is for final fit path fallback
+            import torch
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            model = train_lookup_transformer(X_train, y_train, X_train, y_train, columns, params, device=device)
+            return predict_lookup_transformer(model, X_pred, device=device)
+        X_val, y_val = eval_set
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model = train_lookup_transformer(X_train, y_train, X_val, y_val, columns, params, device=device)
+        return predict_lookup_transformer(model, X_pred, device=device)
+
     if model_name == "logistic":
         # Linear member: median-imputed numerics (train-fold stats), one-hot
         # categoricals, standardized. Genuinely decorrelated from tree splits.
