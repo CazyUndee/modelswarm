@@ -16,9 +16,11 @@ import sys
 
 # Install TabFM from GitHub
 print("Installing TabFM and dependencies...")
-subprocess.run([sys.executable, "-m", "pip", "install", "safetensors", "git+https://github.com/google-research/tabfm.git"],
-               capture_output=True, text=True)
-print("TabFM installed.")
+result = subprocess.run([sys.executable, "-m", "pip", "install", "safetensors", "git+https://github.com/google-research/tabfm.git"],
+               capture_output=False, text=True)
+if result.returncode != 0:
+    print(f"WARNING: pip install returned {result.returncode}")
+print("TabFM install complete.")
 
 import numpy as np
 import pandas as pd
