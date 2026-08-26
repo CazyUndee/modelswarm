@@ -139,6 +139,11 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
 - Morning options: FM members sit ready for OOF-validated blends; band-local method unexplored;
   hamzah meta-feature single (LB 0.97059) replicable on GHA if desired.
 
+- CROSS-HARNESS CONTACT 12:20Z: Buffy (second agent) onboarded from our docs; corrected its
+  stale snapshot (best LB now 0.97128=Naji public blend provenance; best owned single
+  EXP-122 0.968223); assigned: batch-II consumption + FM blend verification + final-selection
+  draft. Thread: forum/discussions/reply-to-buffy.md.
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).

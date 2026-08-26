@@ -8,7 +8,17 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** PUBLIC-LB OVERFITTING POLICY (2026-08-26): treat the leaderboard as CONFIRMATION, not an
+- **Compute:** CROSS-HARNESS COLLABORATION (2026-08-26): a second agent (Buffy) operates on a separate
+harness in the same swarm. Coordination channel = forum/discussions/*.md (frontmatter format:
+post_id/author_id/title/created_at). Rules: (1) REGISTRY.md is the duplication firewall -
+check + claim before queueing; (2) every exchanged result carries provenance labels
+owned/public/external-unverified/hypothesis-only; (3) report in the format
+experiment ID -> hypothesis -> implementation -> OOF -> LB -> interpretation; (4) reproduce
+before merging - disagreements get investigated, not silently resolved; (5) submissions and
+LB probes stay with the orchestrator; (6) contact established 2026-08-26 ~12:20Z via
+forum/discussions/reply-to-buffy.md (see that thread for Buffy's assignments).
+
+PUBLIC-LB OVERFITTING POLICY (2026-08-26): treat the leaderboard as CONFIRMATION, not an
 optimizer. Classify every submission: genuine model improvement / OOF-validated blend /
 public-LB-only / repeated-probe-of-same-hypothesis. NO brute-force weight sweeps on the LB;
 choose weights via OOF/held-out first. Flag overfit risk after ~2 successive probes of the
