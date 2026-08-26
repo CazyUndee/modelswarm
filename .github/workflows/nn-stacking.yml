@@ -1,0 +1,46 @@
+name: NN Stacking Investigation
+on:
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -e ".[ml]" kagglehub
+      - name: Download EXP-122 artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: experiment-runner.yml
+          name: exp-EXP-122-artifacts
+          path: /tmp/stacking_vectors/exp122
+          if_no_artifact_found: warn
+      - name: Download EXP-130 artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: experiment-runner.yml
+          name: exp-EXP-130-artifacts
+          path: /tmp/stacking_vectors/exp130
+          if_no_artifact_found: warn
+      - name: Verify vectors exist
+        run: |
+          echo "=== EXP-122 ==="
+          ls -la /tmp/stacking_vectors/exp122/ 2>/dev/null || echo "MISSING"
+          echo "=== EXP-130 ==="
+          ls -la /tmp/stacking_vectors/exp130/ 2>/dev/null || echo "MISSING"
+      - name: Run stacking analysis
+        shell: bash
+        run: |
+          set -o pipefail
+          python shared/analysis/nn_stacking_investigation.py 2>&1 | tee stacking_output.txt
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: stacking-analysis-${{ github.run_id }}
+          path: stacking_output.txt
+          retention-days: 30
