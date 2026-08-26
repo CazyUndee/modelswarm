@@ -41,6 +41,14 @@ V["owned_EXP130"] = np.load("shared/artifacts/stacking_vectors/exp130_oof.npy")
 print(f"  owned_EXP122: OOF {roc_auc_score(y, V['owned_EXP122']):.6f}")
 print(f"  owned_EXP130: OOF {roc_auc_score(y, V['owned_EXP130']):.6f}")
 
+# Sigmoid-transform logit-space OOF vectors to probability space
+# Tamerlan's NN models output logits (-6 to +10), not probabilities
+import scipy.special
+for k in list(V.keys()):
+    if k.startswith("t_") and V[k].min() < 0:
+        V[k] = scipy.special.expit(V[k])  # sigmoid
+        print(f"  {k}: sigmoid-transformed to probability space")
+
 # Load library NN for comparison
 import kagglehub
 lib_dir = kagglehub.dataset_download("szymonkapiski/s6e8-oof-library-47-models")
