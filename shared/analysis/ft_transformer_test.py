@@ -44,10 +44,11 @@ feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
 
 X = tr[feature_cols].copy()
 X["free_time_slack"] = X["daily_screen_time_hours"] - X["social_media_hours"] - X["gaming_hours"] - X["work_study_hours"]
-# Encode gender: Male=1, Female=0
-if X["gender"].dtype == object:
-    X["gender"] = (X["gender"] == "Male").astype(float)
-    print(f"  Encoded gender: Male=1, Female=0")
+# Encode gender: Male=1, Female=0, Other=0.5
+print(f"  Gender values: {X['gender'].unique()}")
+gender_map = {"Male": 1.0, "Female": 0.0, "Other": 0.5}
+X["gender"] = X["gender"].map(gender_map).fillna(0.0).astype(np.float32)
+print(f"  Encoded gender: Male=1, Female=0, Other=0.5")
 for col in X.columns:
     X[col] = X[col].astype(float)
 feature_names = list(X.columns)

@@ -44,10 +44,11 @@ feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
                 "academic_work_impact"]
 
 X_df = tr[feature_cols].copy()
-# Encode gender: Male=1, Female=0
-if X_df["gender"].dtype == object:
-    X_df["gender"] = (X_df["gender"] == "Male").astype(float)
-    print(f"  Encoded gender: Male=1, Female=0")
+# Encode gender: Male=1, Female=Other=0.5, Female=0, NaN=0
+print(f"  Gender values: {X_df['gender'].unique()}")
+gender_map = {"Male": 1.0, "Female": 0.0, "Other": 0.5}
+X_df["gender"] = X_df["gender"].map(gender_map).fillna(0.0).astype(np.float32)
+print(f"  Encoded gender: Male=1, Female=0, Other=0.5")
 
 X = X_df.values.astype(np.float32)
 
