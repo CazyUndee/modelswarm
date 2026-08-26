@@ -79,6 +79,9 @@ independently-validated alternative for private robustness.
 | EXP-125 v1/v2 | 32906272823 | OOF 1.0 - inherited same pair_grid leak; budget/ratio cols dropped by features-filter bug | — | voided; covered by EXP-126 |
 | LEAK INCIDENT: EXP-124 v1/v2 | 32906270220 | OOF 1.0 - pair_grid encoded addicted_label; FE-generated cols were also silently dropped by config.features filter (both fixed, regression tests) | — | superseded by EXP-126 redispatch |
 
+| EXP-126 root cause | — | OOF 0.9074 REJECTED: pair_grid over continuous derived features -> near-unique levels -> self-referential plain-TE collapse; ran pre-leak-fix checkout too. latwide recipe avoids by grid-only columns @0.1 res | — |
+| EXP-128 clean pair-lattice | (push 80c3b80) | QUEUED: grid6 @0.1 res + plain TE m10 @10-fold on EXP-122 base | final candidate |
+
 ## FAILED / CANCELLED
 
 | ID | Run ID | Reason | Resolution |
