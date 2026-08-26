@@ -1,24 +1,25 @@
-"""Test Google TabFM — tabular foundation model for S6E8.
+"""Test FT-Transformer via pytorch-tabular for S6E8.
 
-TabFM is a pretrained tabular foundation model that uses in-context
-learning. It could provide the missing NN diversity we need.
+Hypothesis: FT-Transformer (Feature Tokenizer + Transformer) is a distinct
+NN architecture that could provide complementary signal to existing lookup/tabm
+models. Combined with proper OOF validation, it could improve the NN stack.
 
 Protocol:
-1. Install TabFM from GitHub (not PyPI)
-2. Generate OOF predictions with 5-fold CV
-3. Test standalone AUC
-4. Test blend with existing models
+1. Install pytorch-tabular
+2. Build OOF predictions with 5-fold CV
+3. Measure standalone AUC
+4. Test blend with existing NN and tree models
 5. Report complementarity metrics
 """
 import os
 import subprocess
 import sys
 
-# Install TabFM from GitHub
-print("Installing TabFM and dependencies...")
-subprocess.run([sys.executable, "-m", "pip", "install", "safetensors", "git+https://github.com/google-research/tabfm.git"],
+# Install dependencies
+print("Installing dependencies...")
+subprocess.run([sys.executable, "-m", "pip", "install", "pytorch-tabular", "torch", "scikit-learn"],
                capture_output=True, text=True)
-print("TabFM installed.")
+print("Dependencies installed.")
 
 import numpy as np
 import pandas as pd
@@ -34,73 +35,109 @@ tr = pd.read_csv("competitions/s6e8/data/train.csv")
 y = tr["addicted_label"].values
 N = len(y)
 
-# Feature columns (same as our models)
+# Feature columns
 feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
                 "gaming_hours", "work_study_hours", "sleep_hours",
                 "notifications_per_day", "app_opens_per_day",
                 "weekend_screen_time", "gender", "stress_level",
                 "academic_work_impact"]
 
-X = tr[feature_cols].values
+X = tr[feature_cols].copy()
+X["free_time_slack"] = X["daily_screen_time_hours"] - X["social_media_hours"] - X["gaming_hours"] - X["work_study_hours"]
+feature_names = list(X.columns)
 
-# Free time slack feature
-X_slack = np.column_stack([X, X[:, 1] - X[:, 2] - X[:, 3] - X[:, 4]])  # daily - social - gaming - work
-feature_names = feature_cols + ["free_time_slack"]
-
-print(f"Data: {X_slack.shape[0]} rows, {X_slack.shape[1]} features")
+print(f"Data: {X.shape[0]} rows, {X.shape[1]} features")
 
 # ============================================================
-# TABFM OOF PREDICTIONS
+# FT-TRANSFORMER OOF PREDICTIONS
 # ============================================================
 print("\n" + "=" * 70)
-print("TABFM OOF PREDICTIONS (5-fold CV)")
+print("FT-TRANSFORMER OOF PREDICTIONS (5-fold CV)")
 print("=" * 70)
 
 try:
-    from tabfm import TabFMClassifier
-    from tabfm import tabfm_v1_0_0_pytorch as tabfm_v1_0_0
-    
-    print("Loading TabFM model...")
-    tabfm_model = tabfm_v1_0_0.load()
-    print("TabFM model loaded.")
-    
+    from pytorch_tabular import TabularModel
+    from pytorch_tabular.config import (
+        DataConfig,
+        OptimizerConfig,
+        TrainerConfig,
+    )
+    from pytorch_tabular.models import FTTransformerConfig
+
+    print("FT-Transformer config loaded.")
+
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
-    tabfm_oof = np.zeros(N)
-    
-    # Use DataFrame for TabFM (it expects DataFrame input)
-    X_df = pd.DataFrame(X_slack, columns=feature_names)
-    
+    ft_oof = np.zeros(N)
+
     for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
         print(f"  Fold {fold+1}/{n_folds}...", end=" ", flush=True)
-        
-        clf = TabFMClassifier(model=tabfm_model)
-        clf.fit(X_df.iloc[tr_idx], y[tr_idx])
-        preds = clf.predict_proba(X_df.iloc[va_idx])[:, 1]
-        tabfm_oof[va_idx] = preds
-        
+
+        train_df = X.iloc[tr_idx].copy()
+        train_df["target"] = y[tr_idx]
+        val_df = X.iloc[va_idx].copy()
+        val_df["target"] = y[va_idx]
+
+        data_config = DataConfig(
+            target=["target"],
+            continuous_cols=feature_names,
+            categorical_cols=[],
+        )
+
+        trainer_config = TrainerConfig(
+            max_epochs=100,
+            batch_size=1024,
+            early_stopping_patience=10,
+            gpus=0,
+        )
+
+        optimizer_config = OptimizerConfig(
+            optimizer="AdamW",
+            lr_scheduler="CosineAnnealingWarmRestarts",
+            lr_scheduler_params={"T_0": 10, "T_mult": 1},
+        )
+
+        model_config = FTTransformerConfig(
+            task="classification",
+            num_layers=3,
+            d_block=128,
+            attention_dropout=0.1,
+            ff_dropout=0.1,
+            learning_rate=1e-3,
+        )
+
+        model = TabularModel(
+            data_config=data_config,
+            model_config=model_config,
+            trainer_config=trainer_config,
+            optimizer_config=optimizer_config,
+        )
+
+        model.fit(train=train_df, validation=val_df)
+        preds = model.predict(val_df)["prediction"].values
+        ft_oof[va_idx] = preds
+
         fold_auc = roc_auc_score(y[va_idx], preds)
         print(f"AUC={fold_auc:.6f}")
-    
-    tabfm_auc = roc_auc_score(y, tabfm_oof)
-    print(f"\nTabFM OOF: {tabfm_auc:.6f}")
-    
+
+    ft_auc = roc_auc_score(y, ft_oof)
+    print(f"\nFT-Transformer OOF: {ft_auc:.6f}")
+
     # Save OOF
-    np.save("shared/artifacts/stacking_vectors/tabfm_oof.npy", tabfm_oof)
-    print("Saved tabfm_oof.npy")
-    
+    np.save("shared/artifacts/stacking_vectors/ft_transformer_oof.npy", ft_oof)
+    print("Saved ft_transformer_oof.npy")
+
 except Exception as e:
-    print(f"TabFM failed: {e}")
+    print(f"FT-Transformer failed: {e}")
     import traceback
     traceback.print_exc()
-    print("No foundation model available. Exiting.")
     sys.exit(1)
 
 # ============================================================
 # LOAD EXISTING MODELS FOR BLEND TEST
 # ============================================================
 print("\n" + "=" * 70)
-print("BLEND TEST: TabFM + existing models")
+print("BLEND TEST: FT-Transformer + existing models")
 print("=" * 70)
 
 import kagglehub
@@ -112,8 +149,8 @@ for n in ["lookup", "tabm_seed3", "naji03"]:
 
 V["owned_EXP122"] = np.load("shared/artifacts/stacking_vectors/exp122_oof.npy")
 V["owned_EXP130"] = np.load("shared/artifacts/stacking_vectors/exp130_oof.npy")
-V["tabfm"] = tabfm_oof
-print(f"  tabfm: OOF {roc_auc_score(y, V['tabfm']):.6f}")
+V["ft_transformer"] = ft_oof
+print(f"  ft_transformer: OOF {roc_auc_score(y, V['ft_transformer']):.6f}")
 
 # ============================================================
 # HELPER
@@ -137,15 +174,15 @@ hold_idx = np.arange(400000, N)
 # BLEND CONFIGURATIONS
 # ============================================================
 configs = [
-    ("TabFM alone", ["tabfm"]),
+    ("FT-Transformer alone", ["ft_transformer"]),
     ("Library NN (lookup+tabm)", ["lib_lookup", "lib_tabm_seed3"]),
-    ("TabFM + Library NN", ["tabfm", "lib_lookup", "lib_tabm_seed3"]),
-    ("TabFM + Owned", ["tabfm", "owned_EXP122", "owned_EXP130"]),
-    ("TabFM + Library + Owned", ["tabfm", "lib_lookup", "lib_tabm_seed3", "owned_EXP122", "owned_EXP130"]),
-    ("Full pool", ["tabfm", "lib_lookup", "lib_tabm_seed3", "lib_naji03", "owned_EXP122", "owned_EXP130"]),
+    ("FT + Library NN", ["ft_transformer", "lib_lookup", "lib_tabm_seed3"]),
+    ("FT + Owned", ["ft_transformer", "owned_EXP122", "owned_EXP130"]),
+    ("FT + Library + Owned", ["ft_transformer", "lib_lookup", "lib_tabm_seed3", "owned_EXP122", "owned_EXP130"]),
+    ("Full pool", ["ft_transformer", "lib_lookup", "lib_tabm_seed3", "lib_naji03", "owned_EXP122", "owned_EXP130"]),
 ]
 
-print(f"\n{'Config':<45} {'OOF AUC':>10} {'Held-out':>10} {'Δ vs tabfm':>12}")
+print(f"\n{'Config':<45} {'OOF AUC':>10} {'Held-out':>10} {'Δ vs ft':>12}")
 print("-" * 80)
 
 for name, members in configs:
@@ -158,15 +195,15 @@ for name, members in configs:
         pred = np.clip(M[:, cols] @ w, 1e-9, 1 - 1e-9)
         auc = roc_auc_score(y, pred)
         held = roc_auc_score(y[hold_idx], pred[hold_idx])
-    delta = auc - roc_auc_score(y, V["tabfm"])
+    delta = auc - roc_auc_score(y, V["ft_transformer"])
     print(f"{name:<45} {auc:>10.6f} {held:>10.6f} {delta:>+12.6f}")
 
 # ============================================================
 # CORRELATION ANALYSIS
 # ============================================================
-print(f"\n--- Correlation: TabFM vs existing models ---")
+print(f"\n--- Correlation: FT-Transformer vs existing models ---")
 for k in ["lib_lookup", "lib_tabm_seed3", "owned_EXP122", "owned_EXP130"]:
-    sp = spearmanr(V["tabfm"], V[k]).correlation
-    print(f"  tabfm ~ {k}: Spearman={sp:.5f}")
+    sp = spearmanr(V["ft_transformer"], V[k]).correlation
+    print(f"  ft ~ {k}: Spearman={sp:.5f}")
 
 print("\n--- DONE ---")
