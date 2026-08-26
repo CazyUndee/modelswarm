@@ -104,9 +104,12 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   impute_median pinned to train stats (raphdraft block) - EXP-124/125 (nested-handicapped) and
   EXP-126 (clean max-strength combo, strongest candidate).
 
-- BREAKTHROUGH 00:30Z: anthonytherrien vault NN verified at **LB 0.97128 solo** (rank ~top-100).
-  All admixtures with greedy74/EXP-122 hurt monotonically -> NN direction saturates public pack.
-  Final-selection plan: keep vault NN + one diversified blend for private-LB insurance.
+- PROVENANCE CORRECTION (00:55Z): the "vault NN" claim was FAKE — community exposé proved the
+  vault author zero-weighted his own NN (weight 1e-6) and shipped byte-for-byte copies of public
+  blends: vault submission.csv = **Naji Ama "Ensemble of Ensembles"** (0.97101 post, now scoring
+  0.97128 as Naji iterated it), vault submission(1).csv = Krasnov Daniil 0.97099. Our verified
+  0.97128 IS Naji's blend. Any final pick using it MUST credit "Naji Ama — Ensemble of
+  Ensembles" (and note it is public-work-derived, not ours).
 
 ## Frontier additions (00:50Z mining pass)
 
