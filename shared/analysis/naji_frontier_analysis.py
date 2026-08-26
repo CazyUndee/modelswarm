@@ -24,8 +24,10 @@ tr = pd.read_csv("competitions/s6e8/data/train.csv")
 y = tr["addicted_label"].values
 N = len(y)
 
-# Load Naji's published OOF vectors
-naji_dir = "/tmp/naji_oof/naji_data"
+# Download and load Naji's published OOF vectors via kagglehub
+import kagglehub
+naji_dir = kagglehub.dataset_download("najiama/predicting-smartphone-addiction-oof-submission-csv")
+print(f"Naji dataset: {naji_dir}")
 V = {}
 for f in sorted(glob.glob(os.path.join(naji_dir, "*_oof_predictions.csv"))):
     name = os.path.basename(f).replace("_oof_predictions.csv", "")
@@ -38,14 +40,7 @@ for f in sorted(glob.glob(os.path.join(naji_dir, "*_oof_predictions.csv"))):
         print(f"  Skipping {name}: columns = {list(df.columns)}")
         continue
 
-# Also load our owned vectors
-lib_dir = None
-for p in ["competitions/s6e8/data"]:
-    if os.path.exists(p):
-        break
-
 # Load library NN
-import kagglehub
 lib_dir = kagglehub.dataset_download("szymonkapiski/s6e8-oof-library-47-models")
 for n in ["lookup", "tabm_seed3", "naji03"]:
     V[f"lib_{n}"] = np.load(os.path.join(lib_dir, "oof", f"oof_{n}.npy"))

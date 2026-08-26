@@ -24,7 +24,9 @@ print("=" * 70)
 print("TARMERLAN + OWNED MODELS ANALYSIS")
 print("=" * 70)
 
-tamerlan_dir = "/tmp/blend_npy/blend_data"
+import kagglehub
+tamerlan_dir = kagglehub.dataset_download("tamerlanomralinov/s6e8-full-best-blend-npy")
+print(f"Tamerlan dataset: {tamerlan_dir}")
 V = {}
 for name in ["lookup_transformer", "catboost", "dl_s23", "dl_s7", "mlp",
              "xgb_te", "lgb_cat", "lightgbm", "lgb_te_a1"]:
@@ -50,7 +52,6 @@ for k in list(V.keys()):
         print(f"  {k}: sigmoid-transformed to probability space")
 
 # Load library NN for comparison
-import kagglehub
 lib_dir = kagglehub.dataset_download("szymonkapiski/s6e8-oof-library-47-models")
 for n in ["lookup", "tabm_seed3", "naji03"]:
     V[f"lib_{n}"] = np.load(os.path.join(lib_dir, "oof", f"oof_{n}.npy"))
