@@ -16,7 +16,8 @@ np.random.seed(42)
 tr = pd.read_csv("competitions/s6e8/data/train.csv")
 y = tr["addicted_label"].values
 N = len(y)
-screen = tr["daily_screen_time_hours"].values
+screen = tr["daily_screen_time_hours"].values.astype(float)
+screen = np.nan_to_num(screen, nan=0.0)
 
 # Load vectors
 V = {}
@@ -38,8 +39,8 @@ def fit_weights(cols, y_fit, M_fit):
 
 keys = list(V.keys())
 M = np.column_stack([V[k] for k in keys])
-fit_idx = np.arange(400000)
-hold_idx = np.arange(400000, N)
+fit_idx = np.arange(400000, dtype=int)
+hold_idx = np.arange(400000, N, dtype=int)
 
 # Define bands
 bands = [
@@ -139,14 +140,15 @@ for seed in [42, 123, 7, 2024, 99]:
     g_pred = np.clip(M[:, cols] @ gw, 1e-9, 1 - 1e-9)
     g_auc = roc_auc_score(y[hi], g_pred[hi])
     
-    # Band-specific: fit per-band on training fold, predict on full
+    # Band-specific: fit per-band on training fold, predict on all
     bs_preds = np.zeros(N)
     for bm, _ in bands:
-        band_fi = fi[bm[fi]]  # integer indices of training rows in this band
+        bm_arr = np.asarray(bm, dtype=bool)
+        band_fi = fi[bm_arr[fi]]  # integer indices of training rows in this band
         if len(band_fi) < 100:
             continue
         bw = fit_weights(cols, y[band_fi], M[band_fi])
-        band_all = np.where(bm)[0]  # all row indices in this band
+        band_all = np.nonzero(bm_arr)[0]  # all row indices in this band
         bs_preds[band_all] = np.clip(M[band_all][:, cols] @ bw, 1e-9, 1 - 1e-9)
     bs_auc = roc_auc_score(y[hi], bs_preds[hi])
     
