@@ -148,19 +148,19 @@ target_encoding:
   smoothing: 10
 results:
   status: completed
-  oof_metric: 0.9682245470503175
+  oof_metric: 0.9682241995248091
   fold_metrics:
-  - 0.9677286365187232
-  - 0.9674472888177378
-  - 0.9682600376863163
-  - 0.9685436902099473
-  - 0.9678946575385382
-  - 0.9688257044372763
-  - 0.9687187703045634
-  - 0.968899626076604
-  - 0.9687739819212021
+  - 0.9677158793101573
+  - 0.9674480875387514
+  - 0.9682600437756762
+  - 0.9685399665664924
+  - 0.967892981998971
+  - 0.9688306955357566
+  - 0.9687198217031047
+  - 0.9689016081049351
+  - 0.9687793089394867
   - 0.9671620686075291
-  runtime_seconds: 4297.5697548389435
+  runtime_seconds: 4293.703654527664
   features_used:
   - academic_work_impact
   - age
@@ -183,73 +183,73 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9981045455905716
-    lightgbm[0]~lightgbm[2]: 0.9981226803846164
-    lightgbm[0]~lightgbm[3]: 0.9981086192495864
-    lightgbm[0]~lightgbm[4]: 0.9981437312380697
-    lightgbm[1]~lightgbm[2]: 0.998113306867165
-    lightgbm[1]~lightgbm[3]: 0.9981184387367802
-    lightgbm[1]~lightgbm[4]: 0.9981382674475737
-    lightgbm[2]~lightgbm[3]: 0.9981401992761318
-    lightgbm[2]~lightgbm[4]: 0.9981696482913044
-    lightgbm[3]~lightgbm[4]: 0.9981435866231502
-  rank_average_diagnostic: 0.9682219061081428
+    lightgbm[0]~lightgbm[1]: 0.9981049111118317
+    lightgbm[0]~lightgbm[2]: 0.9981228099925716
+    lightgbm[0]~lightgbm[3]: 0.9981184996402824
+    lightgbm[0]~lightgbm[4]: 0.9981465163411506
+    lightgbm[1]~lightgbm[2]: 0.998112994725545
+    lightgbm[1]~lightgbm[3]: 0.9981251801256927
+    lightgbm[1]~lightgbm[4]: 0.9981379356098014
+    lightgbm[2]~lightgbm[3]: 0.9981434909081797
+    lightgbm[2]~lightgbm[4]: 0.9981668323713707
+    lightgbm[3]~lightgbm[4]: 0.9981502312784126
+  rank_average_diagnostic: 0.9682216861328077
   screening: null
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.9680346363202533
+    oof_auc: 0.9680371071684666
     fold_metrics:
     - 0.9675111641711752
-    - 0.9673177965539892
+    - 0.9673177904646294
     - 0.9681745156740484
     - 0.9682893691170849
     - 0.9677364920836643
     - 0.968668180376107
-    - 0.9684965862479729
+    - 0.9685029352337584
     - 0.9686579089430611
-    - 0.9686263395855115
+    - 0.9686466977464541
     - 0.9668814641767698
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9680227136976889
+    oof_auc: 0.9680211170065925
     fold_metrics:
-    - 0.9675866641122749
+    - 0.9675866742612077
     - 0.9672160646662071
     - 0.9679886410139698
-    - 0.9682895172915043
-    - 0.967704548241499
+    - 0.9682706534700554
+    - 0.9676944686176463
     - 0.9686131473754367
     - 0.9685610463152932
-    - 0.9687863825377805
+    - 0.9687975470506683
     - 0.9685909989953561
     - 0.9669156931654952
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9680177507192195
+    oof_auc: 0.968021165802044
     fold_metrics:
     - 0.9674816003298452
-    - 0.9672444238292104
+    - 0.9672528017732605
     - 0.9681216305999709
     - 0.9683474047745727
-    - 0.9676471922183761
-    - 0.9686094106481891
+    - 0.9676471648170628
+    - 0.9686230899927227
     - 0.9684762818747933
     - 0.9687313637451984
-    - 0.968559159684127
+    - 0.9685670806934071
     - 0.966986960424829
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9680302415124488
+    oof_auc: 0.9680267722451577
     fold_metrics:
-    - 0.9674972621629866
+    - 0.9674540764240136
     - 0.9672991519494893
-    - 0.9680265158163933
-    - 0.9683815122931304
+    - 0.9680265350993656
+    - 0.968381514322917
     - 0.9677427162412446
     - 0.9686115418614483
     - 0.9685839730956451
@@ -259,20 +259,22 @@ results:
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9680012745412524
+    oof_auc: 0.9679997848794469
     fold_metrics:
-    - 0.9675072081171587
+    - 0.9674966481525504
     - 0.9671790971783782
     - 0.9680071303397971
     - 0.9683570655437324
     - 0.9677037525885489
     - 0.9685804342667712
     - 0.9684410102953533
-    - 0.968678407155161
+    - 0.9686758618776113
     - 0.9685012231591069
     - 0.9670702848621877
   artifacts:
   - experiments/output/EXP-129/oof_predictions.csv
   - experiments/output/EXP-129/results.json
   decision: REJECTED
-  reasoning: weekend_slack adds +0.000002 vs EXP-122 anchor (0.968223). Statistically identical. The weekend constraint (99.69% hold rate) is too weak to add signal over free_time_slack alone. Weekend axis CLOSED.
+  reasoning: weekend_slack adds +0.000002 vs EXP-122 anchor (0.968223). Statistically
+    identical. The weekend constraint (99.69% hold rate) is too weak to add signal
+    over free_time_slack alone. Weekend axis CLOSED.
