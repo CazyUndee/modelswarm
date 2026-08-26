@@ -52,7 +52,7 @@ independently-validated alternative for private robustness.
 
 | rank | submission | LB | notes |
 |---|---|---|---|
-| 1 | **vault NN (anthonytherrien submission.csv)** | **0.97128** | ~top-100; spearman 0.990 vs greedy74; every admixture tested hurt (n50/n65/a85/a75 all worse) -> pure NN optimal so far |
+| 1 | vault submission.csv | **0.97128** | PROVENANCE: byte-for-byte Naji Ama Ensemble-of-Ensembles (fake-NN cover exposed by community); spearman 0.990 vs greedy74; admixtures all hurt |
 | 2 | greedy74 | 0.97054 | superseded as blend base |
 | 3 | blend v1/v2 | 0.97053/0.97050 | historical |
 
