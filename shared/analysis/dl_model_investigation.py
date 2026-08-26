@@ -19,8 +19,9 @@ y = tr["addicted_label"].values
 N = len(y)
 screen = tr["daily_screen_time_hours"].values.astype(float)
 
-# Load all Tamerlan models
-tamerlan_dir = "/tmp/blend_npy/blend_data"
+# Load all Tamerlan models via kagglehub
+import kagglehub
+tamerlan_dir = kagglehub.dataset_download("tamerlanomralinov/s6e8-full-best-blend-npy")
 V = {}
 for name in ["lookup_transformer", "catboost", "dl_s23", "dl_s7", "mlp",
              "xgb_te", "lgb_cat", "lightgbm", "lgb_te_a1"]:
