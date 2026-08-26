@@ -68,6 +68,8 @@ scans, long optimizations, or multi-minute scripts. If an analysis may exceed ~3
 CPU: prepare the script locally, commit it, execute on GHA (experiment yaml or dispatchable
 analysis workflow), consume artifacts. Inspecting already-produced artifacts is fine.
 
+FRONTIER ATTACK POLICY (2026-08-26): verified external frontier = Naji Ama "Ensemble of Ensembles" **0.97128 LB** (vault submission.csv, 1.0000 Spearman vs hidden CSV). This is NOT owned — treat as external reference/base to beat, not a target to copy. Frontier-attack priority: (1) build owned lookup-transformer (exact-value embeddings + transformer, strongest untested family per library +0.00095 blend evidence), measure OOF + correlation vs greedy74/frontier + error complementarity; (2) test frontier + owned blends only with leakage-safe OOF weights; (3) generate next hypotheses from disagreement/error analysis, not generic FE. Provenance: external vs owned must stay distinct in every submission that touches the frontier.
+
 GitHub Actions ONLY — local training is prohibited and its results are void
 
 ## Data Location

@@ -115,6 +115,8 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   0.9028 / [6,7.8h) 0.9191 vs base-blend in-band 0.9176/0.9341; splice costs -0.0018..-0.0020
   global. Confirms raykkretzschmar caution on our own composition. Axis closed.
 
+- Batch II (2026-08-26 12:15Z): EXP-129 0.968225 REJECTED (weekend_slack +0.000001); EXP-130 0.968583 KEEP (+0.00036 vs EXP-122, new best owned single); EXP-131 0.968236 REJECTED (digit family +0.00001). Raph block is only incremental gain.
+
 ## Frontier additions (00:50Z mining pass)
 
 1. raykkretzschmar/s6e8-fm-lattice-blend-members: 7 Factorization Machines, aligned OOF+test
@@ -148,10 +150,20 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   EXP-122 0.968223); assigned: batch-II consumption + FM blend verification + final-selection
   draft. Thread: forum/discussions/reply-to-buffy.md.
 
-## Next frontier (priority order)
+## Next frontier (FROZEN 2026-08-26: Frontier Attack Mission)
 
-1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).
-2. If lookup-transformer intel lands: implement as second owned NN member type (GHA-CPU feasible?).
-3. Blend v3 candidates: EXP-120 winner + EXP-121 TabM + library → expect >0.9706 held-out.
-4. Consider 10-fold variant of champion ensemble (community uses 10-fold widely).
-5. Final-submission hygiene near deadline: keep best-2 selection strategy in mind.
+1. **ATTACK 0.97128 EXTERNAL FRONTIER** — verified Naji Ama Ensemble-of-Ensembles (1.0000
+   Spearman vs vault). Goal: frontier + owned-signal > frontier. Blend frontier with
+   lookup-transformer, TabM, EXP-130, etc. only via leakage-safe OOF weights; keep
+   external vs owned provenance distinct in every submission that touches the frontier.
+2. Priority 1 remains **lookup-transformer** (exact-value embeddings + transformer) — strongest
+   untested family (+0.00095 blend evidence in library). Build first, measure complementarity.
+3. If lookup-transformer helps: explore its disagreement regions (bands, rare values, quantized
+   structure) to generate the next mechanism. If it fails: use its error structure to hypothesize
+   the next architecture family.
+4. Stack only when justified: constrained linear/logistic meta-model on OOF; test pipeline must
+   reproduce without LB feedback.
+5. Final-submission hygiene near deadline: keep best-2 distinct picks (frontier + diverse owned).
+
+Prior candidates closed since this was written: fold-count axis (EXP-122), nested TE, pairs,
+band-local — see overnight final state above.
