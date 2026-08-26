@@ -108,6 +108,21 @@ Read this + STATE.md + competitions/s6e8/experiments/REGISTRY.md before assuming
   All admixtures with greedy74/EXP-122 hurt monotonically -> NN direction saturates public pack.
   Final-selection plan: keep vault NN + one diversified blend for private-LB insurance.
 
+## Frontier additions (00:50Z mining pass)
+
+1. raykkretzschmar/s6e8-fm-lattice-blend-members: 7 Factorization Machines, aligned OOF+test
+   on frozen CV. Bilinear lookup class absent from library; author-measured blend gain only
+   +0.000006 (decorrelation without strength). USE: candidate members in OOF-validated blends.
+2. anhadmahajan06/ps-s6e8...-submission: LB-scored prediction files up to 0.97092.
+   USE: extra test-side ensemble ingredients (no OOF -> weight via LB probes ONLY if a
+   hypothesis justifies; else skip per overfit policy).
+3. Band-local conditional models ('mix meta-models, fix weak bands'): train per
+   daily_screen_time band; author says pays when within 0.015 of blend on-band; two bands
+   measured negative. HYPOTHESIS: our mid-band weakness (AUC 0.68) matches this method -est
+   candidate after EXP-126/127 verdicts.
+4. donmarch14 digit/float categorical families: partially covered by our TE-on-exact-values;
+   digit-specific columns (d1/frac) still untested standalone (EXP candidate).
+
 ## Next frontier (priority order)
 
 1. Collect agent reports → pick under-tested hypotheses (oracle/general agents running).
