@@ -98,10 +98,6 @@ try:
 
         model_config = FTTransformerConfig(
             task="classification",
-            num_layers=3,
-            d_block=128,
-            attention_dropout=0.1,
-            ff_dropout=0.1,
             learning_rate=1e-3,
         )
 
