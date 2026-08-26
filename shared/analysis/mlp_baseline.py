@@ -35,11 +35,13 @@ feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
 
 X_df = tr[feature_cols].copy()
 
-# Encode gender: Male=1, Female=0, Other=0.5
+# Encode all categorical columns
 print(f"  Gender values: {X_df['gender'].unique()}")
-gender_map = {"Male": 1.0, "Female": 0.0, "Other": 0.5}
-X_df["gender"] = X_df["gender"].map(gender_map).fillna(0.0).astype(np.float32)
-print(f"  Encoded gender: Male=1, Female=0, Other=0.5")
+X_df["gender"] = X_df["gender"].map({"Male": 1.0, "Female": 0.0, "Other": 0.5}).fillna(0.0).astype(np.float32)
+print(f"  Stress values: {X_df['stress_level'].unique()}")
+X_df["stress_level"] = X_df["stress_level"].map({"Low": 0.0, "Medium": 0.5, "High": 1.0}).fillna(0.5).astype(np.float32)
+print(f"  Impact values: {X_df['academic_work_impact'].unique()}")
+X_df["academic_work_impact"] = X_df["academic_work_impact"].map({"No": 0.0, "Yes": 1.0}).fillna(0.0).astype(np.float32)
 
 # Add free_time_slack
 X_df["free_time_slack"] = X_df["daily_screen_time_hours"] - X_df["social_media_hours"] - X_df["gaming_hours"] - X_df["work_study_hours"]
