@@ -58,17 +58,25 @@ print("=" * 70)
 
 try:
     from tabfm import TabFMClassifier
+    from tabfm import tabfm_v1_0_0_pytorch as tabfm_v1_0_0
+    
+    print("Loading TabFM model...")
+    tabfm_model = tabfm_v1_0_0.load()
+    print("TabFM model loaded.")
     
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
     tabfm_oof = np.zeros(N)
     
+    # Use DataFrame for TabFM (it expects DataFrame input)
+    X_df = pd.DataFrame(X_slack, columns=feature_names)
+    
     for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
         print(f"  Fold {fold+1}/{n_folds}...", end=" ", flush=True)
         
-        model = TabFMClassifier()
-        model.fit(X_slack[tr_idx], y[tr_idx])
-        preds = model.predict_proba(X_slack[va_idx])[:, 1]
+        clf = TabFMClassifier(model=tabfm_model)
+        clf.fit(X_df.iloc[tr_idx], y[tr_idx])
+        preds = clf.predict_proba(X_df.iloc[va_idx])[:, 1]
         tabfm_oof[va_idx] = preds
         
         fold_auc = roc_auc_score(y[va_idx], preds)
@@ -83,38 +91,10 @@ try:
     
 except Exception as e:
     print(f"TabFM failed: {e}")
-    print("Trying alternative approach...")
-    
-    # Try TabPFN as fallback
-    try:
-        from tabpfn import TabPFNClassifier
-        
-        n_folds = 5
-        skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
-        tabpfn_oof = np.zeros(N)
-        
-        for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
-            print(f"  Fold {fold+1}/{n_folds}...", end=" ", flush=True)
-            
-            model = TabPFNClassifier()
-            model.fit(X_slack[tr_idx], y[tr_idx])
-            preds = model.predict_proba(X_slack[va_idx])[:, 1]
-            tabpfn_oof[va_idx] = preds
-            
-            fold_auc = roc_auc_score(y[va_idx], preds)
-            print(f"AUC={fold_auc:.6f}")
-        
-        tabfm_auc = roc_auc_score(y, tabpfn_oof)
-        print(f"\nTabPFN OOF: {tabfm_auc:.6f}")
-        tabfm_oof = tabpfn_oof
-        
-        np.save("shared/artifacts/stacking_vectors/tabpfn_oof.npy", tabfm_oof)
-        print("Saved tabpfn_oof.npy")
-        
-    except Exception as e2:
-        print(f"TabPFN also failed: {e2}")
-        print("No foundation model available. Exiting.")
-        sys.exit(1)
+    import traceback
+    traceback.print_exc()
+    print("No foundation model available. Exiting.")
+    sys.exit(1)
 
 # ============================================================
 # LOAD EXISTING MODELS FOR BLEND TEST
