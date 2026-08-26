@@ -170,19 +170,19 @@ target_encoding:
   smoothing: 10
 results:
   status: completed
-  oof_metric: 0.9682360174421587
+  oof_metric: 0.9682377744945131
   fold_metrics:
   - 0.9675321826110637
   - 0.9674710312311973
-  - 0.9683156375999254
-  - 0.9685430964973768
+  - 0.9683236958525917
+  - 0.9685423647593199
   - 0.9678780371197067
   - 0.9689478371651177
-  - 0.968768933990368
-  - 0.9689639359441324
-  - 0.9687010954426003
+  - 0.9687750556467394
+  - 0.9689639339144056
+  - 0.9687040557993039
   - 0.9672538594572683
-  runtime_seconds: 4400.039406776428
+  runtime_seconds: 4680.552198648453
   features_used:
   - academic_work_impact
   - age
@@ -220,27 +220,27 @@ results:
   model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
   blend_method: probability_average
   member_correlations:
-    lightgbm[0]~lightgbm[1]: 0.9980852937953614
-    lightgbm[0]~lightgbm[2]: 0.998121421135824
-    lightgbm[0]~lightgbm[3]: 0.9981000465069575
-    lightgbm[0]~lightgbm[4]: 0.9980988586006443
-    lightgbm[1]~lightgbm[2]: 0.9981298498198892
-    lightgbm[1]~lightgbm[3]: 0.9980921558843938
-    lightgbm[1]~lightgbm[4]: 0.9981089595801114
-    lightgbm[2]~lightgbm[3]: 0.9981211217862219
-    lightgbm[2]~lightgbm[4]: 0.9981341432584487
-    lightgbm[3]~lightgbm[4]: 0.9981125832318588
-  rank_average_diagnostic: 0.9682345780727536
+    lightgbm[0]~lightgbm[1]: 0.9980740918261685
+    lightgbm[0]~lightgbm[2]: 0.9981122782299593
+    lightgbm[0]~lightgbm[3]: 0.9980883216167835
+    lightgbm[0]~lightgbm[4]: 0.9980930377355155
+    lightgbm[1]~lightgbm[2]: 0.9981194366626575
+    lightgbm[1]~lightgbm[3]: 0.9980794861619599
+    lightgbm[1]~lightgbm[4]: 0.9981016392984964
+    lightgbm[2]~lightgbm[3]: 0.9981169956212598
+    lightgbm[2]~lightgbm[4]: 0.9981340211560777
+    lightgbm[3]~lightgbm[4]: 0.9981056159200102
+  rank_average_diagnostic: 0.9682362151560913
   screening: null
   members:
   - member_index: 0
     name: lightgbm
     key: lightgbm[0]
-    oof_auc: 0.968011123549956
+    oof_auc: 0.968012973027472
     fold_metrics:
     - 0.9673178107624951
     - 0.9673334756403162
-    - 0.9681103865972901
+    - 0.9681246631011002
     - 0.9682802777030568
     - 0.967603364325132
     - 0.9688151640654146
@@ -251,22 +251,22 @@ results:
   - member_index: 1
     name: lightgbm
     key: lightgbm[1]
-    oof_auc: 0.9680419577895225
+    oof_auc: 0.9680432309570327
     fold_metrics:
     - 0.9673228050523403
     - 0.967188937583649
-    - 0.9682148982777741
+    - 0.9682223354157509
     - 0.9683924437086802
-    - 0.9676113908802116
+    - 0.9676113929099385
     - 0.9687691400076499
-    - 0.9686188681607426
+    - 0.9686188671458791
     - 0.9687763008842009
-    - 0.9685084307193769
+    - 0.9685125378717865
     - 0.9670232618678919
   - member_index: 2
     name: lightgbm
     key: lightgbm[2]
-    oof_auc: 0.9680153199689325
+    oof_auc: 0.9680153198369981
     fold_metrics:
     - 0.9673018069103174
     - 0.9672223316322287
@@ -281,7 +281,7 @@ results:
   - member_index: 3
     name: lightgbm
     key: lightgbm[3]
-    oof_auc: 0.9680444104003342
+    oof_auc: 0.9680462345261369
     fold_metrics:
     - 0.9673185770069236
     - 0.9673231947713609
@@ -289,19 +289,19 @@ results:
     - 0.9683513567690163
     - 0.9677212660872223
     - 0.968709611161866
-    - 0.9685854131868903
-    - 0.968741727530819
+    - 0.9686011303772452
+    - 0.968741705203823
     - 0.9685106938648854
     - 0.9670782752799139
   - member_index: 4
     name: lightgbm
     key: lightgbm[4]
-    oof_auc: 0.9680445413605061
+    oof_auc: 0.968044288442152
     fold_metrics:
     - 0.9674027278983665
     - 0.9672928809238944
     - 0.9680331359652774
-    - 0.9683164799613502
+    - 0.9683137661367118
     - 0.9677171234145917
     - 0.9687659411580342
     - 0.9685739543635997
@@ -312,4 +312,6 @@ results:
   - experiments/output/EXP-131/oof_predictions.csv
   - experiments/output/EXP-131/results.json
   decision: REJECTED
-  reasoning: digit family (d1/frac x8) adds +0.000013 vs EXP-122 anchor. Negligible. TE already encodes exact-value rates which subsume the coarse digit splits. Digit/float categorical axis CLOSED for standalone use.
+  reasoning: digit family (d1/frac x8) adds +0.000013 vs EXP-122 anchor. Negligible.
+    TE already encodes exact-value rates which subsume the coarse digit splits. Digit/float
+    categorical axis CLOSED for standalone use.
