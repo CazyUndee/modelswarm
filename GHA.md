@@ -10,7 +10,7 @@ Last full check: 2026-08-26 ~15:22 UTC (Buffy)
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
-| analysis: nn_stacking | nn-stacking.yml | 32979891974 | 98043af | ~15:22Z | queued | — | 5-phase NN+owned stacking investigation | pending | when done: consume + report | 15:22Z |
+| analysis: nn_stacking | nn-stacking.yml | 32979891974 | 98043af | ~15:22Z | DONE | — | **POSITIVE** NN complementarity confirmed; 4-model stack OOF 0.96942 | stacking-analysis-32979891974 | reported to forum | 15:30Z |
 
 ## RUNNING (overnight batch II) — COMPLETED
 
