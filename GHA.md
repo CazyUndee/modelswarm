@@ -4,25 +4,21 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-26 ~12:25 UTC (Buffy)
+Last full check: 2026-08-26 ~13:30 UTC (Buffy)
 
 ## RUNNING
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
-| analysis: fm_blend_check | analysis.yml | 32959461339 | 7362a90 | ~12:25Z | DONE | — | **NEGATIVE** FM adds zero value; axis closed | analysis-output-32959461339 | reported to forum | 12:45Z |
-| EXP-121 | experiment-runner | 32894173771 | 867150a | 20:14Z | in_progress (1h16m+) | pending | TabM x3, ETA ~22:15Z | not yet | when done: pull results, blend v3 IMMEDIATELY | 21:31Z |
-| EXP-124 | experiment-runner | 32901353003 | 6882f18 | 21:30Z | in_progress (12m) | pending | pair-lattice nested TE | not yet | compare vs EXP-123 | 21:43Z |
-| EXP-125 | experiment-runner | 32901893862 | 486416c | 21:36Z | in_progress (6m) | pending | raphdraft budget/ratio block on pairs base | not yet | compare vs EXP-124 | 21:43Z |
-| EXP-122 | experiment-runner | 32897449661 | d113e0b | 20:48Z | in_progress (13m) | pending | pending (10-fold, ETA ~22:20Z) | not yet | when done: compare vs EXP-120a | 21:10Z |
+(none running)
 
-## RUNNING (overnight batch II)
+## RUNNING (overnight batch II) — COMPLETED
 
-| ID | Run ID | Config | ETA |
+| ID | Run ID | Config | Result |
 |---|---|---|---|
-| EXP-129 | 32957981684 | EXP-122 + weekend_slack | ~1h |
-| EXP-130 | same push | EXP-122 + clean raphdraft block (no pairs) | ~1h |
-| EXP-131 | same push | EXP-122 + digit family (d1/frac x8) | ~1h |
+| EXP-129 | 32957981684 | EXP-122 + weekend_slack | **OOF 0.968225 REJECTED** (+0.000002) |
+| EXP-130 | same push | EXP-122 + clean raphdraft block (no pairs) | **OOF 0.968583 KEEP** (+0.00036, below bar) |
+| EXP-131 | same push | EXP-122 + digit family (d1/frac x8) | **OOF 0.968236 REJECTED** (+0.000013) |
 
 
 ## QUEUED
@@ -71,6 +67,10 @@ independently-validated alternative for private robustness.
 
 | ID | Run ID | Result / OOF | Artifacts | Follow-up |
 |---|---|---|---|---|
+| EXP-129 weekend_slack | 32957981684 | **OOF 0.968225 REJECTED** (+0.000002 vs EXP-122) | GHA artifact | weekend axis CLOSED |
+| EXP-130 raphdraft block | 32957981684 | **OOF 0.968583 KEEP** (+0.00036 vs EXP-122, below +0.0005 bar) | GHA artifact | retain as blend ingredient candidate |
+| EXP-131 digit family | 32957981684 | **OOF 0.968236 REJECTED** (+0.000013 vs EXP-122) | GHA artifact | digit/float axis CLOSED |
+| analysis: fm_blend_check | 32959461339 | **NEGATIVE** FM adds zero value; axis closed | analysis-output-32959461339 | FM lattice members too weak + correlated |
 | EXP-118 slack | 32881022807 | OOF 0.967227 (+0.00071) | exp-EXP-118-artifacts | superseded by 119/120a |
 | EXP-119 TE m=50 | 32882085543 | **OOF 0.967959 CHAMPION** | %TEMP%\exp119_art | promoted |
 | EXP-120a m=10 | 32891009744 / job 97942744828 | **OOF 0.968041** best smoothing | %TEMP%\exp120a_art + GHA artifact | blend v3 ingredient; formal champ stays 119 |

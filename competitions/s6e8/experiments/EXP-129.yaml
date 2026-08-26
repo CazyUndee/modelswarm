@@ -274,5 +274,5 @@ results:
   artifacts:
   - experiments/output/EXP-129/oof_predictions.csv
   - experiments/output/EXP-129/results.json
-  decision: null
-  reasoning: null
+  decision: REJECTED
+  reasoning: weekend_slack adds +0.000002 vs EXP-122 anchor (0.968223). Statistically identical. The weekend constraint (99.69% hold rate) is too weak to add signal over free_time_slack alone. Weekend axis CLOSED.

@@ -331,5 +331,5 @@ results:
   artifacts:
   - experiments/output/EXP-130/oof_predictions.csv
   - experiments/output/EXP-130/results.json
-  decision: null
-  reasoning: null
+  decision: KEEP (no promotion)
+  reasoning: raphdraft feature block (impute+ratios+budget) achieves +0.000360 vs EXP-122 — best of overnight batch but below +0.0005 promotion bar. The block adds genuine signal (~0.00036) from imputed ratios and budget-constraint views, but not enough for champion candidacy. Retain as blend ingredient candidate if combined with other gains.

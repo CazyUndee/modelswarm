@@ -311,5 +311,5 @@ results:
   artifacts:
   - experiments/output/EXP-131/oof_predictions.csv
   - experiments/output/EXP-131/results.json
-  decision: null
-  reasoning: null
+  decision: REJECTED
+  reasoning: digit family (d1/frac x8) adds +0.000013 vs EXP-122 anchor. Negligible. TE already encodes exact-value rates which subsume the coarse digit splits. Digit/float categorical axis CLOSED for standalone use.

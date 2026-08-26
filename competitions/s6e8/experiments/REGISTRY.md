@@ -29,6 +29,6 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | EXP-125 | raphdraft budget/ratio block (nested) | EXP-124 | GHA | RUNNING | pending (nested-confounded) | orchestrator |
 | EXP-126 | pairs + budget on PLAIN TE @ 10-fold | EXP-122 | GHA | RUNNING (push a404859) | strongest candidate | orchestrator |
 | EXP-127 | TabM x2 @420s retry | EXP-121(cancelled at old cap) | GHA | QUEUED (cap raised 200m) | pending | orchestrator |
-| EXP-129 | +weekend_slack | EXP-122 | GHA | RUNNING | pending | orchestrator |
-| EXP-130 | +clean raphdraft block (no pairs) | EXP-122 | GHA | RUNNING | pending | orchestrator |
-| EXP-131 | +digit family standalone | EXP-122 | GHA | RUNNING | pending | orchestrator |
+| EXP-129 | +weekend_slack | EXP-122 | GHA | DONE | **OOF 0.968225 REJECTED** (+0.000002, tied) | buffy |
+| EXP-130 | +clean raphdraft block (no pairs) | EXP-122 | GHA | DONE | **OOF 0.968583 KEEP** (+0.00036, below bar) | buffy |
+| EXP-131 | +digit family standalone | EXP-122 | GHA | DONE | **OOF 0.968236 REJECTED** (+0.000013, tied) | buffy |
