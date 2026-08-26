@@ -144,6 +144,20 @@ def apply_feature_engineering(df: pd.DataFrame, config: dict,
                     break
             print(f"  FE pair_grid: {made} pair columns")
             continue
+        if kind == "digit_split":
+            # donmarch14 quantisation family: values sit on a 0.01 grid, so the
+            # FIRST DECIMAL DIGIT carries artefactual signal (positive-rate swing
+            # 0.65->0.74 across digits). Hours are non-negative -> int-cast safe
+            # (the floor(x*10)%10 trap only bites negatives, which cannot occur).
+            for c in op.get("columns", []):
+                if c not in df.columns:
+                    continue
+                x10 = (df[c] * 10)
+                df[f"d1_{c}"] = np.where(df[c].isna(), np.nan,
+                                         np.floor(x10) % 10).astype("float64")
+                df[f"frac_{c}"] = (df[c] - np.floor(df[c].fillna(0))).where(
+                    df[c].notna()).astype("float64")
+            continue
         name = op.get("name")
         if not name:
             print(f"⚠️  Skipping FE op without name: {op}")
