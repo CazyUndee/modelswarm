@@ -44,11 +44,13 @@ feature_cols = ["age", "daily_screen_time_hours", "social_media_hours",
 
 X = tr[feature_cols].copy()
 X["free_time_slack"] = X["daily_screen_time_hours"] - X["social_media_hours"] - X["gaming_hours"] - X["work_study_hours"]
-# Encode gender: Male=1, Female=0, Other=0.5
+# Encode all categorical columns
 print(f"  Gender values: {X['gender'].unique()}")
-gender_map = {"Male": 1.0, "Female": 0.0, "Other": 0.5}
-X["gender"] = X["gender"].map(gender_map).fillna(0.0).astype(np.float32)
-print(f"  Encoded gender: Male=1, Female=0, Other=0.5")
+X["gender"] = X["gender"].map({"Male": 1.0, "Female": 0.0, "Other": 0.5}).fillna(0.0).astype(np.float32)
+print(f"  Stress values: {X['stress_level'].unique()}")
+X["stress_level"] = X["stress_level"].map({"Low": 0.0, "Medium": 0.5, "High": 1.0}).fillna(0.5).astype(np.float32)
+print(f"  Impact values: {X['academic_work_impact'].unique()}")
+X["academic_work_impact"] = X["academic_work_impact"].map({"No": 0.0, "Yes": 1.0}).fillna(0.0).astype(np.float32)
 for col in X.columns:
     X[col] = X[col].astype(float)
 feature_names = list(X.columns)
