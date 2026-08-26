@@ -88,7 +88,6 @@ try:
             max_epochs=100,
             batch_size=1024,
             early_stopping_patience=10,
-            gpus=0,
         )
 
         optimizer_config = OptimizerConfig(
