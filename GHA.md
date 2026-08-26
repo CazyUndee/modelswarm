@@ -32,6 +32,22 @@ Last full check: 2026-08-25 22:35 UTC
 | EXP-126 max-strength combo | (push a404859) | QUEUED: plain TE m=10 + pairs + budget @ 10-fold | — | strongest candidate |
 | EXP-122 10-fold | 32897449661 | **OOF 0.968223 KEEP** (+0.0003 vs 5-fold; best single) | exp-EXP-122-artifacts | fold-count axis confirmed |
 
+## SUBMISSION TALLY + OVERFIT AUDIT (2026-08-26)
+
+| # | submission | LB | classification |
+|---|---|---|---|
+| 1 | EXP-035 anchor | 0.96801 | genuine baseline |
+| 2 | blend v1 | 0.97053 | OOS-validated blend |
+| 3 | blend v2 | 0.97050 | OOS-validated blend (same lineage) |
+| 4 | greedy74 | 0.97054 | OOS-validated selection |
+| 5 | vault NN verify | **0.97128** | GENUINE standalone (no tuning) — highest confidence |
+| 6-9 | n50/n65/a85/a75 mixes | 0.97084-0.97106 | PUBLIC-LB PROBES, same hypothesis x4, all negative -> STOPPED per policy |
+
+Verdict: vault NN is the only high-confidence result among today's submissions.
+Final-selection intent: vault NN (public-fit-free) + one structurally distinct
+independently-validated alternative for private robustness.
+
+
 ## BEST SUBMISSION
 
 | rank | submission | LB | notes |

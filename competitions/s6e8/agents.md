@@ -8,7 +8,16 @@
 - **Target:** `addicted_label` (binary)
 - **Metric:** ROC-AUC
 - **Current Champion:** EXP-119 — LightGBM ensemble + free_time_slack + 1-D target encoding (OOF 0.967959; LB 0.97050 as part of blend v2). See REGISTRY.md and HISTORY.md
-- **Compute:** PRIORITIZATION RULE (2026-08-25): when a prepared score-producing pipeline (blend,
+- **Compute:** PUBLIC-LB OVERFITTING POLICY (2026-08-26): treat the leaderboard as CONFIRMATION, not an
+optimizer. Classify every submission: genuine model improvement / OOF-validated blend /
+public-LB-only / repeated-probe-of-same-hypothesis. NO brute-force weight sweeps on the LB;
+choose weights via OOF/held-out first. Flag overfit risk after ~2 successive probes of the
+same hypothesis family. A standalone model that jumps substantially WITHOUT probe-tuning
+deserves far more confidence than a blend tuned by repeated probing. Final selection:
+prefer genuinely distinct, independently validated submissions over multiple variants of
+one public-fit lineage. Tally kept in GHA.md.
+
+PRIORITIZATION RULE (2026-08-25): when a prepared score-producing pipeline (blend,
 submission, promotion) becomes unblocked by a finished experiment, EXECUTE IT IMMEDIATELY
 before creating additional tooling or infrastructure. Infrastructure only when it blocks
 execution.
