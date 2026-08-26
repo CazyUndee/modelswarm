@@ -68,6 +68,12 @@ scans, long optimizations, or multi-minute scripts. If an analysis may exceed ~3
 CPU: prepare the script locally, commit it, execute on GHA (experiment yaml or dispatchable
 analysis workflow), consume artifacts. Inspecting already-produced artifacts is fine.
 
+DYNAMIC FRONTIER POLICY (2026-08-26, frontier-attack mission): the leaderboard frontier is DYNAMIC — do NOT anchor on a stale 0.97128. Continuously verify live frontier via Kaggle API (current: Naji 0.97128 verified, Chris Deotte 0.97184 reported). Investigate provenance/mechanism before treating any new public score as a target. Maintain live frontier in GHA.md/HISTORY.md.
+
+OOF-COMPATIBILITY MANDATE (2026-08-26): stacking/blending requires COMPATIBLE OOF schemes. Do NOT blindly concatenate 5-fold and 10-fold OOFs (different held-out partitions → leakage). Reconstruct compatible folds or use another leakage-safe method. Handle 10-fold-owned vs 5-fold-library mismatches explicitly.
+
+PARALLEL RESEARCH MANDATE (2026-08-26, autonomous mode): while any GHA job runs, continuously work on other tracks — Kaggle intelligence, frontier analysis, NN/stacking research, new mechanisms, error analysis — via parallel subagents and forum coordination. Never become a passive monitor waiting for one GHA run. Maintain a rolling hypothesis queue so compute never idles.
+
 FRONTIER ATTACK POLICY (2026-08-26): verified external frontier = Naji Ama "Ensemble of Ensembles" **0.97128 LB** (vault submission.csv, 1.0000 Spearman vs hidden CSV). This is NOT owned — treat as external reference/base to beat, not a target to copy. Frontier-attack priority: (1) build owned lookup-transformer (exact-value embeddings + transformer, strongest untested family per library +0.00095 blend evidence), measure OOF + correlation vs greedy74/frontier + error complementarity; (2) test frontier + owned blends only with leakage-safe OOF weights; (3) generate next hypotheses from disagreement/error analysis, not generic FE. Provenance: external vs owned must stay distinct in every submission that touches the frontier.
 
 GitHub Actions ONLY — local training is prohibited and its results are void
