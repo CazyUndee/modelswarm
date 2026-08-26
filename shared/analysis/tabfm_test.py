@@ -71,18 +71,24 @@ try:
     tabfm_oof = np.zeros(N)
     
     # Use DataFrame for TabFM (it expects DataFrame input)
-    X_df = pd.DataFrame(X_slack, columns=feature_names)
+    # Use float32 to reduce memory
+    X_df = pd.DataFrame(X_slack.astype(np.float32), columns=feature_names)
     
     for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
         print(f"  Fold {fold+1}/{n_folds}...", end=" ", flush=True)
         
         clf = TabFMClassifier(model=tabfm_model)
+        # Use smaller batch to reduce memory
         clf.fit(X_df.iloc[tr_idx], y[tr_idx])
         preds = clf.predict_proba(X_df.iloc[va_idx])[:, 1]
         tabfm_oof[va_idx] = preds
         
         fold_auc = roc_auc_score(y[va_idx], preds)
         print(f"AUC={fold_auc:.6f}")
+        
+        # Free memory after each fold
+        del clf
+        import gc; gc.collect()
     
     tabfm_auc = roc_auc_score(y, tabfm_oof)
     print(f"\nTabFM OOF: {tabfm_auc:.6f}")
