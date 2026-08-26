@@ -4,12 +4,13 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-26 ~15:22 UTC (Buffy)
+Last full check: 2026-08-26 14:30 UTC
 
 ## RUNNING
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
+| EXP-132 lookup-transformer | experiment-runner | 32980487428 | b533500 | 14:28Z | in_progress (2m) | training | pending — exact-value embeddings + transformer (Priority 1 frontier attack) | — | consume OOF, measure correlation vs greedy74/frontier, test blend | 14:30Z |
 | analysis: nn_stacking | nn-stacking.yml | 32979891974 | 98043af | ~15:22Z | DONE | — | **POSITIVE** NN complementarity confirmed; 4-model stack OOF 0.96942 | stacking-analysis-32979891974 | reported to forum | 15:30Z |
 
 ## RUNNING (overnight batch II) — COMPLETED
