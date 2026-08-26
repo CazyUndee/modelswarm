@@ -144,7 +144,7 @@ model:
       verbose: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -168,4 +168,148 @@ target_encoding:
   - stress_level
   - academic_work_impact
   smoothing: 10
-results: {}
+results:
+  status: completed
+  oof_metric: 0.9682360174421587
+  fold_metrics:
+  - 0.9675321826110637
+  - 0.9674710312311973
+  - 0.9683156375999254
+  - 0.9685430964973768
+  - 0.9678780371197067
+  - 0.9689478371651177
+  - 0.968768933990368
+  - 0.9689639359441324
+  - 0.9687010954426003
+  - 0.9672538594572683
+  runtime_seconds: 4400.039406776428
+  features_used:
+  - academic_work_impact
+  - age
+  - app_opens_per_day
+  - d1_app_opens_per_day
+  - d1_daily_screen_time_hours
+  - d1_gaming_hours
+  - d1_notifications_per_day
+  - d1_sleep_hours
+  - d1_social_media_hours
+  - d1_weekend_screen_time
+  - d1_work_study_hours
+  - daily_screen_time_hours
+  - frac_app_opens_per_day
+  - frac_daily_screen_time_hours
+  - frac_gaming_hours
+  - frac_notifications_per_day
+  - frac_sleep_hours
+  - frac_social_media_hours
+  - frac_weekend_screen_time
+  - frac_work_study_hours
+  - free_time_slack
+  - gaming_hours
+  - gender
+  - notifications_per_day
+  - sleep_hours
+  - social_media_hours
+  - stress_level
+  - weekend_screen_time
+  - work_study_hours
+  categorical_features:
+  - academic_work_impact
+  - gender
+  - stress_level
+  model_name: ensemble:lightgbm+lightgbm+lightgbm+lightgbm+lightgbm
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~lightgbm[1]: 0.9980852937953614
+    lightgbm[0]~lightgbm[2]: 0.998121421135824
+    lightgbm[0]~lightgbm[3]: 0.9981000465069575
+    lightgbm[0]~lightgbm[4]: 0.9980988586006443
+    lightgbm[1]~lightgbm[2]: 0.9981298498198892
+    lightgbm[1]~lightgbm[3]: 0.9980921558843938
+    lightgbm[1]~lightgbm[4]: 0.9981089595801114
+    lightgbm[2]~lightgbm[3]: 0.9981211217862219
+    lightgbm[2]~lightgbm[4]: 0.9981341432584487
+    lightgbm[3]~lightgbm[4]: 0.9981125832318588
+  rank_average_diagnostic: 0.9682345780727536
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.968011123549956
+    fold_metrics:
+    - 0.9673178107624951
+    - 0.9673334756403162
+    - 0.9681103865972901
+    - 0.9682802777030568
+    - 0.967603364325132
+    - 0.9688151640654146
+    - 0.9685091289454352
+    - 0.968684106628334
+    - 0.9685456792528306
+    - 0.9669523244555994
+  - member_index: 1
+    name: lightgbm
+    key: lightgbm[1]
+    oof_auc: 0.9680419577895225
+    fold_metrics:
+    - 0.9673228050523403
+    - 0.967188937583649
+    - 0.9682148982777741
+    - 0.9683924437086802
+    - 0.9676113908802116
+    - 0.9687691400076499
+    - 0.9686188681607426
+    - 0.9687763008842009
+    - 0.9685084307193769
+    - 0.9670232618678919
+  - member_index: 2
+    name: lightgbm
+    key: lightgbm[2]
+    oof_auc: 0.9680153199689325
+    fold_metrics:
+    - 0.9673018069103174
+    - 0.9672223316322287
+    - 0.9680484638985287
+    - 0.9683845001389553
+    - 0.9677779949247287
+    - 0.9685985353713862
+    - 0.9685425291166609
+    - 0.9687906804845198
+    - 0.9684434794581437
+    - 0.9670710338687013
+  - member_index: 3
+    name: lightgbm
+    key: lightgbm[3]
+    oof_auc: 0.9680444104003342
+    fold_metrics:
+    - 0.9673185770069236
+    - 0.9673231947713609
+    - 0.9681237557865053
+    - 0.9683513567690163
+    - 0.9677212660872223
+    - 0.968709611161866
+    - 0.9685854131868903
+    - 0.968741727530819
+    - 0.9685106938648854
+    - 0.9670782752799139
+  - member_index: 4
+    name: lightgbm
+    key: lightgbm[4]
+    oof_auc: 0.9680445413605061
+    fold_metrics:
+    - 0.9674027278983665
+    - 0.9672928809238944
+    - 0.9680331359652774
+    - 0.9683164799613502
+    - 0.9677171234145917
+    - 0.9687659411580342
+    - 0.9685739543635997
+    - 0.9687511728650112
+    - 0.9685071205306542
+    - 0.9671022272497272
+  artifacts:
+  - experiments/output/EXP-131/oof_predictions.csv
+  - experiments/output/EXP-131/results.json
+  decision: null
+  reasoning: null
