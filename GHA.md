@@ -4,13 +4,13 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-26 ~13:30 UTC (Buffy)
+Last full check: 2026-08-26 ~15:22 UTC (Buffy)
 
 ## RUNNING
 
 | ID | Workflow | Run ID | Commit | Started | Job status | Exp status | Result/OOF | Artifacts | Next action | Checked |
 |---|---|---|---|---|---|---|---|---|---|---|
-(none running)
+| analysis: nn_stacking | nn-stacking.yml | 32979891974 | 98043af | ~15:22Z | queued | — | 5-phase NN+owned stacking investigation | pending | when done: consume + report | 15:22Z |
 
 ## RUNNING (overnight batch II) — COMPLETED
 
