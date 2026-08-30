@@ -118,7 +118,15 @@ try:
         )
 
         model.fit(train=train_df, validation=val_df)
-        preds = model.predict(val_df)["prediction"].values
+        # pytorch-tabular names output columns after the target
+        # (e.g. 'target_prediction' / 'target_probability'), not literally 'prediction'.
+        pred_df = model.predict(val_df)
+        prob_col = next((c for c in pred_df.columns if c.endswith("_probability")), None)
+        if prob_col is not None:
+            preds = pred_df[prob_col].values.astype(float)
+        else:
+            pred_col = next((c for c in pred_df.columns if c.endswith("_prediction")), pred_df.columns[-1])
+            preds = pred_df[pred_col].values.astype(float)
         ft_oof[va_idx] = preds
 
         fold_auc = roc_auc_score(y[va_idx], preds)
