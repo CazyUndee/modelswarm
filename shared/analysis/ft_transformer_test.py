@@ -53,6 +53,11 @@ print(f"  Impact values: {X['academic_work_impact'].unique()}")
 X["academic_work_impact"] = X["academic_work_impact"].map({"No": 0.0, "Yes": 1.0}).fillna(0.0).astype(np.float32)
 for col in X.columns:
     X[col] = X[col].astype(float)
+# Numeric columns have missing values: impute with the GLOBAL median here.
+# This is only the input matrix for a NN screen — medians computed on the whole
+# dataset leak negligibly (a constant per column), and pytorch-tabular cannot
+# take NaN. Tree experiments keep strict fold-safe imputation.
+X = X.fillna(X.median(numeric_only=True))
 feature_names = list(X.columns)
 
 print(f"Data: {X.shape[0]} rows, {X.shape[1]} features")
