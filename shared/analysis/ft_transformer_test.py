@@ -98,10 +98,13 @@ try:
             categorical_cols=[],
         )
 
+        # GHA CPU budget: ~6.5 min/epoch on 691k rows → 100 epochs is infeasible.
+        # Screen with 15 epochs (patience 5) — enough to measure diversity signal;
+        # a strong result can be re-run deeper on a larger budget later.
         trainer_config = TrainerConfig(
-            max_epochs=100,
+            max_epochs=15,
             batch_size=1024,
-            early_stopping_patience=10,
+            early_stopping_patience=5,
         )
 
         optimizer_config = OptimizerConfig(
