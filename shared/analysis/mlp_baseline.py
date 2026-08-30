@@ -69,6 +69,12 @@ mlp_oof = np.zeros(N)
 for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
     print(f"  Fold {fold+1}/{n_folds}...", end=" ", flush=True)
     
+    # Leakage-safe imputation: fill NaNs with TRAIN-fold medians
+    # (numeric columns have missing values; MLPClassifier rejects NaN)
+    tr_med = np.nanmedian(X_scaled[tr_idx], axis=0)
+    tr_X = np.where(np.isnan(X_scaled[tr_idx]), tr_med, X_scaled[tr_idx])
+    va_X = np.where(np.isnan(X_scaled[va_idx]), tr_med, X_scaled[va_idx])
+
     clf = MLPClassifier(
         hidden_layer_sizes=(256, 128, 64),
         activation="relu",
@@ -82,8 +88,8 @@ for fold, (tr_idx, va_idx) in enumerate(skf.split(y, y)):
         validation_fraction=0.1,
         random_state=42,
     )
-    clf.fit(X_scaled[tr_idx], y[tr_idx])
-    preds = clf.predict_proba(X_scaled[va_idx])[:, 1]
+    clf.fit(tr_X, y[tr_idx])
+    preds = clf.predict_proba(va_X)[:, 1]
     mlp_oof[va_idx] = preds
     
     fold_auc = roc_auc_score(y[va_idx], preds)
