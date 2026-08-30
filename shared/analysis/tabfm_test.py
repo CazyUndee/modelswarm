@@ -68,6 +68,10 @@ print("TABFM OOF PREDICTIONS (5-fold CV)")
 print("=" * 70)
 
 try:
+    import safetensors  # noqa: F401  # tabfm's hub_mixin path references this module without importing it
+    import tabfm.src.pytorch.tabfm_v1_0_0 as _tabfm_mod
+    if not hasattr(_tabfm_mod, "safetensors"):
+        _tabfm_mod.safetensors = safetensors
     from tabfm import TabFMClassifier
     from tabfm import tabfm_v1_0_0_pytorch as tabfm_v1_0_0
     
