@@ -126,6 +126,16 @@ try:
 except Exception as e:
     print(f"own_champ_m10 SKIP ({e})")
 
+# RealMLP member (kodaifukuda0311, Aug 30 — genuinely new arch, post-RGS pool)
+try:
+    members["rmlp_realmlp"] = (
+        np.load("shared/analysis/data/oof_realmlp.npy").astype(np.float64),
+        np.load("shared/analysis/data/pred_realmlp.npy").astype(np.float64),
+    )
+    print("rmlp_realmlp: EXTERNAL RealMLP (OOF + TEST)")
+except Exception as e:
+    print(f"rmlp_realmlp SKIP ({e})")
+
 names = sorted(members)
 OOF = np.column_stack([members[n][0] for n in names])
 TST = np.column_stack([members[n][1] for n in names])
