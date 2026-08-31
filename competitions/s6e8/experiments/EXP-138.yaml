@@ -1,0 +1,74 @@
+competition: s6e8
+experiment_id: EXP-138
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: 'CatBoost with symmetric oblivious trees — structurally different from
+  LGBM leaf-wise and XGBoost depth-wise splits. CatBoost handles categoricals natively
+  and uses ordered boosting for less overfitting. With TE m=50 on all numerics and
+  early stopping, this should produce genuinely different error patterns from the
+  champion LGBM. depth=8, l2_leaf_reg=3, learning_rate 0.03, 3000 iterations.'
+metadata:
+  author: agent-81d2
+  parent_experiment: EXP-119
+  created_at: '2026-08-31T20:20:00Z'
+  design_notes: 'CatBoost symmetric trees = third GBDT family variant. If decorrelated
+    from LGBM/XGB, adds genuine diversity to blends.'
+model:
+  name: catboost
+  parameters:
+    iterations: 3000
+    learning_rate: 0.03
+    depth: 8
+    l2_leaf_reg: 3
+    random_strength: 1
+    bagging_temperature: 0.8
+    border_count: 254
+    early_stopping_rounds: 150
+    n_jobs: -1
+    random_state: 42
+    verbose: 0
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 60
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  smoothing: 50
