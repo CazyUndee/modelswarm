@@ -101,7 +101,7 @@ try:
         # GHA CPU budget: ~3.9 min/epoch on 691k rows → must fit 5 folds in 60 min.
         # 3 epochs × 5 folds × 4 min ≈ 60 min. Early stopping may cut earlier.
         trainer_config = TrainerConfig(
-            max_epochs=3,
+            max_epochs=2,
             batch_size=2048,
             early_stopping_patience=2,
         )
@@ -140,11 +140,61 @@ try:
         print(f"AUC={fold_auc:.6f}")
 
     ft_auc = roc_auc_score(y, ft_oof)
-    print(f"\nFT-Transformer OOF: {ft_auc:.6f}")
+    print(f"\nFT-Transformer OOF: {ft_auc:.6f}", flush=True)
 
-    # Save OOF and test predictions as CSV for artifact upload
+    # Save OOF for artifact upload
     pd.DataFrame({"prediction": ft_oof}).to_csv("ft_transformer_oof.csv", index=False)
-    print("Saved ft_transformer_oof.csv")
+    print("Saved ft_transformer_oof.csv", flush=True)
+
+    # Train full model on all data for test predictions
+    print("Training full FT-Transformer for test predictions...", flush=True)
+    full_df = X.copy()
+    full_df["target"] = y
+    test_df = pd.read_csv("competitions/s6e8/data/test.csv")
+    test_X = test_df[feature_cols].copy()
+    test_X["free_time_slack"] = test_X["daily_screen_time_hours"] - test_X["social_media_hours"] - test_X["gaming_hours"] - test_X["work_study_hours"]
+    test_X["gender"] = test_X["gender"].map({"Male": 1.0, "Female": 0.0, "Other": 0.5}).fillna(0.0).astype(np.float32)
+    test_X["stress_level"] = test_X["stress_level"].map({"Low": 0.0, "Medium": 0.5, "High": 1.0}).fillna(0.5).astype(np.float32)
+    test_X["academic_work_impact"] = test_X["academic_work_impact"].map({"No": 0.0, "Yes": 1.0}).fillna(0.0).astype(np.float32)
+    for col in test_X.columns:
+        test_X[col] = test_X[col].astype(float)
+    test_X = test_X.fillna(test_X.median(numeric_only=True))
+
+    full_data_config = DataConfig(
+        target=["target"],
+        continuous_cols=feature_names,
+        categorical_cols=[],
+    )
+    full_trainer = TrainerConfig(
+        max_epochs=2,
+        batch_size=2048,
+    )
+    full_opt = OptimizerConfig(optimizer="AdamW")
+    full_model_config = FTTransformerConfig(task="classification", learning_rate=1e-3)
+
+    full_model = TabularModel(
+        data_config=full_data_config,
+        model_config=full_model_config,
+        trainer_config=full_trainer,
+        optimizer_config=full_opt,
+    )
+    full_model.fit(train=full_df)
+    test_pred_df = full_model.predict(test_X)
+    prob_col = next((c for c in test_pred_df.columns if c.endswith("_probability")), None)
+    if prob_col:
+        ft_test = test_pred_df[prob_col].values.astype(float)
+    else:
+        pred_col = next((c for c in test_pred_df.columns if c.endswith("_prediction")), test_pred_df.columns[-1])
+        ft_test = test_pred_df[pred_col].values.astype(float)
+
+    # Emit submission CSV
+    from scipy.stats import rankdata
+    def pct_rank(v):
+        return (rankdata(v) - 0.5) / len(v)
+    sub = pd.DataFrame({"id": test_df["id"], "addicted_label": pct_rank(ft_test)})
+    sub.to_csv("submission_ft_transformer.csv", index=False)
+    print(f"Saved submission_ft_transformer.csv", flush=True)
+    print(f"FT-Transformer test prediction range: [{ft_test.min():.4f}, {ft_test.max():.4f}]", flush=True)
 
 except Exception as e:
     print(f"FT-Transformer failed: {e}")
