@@ -60,7 +60,7 @@ model:
       max_iter: 1000
       random_state: 42
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -84,3 +84,63 @@ target_encoding:
   - stress_level
   - academic_work_impact
   smoothing: 50
+results:
+  status: completed
+  oof_metric: 0.963345704605108
+  fold_metrics:
+  - 0.9624992364784593
+  - 0.9634398645702664
+  - 0.9637129472807311
+  - 0.9640072493218617
+  - 0.963066626318142
+  runtime_seconds: 411.5935368537903
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+logistic
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~logistic[1]: 0.947285840814489
+  rank_average_diagnostic: 0.9632294020064351
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9678337476284857
+    fold_metrics:
+    - 0.9671937164729302
+    - 0.9678939163269649
+    - 0.968070029185276
+    - 0.968496662739303
+    - 0.9675264304537641
+  - member_index: 1
+    name: logistic
+    key: logistic[1]
+    oof_auc: 0.9502371164677551
+    fold_metrics:
+    - 0.9492726681973493
+    - 0.9503155653287159
+    - 0.950752909909053
+    - 0.9509104806858365
+    - 0.9499396979258738
+  artifacts:
+  - experiments/output/EXP-135/oof_predictions.csv
+  - experiments/output/EXP-135/results.json
+  decision: null
+  reasoning: null
