@@ -1,0 +1,84 @@
+competition: s6e8
+experiment_id: EXP-136
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: 'KNN + LightGBM ensemble for instance-based diversity. KNN decision
+  boundaries are distance-based, not axis-aligned like trees — genuinely decorrelated
+  error patterns. KNN is fast to train (~2 min for 5 folds) so the total run is under
+  30 min. If KNN OOF correlates <0.995 with LGBM, it adds genuine diversity for
+  frontier attack blend. KNN uses standardized numerics + one-hot categoricals.'
+metadata:
+  author: agent-81d2
+  parent_experiment: EXP-119
+  created_at: '2026-08-31T20:10:00Z'
+  design_notes: 'Instance-based diversity: KNN is the fastest non-tree model that
+    could add decorrelated signal. Runs in minutes, not hours.'
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: knn
+    parameters:
+      n_neighbors: 50
+      weights: distance
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 60
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  smoothing: 50
