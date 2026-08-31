@@ -126,7 +126,8 @@ try:
 except Exception as e:
     print(f"own_champ_m10 SKIP ({e})")
 
-# RealMLP member (kodaifukuda0311, Aug 30 — genuinely new arch, post-RGS pool)
+# ---- post-RGS external members (new architecture / feature families) ----
+# RealMLP (kodaifukuda0311, Aug 30)
 try:
     members["rmlp_realmlp"] = (
         np.load("shared/analysis/data/oof_realmlp.npy").astype(np.float64),
@@ -135,6 +136,17 @@ try:
     print("rmlp_realmlp: EXTERNAL RealMLP (OOF + TEST)")
 except Exception as e:
     print(f"rmlp_realmlp SKIP ({e})")
+
+# fresh screen-time ratio features (johnsebin97, Aug 31 — GBDTs on a NEW feature family)
+for tag in ["catboost", "lgb3seed"]:
+    try:
+        members[f"fresh_{tag}"] = (
+            np.load(f"shared/analysis/data/oof_fresh_screentime_ratios_{tag}.npy").astype(np.float64),
+            np.load(f"shared/analysis/data/test_fresh_screentime_ratios_{tag}.npy").astype(np.float64),
+        )
+        print(f"fresh_{tag}: EXTERNAL screen-time-ratio GBDT (OOF + TEST)")
+    except Exception as e:
+        print(f"fresh_{tag} SKIP ({e})")
 
 names = sorted(members)
 OOF = np.column_stack([members[n][0] for n in names])
