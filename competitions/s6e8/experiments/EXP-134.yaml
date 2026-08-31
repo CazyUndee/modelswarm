@@ -1,0 +1,72 @@
+competition: s6e8
+experiment_id: EXP-134
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: Last-resort TabM with tight 300s budget. Prior attempt (EXP-127) failed
+  at 420s/fold x 5 folds = too slow on GHA CPU. Community TabM singles: OOF 0.9685-0.9687.
+  With 300s budget and early stopping, each fold should complete in ~6-8 min. Two
+  members (seeds 42/123) for seed averaging. If TabM decorrelates from GBDT (rank
+  corr <0.99), it adds genuine diversity for frontier attack.
+metadata:
+  author: agent-81d2
+  parent_experiment: EXP-127
+  created_at: '2026-08-31T21:00:00Z'
+  design_notes: 'Tight budget TabM: 300s per fit, 5-fold CV. Prior attempts failed
+    due to time limits. This is the last NN hope for new OOF diversity.'
+model:
+  name: ensemble
+  blend: probability_average
+  members:
+  - name: tabm
+    parameters:
+      random_state: 42
+      time_to_fit_in_seconds: 300
+  - name: tabm
+    parameters:
+      random_state: 123
+      time_to_fit_in_seconds: 300
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 190
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  smoothing: 50

@@ -31,6 +31,8 @@ Last full check: 2026-08-31 11:20 UTC (Buffy — rank-gauss stack reproduced the
 | ID | Workflow | Run ID | Notes |
 |---|---|---|---|
 | EXP-133 cross-family GBDT (LGBM+XGB+CatBoost) | experiment-runner.yml | 33401295913 | **OOF 0.967993 REJECTED** (+0.000034; correlations 0.996-0.998, no diversity) | axis closed |
+| EXP-134 TabM x2 (300s) | experiment-runner.yml | (push 4df122f) | QUEUED: tight-budget TabM, last NN hope | |
+| EXP-135 logistic+LGBM | experiment-runner.yml | (push 4df122f) | QUEUED: linear diversity shot | |
 
 
 | EXP-123 nested TE | 32899563848 | **OOF 0.967339 REJECTED** (-0.00062 vs plain TE; inner-OOF hurt our context) | exp-EXP-123-artifacts | pairs/budget must be retested on plain TE -> EXP-126 |
