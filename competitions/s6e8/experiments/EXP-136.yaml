@@ -22,11 +22,11 @@ feature_engineering:
   - social_media_hours
   - gaming_hours
   - work_study_hours
-hypothesis: 'KNN + LightGBM ensemble for instance-based diversity. KNN decision
-  boundaries are distance-based, not axis-aligned like trees — genuinely decorrelated
-  error patterns. KNN is fast to train (~2 min for 5 folds) so the total run is under
-  30 min. If KNN OOF correlates <0.995 with LGBM, it adds genuine diversity for
-  frontier attack blend. KNN uses standardized numerics + one-hot categoricals.'
+hypothesis: "KNN + LightGBM ensemble for instance-based diversity. KNN decision boundaries\
+  \ are distance-based, not axis-aligned like trees \u2014 genuinely decorrelated\
+  \ error patterns. KNN is fast to train (~2 min for 5 folds) so the total run is\
+  \ under 30 min. If KNN OOF correlates <0.995 with LGBM, it adds genuine diversity\
+  \ for frontier attack blend. KNN uses standardized numerics + one-hot categoricals."
 metadata:
   author: agent-81d2
   parent_experiment: EXP-119
@@ -58,7 +58,7 @@ model:
       n_neighbors: 50
       weights: distance
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -82,3 +82,63 @@ target_encoding:
   - stress_level
   - academic_work_impact
   smoothing: 50
+results:
+  status: completed
+  oof_metric: 0.9642438626701126
+  fold_metrics:
+  - 0.9635406894379062
+  - 0.9642541859746167
+  - 0.9645738186186873
+  - 0.9649526158807754
+  - 0.9639000143653946
+  runtime_seconds: 1110.8650438785553
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+knn
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~knn[1]: 0.9478410071191186
+  rank_average_diagnostic: 0.9633532016791396
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9678337437820886
+    fold_metrics:
+    - 0.9671937164729302
+    - 0.967893912013732
+    - 0.968070029185276
+    - 0.9684966475161274
+    - 0.9675264304537641
+  - member_index: 1
+    name: knn
+    key: knn[1]
+    oof_auc: 0.9516260169749107
+    fold_metrics:
+    - 0.9509479771432291
+    - 0.9514717775626734
+    - 0.9521673384076821
+    - 0.9523483394276588
+    - 0.9511967971910527
+  artifacts:
+  - experiments/output/EXP-136/oof_predictions.csv
+  - experiments/output/EXP-136/results.json
+  decision: null
+  reasoning: null

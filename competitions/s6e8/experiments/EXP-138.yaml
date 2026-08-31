@@ -22,17 +22,17 @@ feature_engineering:
   - social_media_hours
   - gaming_hours
   - work_study_hours
-hypothesis: 'CatBoost with symmetric oblivious trees — structurally different from
-  LGBM leaf-wise and XGBoost depth-wise splits. CatBoost handles categoricals natively
-  and uses ordered boosting for less overfitting. With TE m=50 on all numerics and
-  early stopping, this should produce genuinely different error patterns from the
-  champion LGBM. depth=8, l2_leaf_reg=3, learning_rate 0.03, 3000 iterations.'
+hypothesis: "CatBoost with symmetric oblivious trees \u2014 structurally different\
+  \ from LGBM leaf-wise and XGBoost depth-wise splits. CatBoost handles categoricals\
+  \ natively and uses ordered boosting for less overfitting. With TE m=50 on all numerics\
+  \ and early stopping, this should produce genuinely different error patterns from\
+  \ the champion LGBM. depth=8, l2_leaf_reg=3, learning_rate 0.03, 3000 iterations."
 metadata:
   author: agent-81d2
   parent_experiment: EXP-119
   created_at: '2026-08-31T20:20:00Z'
-  design_notes: 'CatBoost symmetric trees = third GBDT family variant. If decorrelated
-    from LGBM/XGB, adds genuine diversity to blends.'
+  design_notes: CatBoost symmetric trees = third GBDT family variant. If decorrelated
+    from LGBM/XGB, adds genuine diversity to blends.
 model:
   name: catboost
   parameters:
@@ -48,7 +48,7 @@ model:
     random_state: 42
     verbose: 0
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -72,3 +72,52 @@ target_encoding:
   - stress_level
   - academic_work_impact
   smoothing: 50
+results:
+  status: completed
+  oof_metric: 0.9677395961553232
+  fold_metrics:
+  - 0.9670760235656328
+  - 0.9678694209689229
+  - 0.9679523200399249
+  - 0.968456065828492
+  - 0.9673490175037162
+  runtime_seconds: 1066.9232592582703
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: catboost
+  blend_method: probability_average
+  member_correlations: {}
+  rank_average_diagnostic: null
+  screening: null
+  members:
+  - member_index: 0
+    name: catboost
+    key: catboost[0]
+    oof_auc: 0.9677395961553232
+    fold_metrics:
+    - 0.9670760235656328
+    - 0.9678694209689229
+    - 0.9679523200399249
+    - 0.968456065828492
+    - 0.9673490175037162
+  artifacts:
+  - experiments/output/EXP-138/oof_predictions.csv
+  - experiments/output/EXP-138/results.json
+  decision: null
+  reasoning: null
