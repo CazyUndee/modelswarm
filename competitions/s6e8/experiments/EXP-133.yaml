@@ -22,25 +22,24 @@ feature_engineering:
   - social_media_hours
   - gaming_hours
   - work_study_hours
-hypothesis: >-
-  Cross-family GBDT ensemble (LightGBM + XGBoost + CatBoost) with target encoding.
-  All three families share the same feature engineering (free_time_slack + 1D TE m=10)
-  but use different tree-building algorithms. LightGBM uses histogram-based leaf-wise
-  growth, XGBoost uses histogram-based level-wise growth, CatBoost uses symmetric
-  oblivious decision trees with native categorical handling. The three families are
-  structurally decorrelated (rank corr typically 0.96-0.98 within family, 0.94-0.97
+hypothesis: Cross-family GBDT ensemble (LightGBM + XGBoost + CatBoost) with target
+  encoding. All three families share the same feature engineering (free_time_slack
+  + 1D TE m=10) but use different tree-building algorithms. LightGBM uses histogram-based
+  leaf-wise growth, XGBoost uses histogram-based level-wise growth, CatBoost uses
+  symmetric oblivious decision trees with native categorical handling. The three families
+  are structurally decorrelated (rank corr typically 0.96-0.98 within family, 0.94-0.97
   across families). If cross-family diversity provides complementary signal, the blend
   OOF should exceed the single-family champion (EXP-119, OOF 0.967959) by >0.0005.
-  This hypothesis has NOT been tested - all prior ensemble work used same-family
-  (5x LightGBM) or non-GBDT families (lookup-transformer, TabM) that failed on GHA.
+  This hypothesis has NOT been tested - all prior ensemble work used same-family (5x
+  LightGBM) or non-GBDT families (lookup-transformer, TabM) that failed on GHA.
 metadata:
   author: agent-81d2
   parent_experiment: EXP-119
   created_at: '2026-08-31T12:00:00Z'
-  design_notes: 'Cross-family GBDT diversity test: 1 LightGBM + 1 XGBoost + 1 CatBoost,
-    each with tuned hyperparameters. TE smoothing m=10 (best from EXP-120a). 5-fold
-    stratified CV. Key: member correlations must be <0.98 to justify ensemble — if
-    correlation is too high, cross-family adds no diversity.'
+  design_notes: "Cross-family GBDT diversity test: 1 LightGBM + 1 XGBoost + 1 CatBoost,\
+    \ each with tuned hyperparameters. TE smoothing m=10 (best from EXP-120a). 5-fold\
+    \ stratified CV. Key: member correlations must be <0.98 to justify ensemble \u2014\
+    \ if correlation is too high, cross-family adds no diversity."
 model:
   blend: probability_average
   members:
@@ -89,7 +88,7 @@ model:
       thread_count: -1
   name: ensemble
 phase: 4
-status: queued
+status: completed
 training:
   compute: github_actions
   predict_test: true
@@ -113,3 +112,75 @@ target_encoding:
   - stress_level
   - academic_work_impact
   smoothing: 10
+results:
+  status: completed
+  oof_metric: 0.9679929843381582
+  fold_metrics:
+  - 0.9673006514157926
+  - 0.9681816399265055
+  - 0.9682202608691315
+  - 0.9686131225693814
+  - 0.9676555098361891
+  runtime_seconds: 2478.162611722946
+  features_used:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  - free_time_slack
+  categorical_features:
+  - gender
+  - stress_level
+  - academic_work_impact
+  model_name: ensemble:lightgbm+xgboost+catboost
+  blend_method: probability_average
+  member_correlations:
+    lightgbm[0]~xgboost[1]: 0.9976649555859557
+    lightgbm[0]~catboost[2]: 0.9958879302389678
+    xgboost[1]~catboost[2]: 0.9970239739991349
+  rank_average_diagnostic: 0.9679964230676968
+  screening: null
+  members:
+  - member_index: 0
+    name: lightgbm
+    key: lightgbm[0]
+    oof_auc: 0.9678300262344472
+    fold_metrics:
+    - 0.9671684231667702
+    - 0.9679524352286197
+    - 0.968047892404564
+    - 0.9684265724482005
+    - 0.9675697930964593
+  - member_index: 1
+    name: xgboost
+    key: xgboost[1]
+    oof_auc: 0.9676229122762183
+    fold_metrics:
+    - 0.9669292280062166
+    - 0.967813693490223
+    - 0.9678648953725545
+    - 0.9682439582790557
+    - 0.9672657461383459
+  - member_index: 2
+    name: catboost
+    key: catboost[2]
+    oof_auc: 0.9676404969167494
+    fold_metrics:
+    - 0.9669483460312189
+    - 0.9678714141900404
+    - 0.9678733817854788
+    - 0.9682897018917972
+    - 0.9672197531578228
+  artifacts:
+  - experiments/output/EXP-133/oof_predictions.csv
+  - experiments/output/EXP-133/results.json
+  decision: null
+  reasoning: null
