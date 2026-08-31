@@ -226,6 +226,140 @@ for fit_idx, val_idx in folds:
     oof_meta[val_idx] = fit_logistic(G[fit_idx], y[fit_idx], G[val_idx])
 print(f"\nstack OOF AUC = {roc_auc_score(y, oof_meta):.6f}")
 test_meta = fit_logistic(G, y, Gt)
+print(f"linear logistic test OOF = {roc_auc_score(y, oof_meta):.6f}")
+
+# ============================================================
+# NONLINEAR META-ENSEMBLE: LightGBM on rank-gauss features
+# ============================================================
+# Hypothesis: GBDT can capture nonlinear interactions between member
+# predictions that the linear logistic misses.
+try:
+    import lightgbm as lgb
+    print(f"\n=== NONLINEAR LightGBM META-STACK ===")
+    oof_lgb = np.zeros(N_TRAIN)
+    for fold_idx, (fi, vi) in enumerate(folds):
+        print(f"  Fold {fold_idx+1}/5...", end=" ", flush=True)
+        dtrain = lgb.Dataset(G[fi], label=y[fi])
+        dval = lgb.Dataset(G[vi], label=y[vi], reference=dtrain)
+        params = {
+            "objective": "binary", "metric": "auc",
+            "learning_rate": 0.03, "num_leaves": 31,
+            "min_child_samples": 500, "feature_fraction": 0.5,
+            "bagging_fraction": 0.8, "bagging_freq": 5,
+            "reg_alpha": 1.0, "reg_lambda": 1.0,
+            "verbose": -1, "n_jobs": -1, "seed": 42,
+        }
+        model = lgb.train(
+            params, dtrain, num_boost_round=2000,
+            valid_sets=[dval],
+            callbacks=[lgb.early_stopping(50, verbose=False), lgb.log_evaluation(0)],
+        )
+        oof_lgb[vi] = model.predict(G[vi])
+        print(f"AUC={roc_auc_score(y[vi], oof_lgb[vi]):.6f} iters={model.best_iteration}")
+    lgb_auc = roc_auc_score(y, oof_lgb)
+    print(f"\nLightGBM meta-stack OOF: {lgb_auc:.6f}")
+    print(f"vs linear logistic: {lgb_auc - roc_auc_score(y, oof_meta):+.6f}")
+    # Train full LightGBM for test predictions
+    dtrain_full = lgb.Dataset(G, label=y)
+    dtest_full = lgb.Dataset(Gt)
+    params_full = {
+        "objective": "binary", "metric": "auc",
+        "learning_rate": 0.03, "num_leaves": 31,
+        "min_child_samples": 500, "feature_fraction": 0.5,
+        "bagging_fraction": 0.8, "bagging_freq": 5,
+        "reg_alpha": 1.0, "reg_lambda": 1.0,
+        "verbose": -1, "n_jobs": -1, "seed": 42,
+    }
+    lgb_full = lgb.train(params_full, dtrain_full, num_boost_round=1000)
+    test_lgb = lgb_full.predict(Gt)
+    use_lgb = lgb_auc > roc_auc_score(y, oof_meta) + 0.00005
+    if use_lgb:
+        print("*** LightGBM shows genuine improvement — using for submissions ***")
+    else:
+        print("LightGBM improvement too small — falling back to linear")
+except Exception as e:
+    print(f"LightGBM not available: {e}; using linear")
+    use_lgb = False
+
+# ============================================================
+# NONLINEAR META-ENSEMBLE: XGBoost on rank-gauss features
+# ============================================================
+try:
+    import xgboost as xgb_lib
+    print(f"\n=== XGBOOST META-STACK ===")
+    oof_xgb = np.zeros(N_TRAIN)
+    for fold_idx, (fi, vi) in enumerate(folds):
+        print(f"  Fold {fold_idx+1}/5...", end=" ", flush=True)
+        dtrain = xgb_lib.DMatrix(G[fi], label=y[fi])
+        dval = xgb_lib.DMatrix(G[vi], label=y[vi])
+        params = {
+            "objective": "binary:logistic", "eval_metric": "auc",
+            "learning_rate": 0.03, "max_depth": 4,
+            "min_child_weight": 500, "subsample": 0.8,
+            "colsample_bytree": 0.5, "reg_alpha": 1.0,
+            "reg_lambda": 1.0, "verbosity": 0, "seed": 42,
+        }
+        model = xgb_lib.train(
+            params, dtrain, num_boost_round=2000,
+            evals=[(dval, "val")], early_stopping_rounds=50,
+            verbose_eval=False,
+        )
+        oof_xgb[vi] = model.predict(dval)
+        print(f"AUC={roc_auc_score(y[vi], oof_xgb[vi]):.6f}")
+    xgb_auc = roc_auc_score(y, oof_xgb)
+    print(f"\nXGBoost meta-stack OOF: {xgb_auc:.6f}")
+    print(f"vs linear logistic: {xgb_auc - roc_auc_score(y, oof_meta):+.6f}")
+except Exception as e:
+    print(f"XGBoost not available: {e}")
+    xgb_auc = 0
+
+# ============================================================
+# SUMMARY: best meta-learner
+# ============================================================
+logistic_auc = roc_auc_score(y, oof_meta)
+print(f"\n{'='*60}")
+print(f"META-ENSEMBLE COMPARISON")
+print(f"{'='*60}")
+results = [("Linear Logistic", logistic_auc, oof_meta)]
+try:
+    results.append(("LightGBM", lgb_auc, oof_lgb))
+except:
+    pass
+try:
+    if xgb_auc > 0:
+        results.append(("XGBoost", xgb_auc, oof_xgb))
+except:
+    pass
+for name, a, _ in sorted(results, key=lambda x: x[1], reverse=True):
+    print(f"  {name:25s} OOF={a:.6f}  (Δ={a - logistic_auc:+.6f})")
+
+best_name, best_auc, best_oof = max(results, key=lambda x: x[1])
+print(f"\nBest: {best_name} ({best_auc:.6f})")
+
+# Select the best meta-learner's test predictions for blending
+if best_name == "LightGBM" and use_lgb:
+    test_final = test_lgb
+    oof_final = oof_lgb
+    print("Using LightGBM test predictions for submissions")
+elif best_name == "XGBoost" and xgb_auc > logistic_auc + 0.00005:
+    # train full XGBoost for test
+    dtrain_full = xgb_lib.DMatrix(G, label=y)
+    dtest_full = xgb_lib.DMatrix(Gt)
+    params_full = {
+        "objective": "binary:logistic", "eval_metric": "auc",
+        "learning_rate": 0.03, "max_depth": 4,
+        "min_child_weight": 500, "subsample": 0.8,
+        "colsample_bytree": 0.5, "reg_alpha": 1.0,
+        "reg_lambda": 1.0, "verbosity": 0, "seed": 42,
+    }
+    xgb_full = xgb_lib.train(params_full, dtrain_full, num_boost_round=1000)
+    test_final = xgb_full.predict(dtest_full)
+    oof_final = oof_xgb
+    print("Using XGBoost test predictions for submissions")
+else:
+    test_final = test_meta
+    oof_final = oof_meta
+    print("Using linear logistic test predictions for submissions")
 
 # ---- blend with public vault base in rank space ----
 # RGS used the vault (Naji-style) public base. We use naji's published "addition"
@@ -248,7 +382,7 @@ except Exception as e:
     print(f"no naji base ({e}); will use meta probe only")
     public = None
 
-print("\nstack OOF AUC (full) =", roc_auc_score(y, oof_meta))
+print("\nstack OOF AUC (full) =", roc_auc_score(y, oof_final))
 
 # ---- rank-space blend with public base, multiple W candidates ----
 # RGS documented the plateau: W in 0.20..0.50 all give LB 0.97130 (base alone
@@ -260,18 +394,19 @@ print("\nstack OOF AUC (full) =", roc_auc_score(y, oof_meta))
 sub_files = {}
 for W in [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50]:
     if public is not None:
-        final = pct_rank(W * pct_rank(test_meta) + (1 - W) * public)
+        final = pct_rank(W * pct_rank(test_final) + (1 - W) * public)
     else:
-        final = pct_rank(test_meta)
+        final = pct_rank(test_final)
     sub = pd.DataFrame({"id": test["id"], "addicted_label": final})
     assert len(sub) == N_TEST and sub["id"].is_unique
     assert np.isfinite(sub["addicted_label"]).all() and sub["addicted_label"].between(0, 1).all()
-    fn = f"submission_rgs_w{W:.2f}.csv"
+    fn = f"submission_nonlinear_w{W:.2f}.csv"
     sub.to_csv(fn, index=False)
     sub_files[f"{W:.2f}"] = fn
+    print(f"  W={W:.2f}: {fn}")
 
 # pure stack (W=1.0) and pure base (W=0.0) references
-pd.DataFrame({"id": test["id"], "addicted_label": pct_rank(test_meta)}).to_csv(
-    "submission_rgs_w1.00.csv", index=False)
-print("\nEmitted rank-gauss stack submissions at W=0.20..0.50 (RGS plateau) + W=1.00 pure stack.")
-print("stack OOF =", roc_auc_score(y, oof_meta))
+pd.DataFrame({"id": test["id"], "addicted_label": pct_rank(test_final)}).to_csv(
+    "submission_nonlinear_w1.00.csv", index=False)
+print(f"\nEmitted NONLINEAR meta-stack submissions at W=0.20..0.50 + W=1.00")
+print(f"stack OOF = {roc_auc_score(y, oof_final):.6f} (best meta: {best_name})")
