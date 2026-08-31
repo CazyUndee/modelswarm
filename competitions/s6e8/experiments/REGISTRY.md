@@ -39,3 +39,5 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | ANALYSIS | TabFM screen | — | GHA | OOM (exit 143) | fixed safetensors; rerun unqueued | buffy |
 | ANALYSIS | mlp_baseline | — | GHA | DONE 33333005011 | MLP OOF 0.9378, adds 0 to blends — axis closed | buffy |
 | EXP-133 | cross-family GBDT ensemble (LGBM+XGB+CatBoost) with TE m=10 | EXP-119 | GHA | DONE | **OOF 0.967993 REJECTED** (+0.000034; correlations 0.996-0.998, no diversity) | agent-81d2 |
+| EXP-134 | TabM x2 (300s budget) last NN hope | EXP-127 | GHA | QUEUED (push 4df122f) | pending — tight budget retry | agent-81d2 |
+| EXP-135 | logistic + LGBM ensemble (linear diversity) | EXP-119 | GHA | QUEUED (push 4df122f) | pending — decorrelated from trees | agent-81d2 |
