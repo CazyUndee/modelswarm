@@ -1,0 +1,114 @@
+competition: s6e8
+experiment_id: EXP-133
+features:
+- age
+- daily_screen_time_hours
+- social_media_hours
+- gaming_hours
+- work_study_hours
+- sleep_hours
+- notifications_per_day
+- app_opens_per_day
+- weekend_screen_time
+- gender
+- stress_level
+- academic_work_impact
+- free_time_slack
+feature_engineering:
+- op: diff
+  name: free_time_slack
+  terms:
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+hypothesis: Cross-family GBDT ensemble (LightGBM + XGBoost + CatBoost) with target encoding.
+  All three families share the same feature engineering (free_time_slack + 1D TE m=10)
+  but use different tree-building algorithms. LightGBM uses histogram-based leaf-wise
+  growth, XGBoost uses histogram-based level-wise growth, CatBoost uses symmetric
+  oblivious decision trees with native categorical handling. The three families are
+  structurally decorrelated (rank corr typically 0.96-0.98 within family, 0.94-0.97
+  across families). If cross-family diversity provides complementary signal, the blend
+  OOF should exceed the single-family champion (EXP-119: 0.967959) by >0.0005.
+  This hypothesis has NOT been tested — all prior ensemble work used same-family
+  (5x LightGBM) or non-GBDT families (lookup-transformer, TabM) that failed on GHA.
+metadata:
+  author: agent-81d2
+  parent_experiment: EXP-119
+  created_at: '2026-08-31T12:00:00Z'
+  design_notes: 'Cross-family GBDT diversity test: 1 LightGBM + 1 XGBoost + 1 CatBoost,
+    each with tuned hyperparameters. TE smoothing m=10 (best from EXP-120a). 5-fold
+    stratified CV. Key: member correlations must be <0.98 to justify ensemble — if
+    correlation is too high, cross-family adds no diversity.'
+model:
+  blend: probability_average
+  members:
+  - name: lightgbm
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_samples: 80
+      n_estimators: 3000
+      n_jobs: -1
+      num_leaves: 255
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      subsample_freq: 1
+      verbose: -1
+  - name: xgboost
+    parameters:
+      colsample_bytree: 0.3
+      early_stopping_rounds: 150
+      learning_rate: 0.02
+      max_bin: 2048
+      min_child_weight: 80
+      n_estimators: 3000
+      n_jobs: -1
+      random_state: 42
+      reg_alpha: 0.1
+      reg_lambda: 0.1
+      subsample: 0.8
+      tree_method: hist
+      enable_categorical: true
+      eval_metric: auc
+      verbosity: 0
+  - name: catboost
+    parameters:
+      iterations: 3000
+      learning_rate: 0.02
+      depth: 8
+      l2_leaf_reg: 3
+      random_seed: 42
+      verbose: 0
+      early_stopping_rounds: 150
+      thread_count: -1
+  name: ensemble
+phase: 4
+status: queued
+training:
+  compute: github_actions
+  predict_test: true
+  timeout_minutes: 120
+validation:
+  n_folds: 5
+  random_state: 42
+  strategy: stratified_kfold
+target_encoding:
+  columns:
+  - age
+  - daily_screen_time_hours
+  - social_media_hours
+  - gaming_hours
+  - work_study_hours
+  - sleep_hours
+  - notifications_per_day
+  - app_opens_per_day
+  - weekend_screen_time
+  - gender
+  - stress_level
+  - academic_work_impact
+  smoothing: 10
