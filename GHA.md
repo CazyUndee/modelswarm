@@ -4,15 +4,14 @@ RULE: every pushed experiment/analysis gets a row here immediately. Update on ev
 An experiment is NOT finished until its GHA status has been explicitly verified in this file.
 Read this file at the START of every research cycle. Do not trust memory/notifications.
 
-Last full check: 2026-08-26 17:35 UTC (Buffy — GHA.md cleanup + NN architecture tests dispatched)
+Last full check: 2026-08-31 11:20 UTC (Buffy — rank-gauss stack reproduced the 0.97130 plateau)
 
-## RUNNING
+## RUNNING / IN FLIGHT
 
 | ID | Workflow | Run ID | Status | Result/OOF | Next action | Checked |
 |---|---|---|---|---|---|---|
-| EXP-132 lookup-transformer | experiment-runner | 32980487428 | in_progress | pending | consume OOF on completion | 17:35Z |
-| analysis: tabfm_test | analysis.yml | 32988018202 | in_progress | TabFM foundation model OOF | consume | 17:35Z |
-| analysis: ft_transformer_test | analysis.yml | 32988022269 | in_progress | FT-Transformer OOF | consume | 17:35Z |
+| analysis: rank_gauss_stack | analysis.yml | 33384855096 | **SUCCESS** | 241 members, stack OOF 0.970167 (matches asteriosterzis RGS) | consumed -> 0.97130 sub | 11:20Z |
+| analysis: tamerlan_plus_owned | analysis.yml | 33337849843 | SUCCESS | Tamerlan baseline 0.969487; owned adds only +0.00008 (tabm_seed3/naji03) | VALUE: marginal, axis mostly closed | 11:20Z |
 
 ## RECENTLY COMPLETED — OVERNIGHT BATCH II
 
@@ -101,18 +100,35 @@ independently-validated alternative for private robustness.
 |---|---|---|---|
 | analysis greedy (pre-fix) | 32898316603 | local paths + no kagglehub + tee-masked failure | fixed script+workflow; re-dispatched as 32898400579-lineage |
 
-## INTELLIGENCE SUMMARY (2026-08-26)
+## SUBMISSION TALLY UPDATE (2026-08-31 deadline day)
 
-- **Public LB frontier**: 0.97186 (Chris Deotte) — new high
-- **Naji Ama OOF published**: 20 models with OOF predictions on Kaggle; naji_19_blend OOF 0.970099
-- **Tamerlan blend**: 9 models, 63% NN weight (lookup_transformer 18.5%, DL 29.2%, MLP 15.4%)
-- **Our NN diversity**: lookup + tabm_seed3 + EXP122 + EXP130 → OOF 0.96942
-- **Key insight**: NN diversity is the path to frontier; tree-only blends capped
-- **TabFM/FT-Transformer**: testing new NN architectures for diversity
+| # | submission | LB | classification |
+|---|---|---|---|
+| A | **rank-gauss 241-stack w0.35 + VAULT base** | **0.97130** | reproduces public ceiling (asteriosterzis plateau); stack OOF 0.970167 |
+| B | rank-gauss stack w0.35 + weak naji base (BROKEN base) | 0.96863 | ERROR — waste; blended vs a weak single model, not vault |
+| C | r0tor cluster-aware logit-rank (50% stack+25%vault+25%aman) | in flight | structural Pick-B insurance; ~0.999 corr to vault |
+| 0-9 | prior (vault 0.97128 etc.) | | |
+
+**CURRENT BEST: 0.97130** (rank-gauss stack, exactly the public wall). Deadline 2026-08-31 23:59Z.
+
+Gap to frontier: Chris Deotte moved to 0.97207. Exceeding 0.97130 needs NEW OOF members beyond
+the RGS Aug-30 pool; all owned NN training on GHA still dead (EXP-132 killed @3h20m, FT-Transformer
+60-min cap, TabFM OOM). 7 submissions left today as of 11:20Z.
+
+## INTELLIGENCE SUMMARY (2026-08-31)
+
+- **Public LB frontier**: 0.97207 (Chris Deotte, Aug 30) — up from 0.97186
+- **Public-pool stack wall**: asteriosterzis rank-gauss = EXACTLY 0.97130 for any W in 0.20..0.50 (documented plateau; stack OOF 0.970167); pure stack alone = 0.97125 < vault
+- **Blend base matters hugely**: same 0.970167 stack w0.35 vs weak naji base = 0.96863; vs vault base = 0.97130
+- **Tamerlan**: owned models add only +0.00008 to his blend — our GBDT ladder cannot exceed the wall
+- **Our NN diversity**: lookup + tabm_seed3 + EXP122 + EXP130 → OOF 0.96942 (away from the 0.9702 wall)
 
 ## Re-dispatch queue
 - [x] analysis.yml kagglehub dep + pipefail fix
-- [x] TabFM test (fixed safetensors dependency)
-- [x] FT-Transformer test dispatched
-- [ ] EXP-132 consume on completion
-- [ ] TabFM/FT-Transformer consume results
+- [x] rank_gauss_stack.py (+hb_/mk_ pools, pyarrow, owned champ) -> 0.97130
+- [x] tamerlan_plus_owned.py -> consumed (owned adds 0.00008)
+- [x] EXP-132 consume -> ZERO artifacts (killed @3h20m runner cap); not viable
+- [x] FT-Transformer -> infeasible on GHA (58min in fold1 @60-min cap); screen abandoned
+- [x] TabFM -> OOM (exit 143); fixed safetensors but reruns not yet requeued
+- [ ] explore new OOF members (post Aug-30) for the stack
+- [ ] decide if C (r0tor cluster) or more submissions are worth burning for private robustness
