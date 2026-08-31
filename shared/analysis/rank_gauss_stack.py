@@ -143,6 +143,21 @@ try:
 except Exception as e:
     print(f"weak-50 SKIP ({e})")
 
+# nhtquyn multi-column OOF library (440MB, Aug 22 — 60+ members, same frozen folds)
+try:
+    nh = kagglehub.dataset_download("nhtquyn/s6e8-addiction")
+    NH_O = np.load(os.path.join(nh, "oof.npy"), mmap_mode="r")
+    NH_T = np.load(os.path.join(nh, "test.npy"), mmap_mode="r")
+    print(f"nhtquyn oof shape {NH_O.shape}, test shape {NH_T.shape}")
+    for j in range(NH_O.shape[1]):
+        col = ("nh_{:02d}").format(j)
+        o, t = np.asarray(NH_O[:, j], float), np.asarray(NH_T[:, j], float)
+        if o.shape == (N_TRAIN,) and t.shape == (N_TEST,) and np.isfinite(o).all() and np.isfinite(t).all():
+            members[col] = (o, t)
+    print(f"nhtquyn: {NH_O.shape[1]} members loaded")
+except Exception as e:
+    print(f"nhtquyn SKIP ({e})")
+
 # our owned champion vector — the ONLY owned vec with a TEST prediction here
 try:
     members["own_champ_m10"] = (
