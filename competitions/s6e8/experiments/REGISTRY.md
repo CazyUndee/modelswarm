@@ -38,3 +38,4 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | ANALYSIS | FT-Transformer screen | — | GHA | INFEASIBLE | 58 min in fold 1 @60-min cap; abandoned | buffy |
 | ANALYSIS | TabFM screen | — | GHA | OOM (exit 143) | fixed safetensors; rerun unqueued | buffy |
 | ANALYSIS | mlp_baseline | — | GHA | DONE 33333005011 | MLP OOF 0.9378, adds 0 to blends — axis closed | buffy |
+| EXP-133 | cross-family GBDT ensemble (LGBM+XGB+CatBoost) with TE m=10 | EXP-119 | GHA | QUEUED (push 97bbc2e) | pending — first cross-family test | agent-81d2 |
