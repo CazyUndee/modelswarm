@@ -77,6 +77,8 @@ SOURCES = [
     ("dariushafshar/s6e8-golem-oof-library", "golem_"),
     ("raykkretzschmar/s6e8-fm-lattice-blend-members", "fm_"),
     ("hboyang/s6e8-catstrall-member", "x_"),
+    ("hboyang/s6e8-150-fusion-local-members", "hb_"),
+    ("masayakawamata/s6e8-catstr-aug16", "mk_"),
 ]
 
 members = {}
@@ -149,8 +151,8 @@ for i in range(len(names)):
         drop.add(names[j] if auc[names[i]] >= auc[names[j]] else names[i])
 print(f"{len(drop)} near-duplicate members dropped")
 
-# drop self-referential stacked members
-SELF_REFERENTIAL = re.compile(r"^(naji|sz_naji|v13_anchor|hb_candidate|tam_)")
+# drop self-referential stacked members (RGS dropped only these; tam_ kept)
+SELF_REFERENTIAL = re.compile(r"^(naji|sz_naji|v13_anchor|hb_candidate)")
 keep = [i for i, n in enumerate(names) if n not in drop and not SELF_REFERENTIAL.match(n)]
 names = [names[i] for i in keep]
 R, Rt = R[:, keep], Rt[:, keep]

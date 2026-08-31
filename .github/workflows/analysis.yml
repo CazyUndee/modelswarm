@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install deps
-        run: pip install -e ".[ml]" kagglehub
+        run: pip install -e ".[ml]" kagglehub pyarrow
       - name: Run analysis
         shell: bash
         run: |
