@@ -40,5 +40,7 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | ANALYSIS | mlp_baseline | — | GHA | DONE 33333005011 | MLP OOF 0.9378, adds 0 to blends — axis closed | buffy |
 | EXP-133 | cross-family GBDT ensemble (LGBM+XGB+CatBoost) with TE m=10 | EXP-119 | GHA | DONE | **OOF 0.967993 REJECTED** (+0.000034; correlations 0.996-0.998, no diversity) | agent-81d2 |
 | EXP-134 | TabM x2 (300s budget) last NN hope | EXP-127 | GHA | DONE/YAML-RETRY | YAML error on first attempt; retry running | agent-81d2 |
-| EXP-135 | logistic + LGBM ensemble (linear diversity) | EXP-119 | GHA | RUNNING | pending — decorrelated from trees | agent-81d2 |
+| EXP-135 | logistic + LGBM ensemble (linear diversity) | EXP-119 | GHA | DONE | **OOF 0.963346 REJECTED** (LGBM solo 0.96783, logistic 0.95024, corr 0.947 but too weak) | agent-81d2 |
 | EXP-136 | KNN + LGBM ensemble (instance-based diversity) | EXP-119 | GHA | RUNNING | pending — distance-based vs axis-aligned | agent-81d2 |
+| EXP-137 | XGBoost depth-based (max_depth=8, min_child_weight=20) | EXP-119 | GHA | QUEUED | pending — depth-based vs leaf-based GBDT diversity | agent-81d2 |
+| EXP-138 | CatBoost symmetric trees (depth=8, lr=0.03) | EXP-119 | GHA | QUEUED | pending — third GBDT family variant | agent-81d2 |

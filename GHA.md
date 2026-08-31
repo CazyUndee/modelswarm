@@ -32,8 +32,11 @@ Last full check: 2026-08-31 11:20 UTC (Buffy — rank-gauss stack reproduced the
 |---|---|---|---|
 | EXP-133 cross-family GBDT (LGBM+XGB+CatBoost) | experiment-runner.yml | 33401295913 | **OOF 0.967993 REJECTED** (+0.000034; correlations 0.996-0.998, no diversity) | axis closed |
 | EXP-134 TabM x2 (300s) | experiment-runner.yml | 33433409938 | RUNNING: YAML-fixed retry | |
-| EXP-135 logistic+LGBM | experiment-runner.yml | 33432963192 | RUNNING: linear diversity | |
+| EXP-135 logistic+LGBM | experiment-runner.yml | 33432963192 | **OOF 0.963346 REJECTED** (logistic too weak at 0.950, corr 0.947 but unusable) | axis closed |
 | EXP-136 KNN+LGBM | experiment-runner.yml | 33433807266 | RUNNING: instance-based diversity | |
+| EXP-137 XGBoost depth-based | experiment-runner.yml | (push 4ff74e3) | QUEUED: depth vs leaf GBDT | |
+| EXP-138 CatBoost symmetric | experiment-runner.yml | (push 4ff74e3) | QUEUED: third GBDT family | |
+| Optimal blend analysis | analysis.yml | 33434833055 | RUNNING: computing best submission from all OOF vectors | |
 
 
 | EXP-123 nested TE | 32899563848 | **OOF 0.967339 REJECTED** (-0.00062 vs plain TE; inner-OOF hurt our context) | exp-EXP-123-artifacts | pairs/budget must be retested on plain TE -> EXP-126 |
