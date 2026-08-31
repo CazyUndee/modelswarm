@@ -140,7 +140,7 @@ def fast_conditional_cdf(values, orig_pos, orig_neg):
 
 train_vals = tr[numeric_cols].values.astype(float)
 test_vals = test[numeric_cols].values.astype(float)
-orig_vals = orig_numeric.values.astype(float)
+orig_vals = orig_numeric.astype(float)
 orig_pos_vals = orig_addicted[numeric_cols].values.astype(float)
 orig_neg_vals = orig_not_addicted[numeric_cols].values.astype(float)
 
