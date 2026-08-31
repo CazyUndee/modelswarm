@@ -98,13 +98,12 @@ try:
             categorical_cols=[],
         )
 
-        # GHA CPU budget: ~6.5 min/epoch on 691k rows → 100 epochs is infeasible.
-        # Screen with 15 epochs (patience 5) — enough to measure diversity signal;
-        # a strong result can be re-run deeper on a larger budget later.
+        # GHA CPU budget: ~3.9 min/epoch on 691k rows → must fit 5 folds in 60 min.
+        # 3 epochs × 5 folds × 4 min ≈ 60 min. Early stopping may cut earlier.
         trainer_config = TrainerConfig(
-            max_epochs=15,
-            batch_size=1024,
-            early_stopping_patience=5,
+            max_epochs=3,
+            batch_size=2048,
+            early_stopping_patience=2,
         )
 
         optimizer_config = OptimizerConfig(
@@ -143,9 +142,9 @@ try:
     ft_auc = roc_auc_score(y, ft_oof)
     print(f"\nFT-Transformer OOF: {ft_auc:.6f}")
 
-    # Save OOF
-    np.save("shared/artifacts/stacking_vectors/ft_transformer_oof.npy", ft_oof)
-    print("Saved ft_transformer_oof.npy")
+    # Save OOF and test predictions as CSV for artifact upload
+    pd.DataFrame({"prediction": ft_oof}).to_csv("ft_transformer_oof.csv", index=False)
+    print("Saved ft_transformer_oof.csv")
 
 except Exception as e:
     print(f"FT-Transformer failed: {e}")
