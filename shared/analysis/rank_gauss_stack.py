@@ -43,28 +43,48 @@ import kagglehub
 
 def load_vectors(oof_dir, prefix, test_prefixes=("test_", "testpred_", "tep_")):
     out = {}
+    seen = set()
+    # Convention A: oof_<name>.npy (prefix convention — szymonkapiski, adarsh, etc.)
     for path in glob.glob(os.path.join(oof_dir, "**", "oof_*.npy"), recursive=True):
         name = os.path.basename(path)[4:-4]
         mate = next(
-            (
-                c
-                for c in (
-                    os.path.join(os.path.dirname(path), tp + name + ".npy")
-                    for tp in test_prefixes
-                )
-                if os.path.exists(c)
-            ),
+            (c for tp in test_prefixes
+             for c in [os.path.join(os.path.dirname(path), tp + name + ".npy")]
+             if os.path.exists(c)),
             None,
         )
         if mate is None:
             continue
         oof = np.load(path).astype(np.float64)
         tst = np.load(mate).astype(np.float64)
-        if (
-            oof.shape == (N_TRAIN,) and tst.shape == (N_TEST,)
-            and np.isfinite(oof).all() and np.isfinite(tst).all()
-        ):
-            out[prefix + name] = (oof, tst)
+        if (oof.shape == (N_TRAIN,) and tst.shape == (N_TEST,)
+                and np.isfinite(oof).all() and np.isfinite(tst).all()):
+            key = prefix + name
+            if key not in seen:
+                out[key] = (oof, tst)
+                seen.add(key)
+    # Convention B: <name>_oof.npy / <name>_test.npy (suffix convention — beicicc, etc.)
+    for path in glob.glob(os.path.join(oof_dir, "**", "*_oof.npy"), recursive=True):
+        bname = os.path.basename(path)
+        name = bname[:-8]  # strip _oof.npy
+        mate = os.path.join(os.path.dirname(path), name + "_test.npy")
+        if not os.path.exists(mate):
+            mate = next(
+                (c for tp in test_prefixes
+                 for c in [os.path.join(os.path.dirname(path), tp + name + ".npy")]
+                 if os.path.exists(c)),
+                None,
+            )
+        if mate is None:
+            continue
+        oof = np.load(path).astype(np.float64)
+        tst = np.load(mate).astype(np.float64)
+        if (oof.shape == (N_TRAIN,) and tst.shape == (N_TEST,)
+                and np.isfinite(oof).all() and np.isfinite(tst).all()):
+            key = prefix + name
+            if key not in seen:
+                out[key] = (oof, tst)
+                seen.add(key)
     return out
 
 
@@ -79,6 +99,13 @@ SOURCES = [
     ("hboyang/s6e8-catstrall-member", "x_"),
     ("hboyang/s6e8-150-fusion-local-members", "hb_"),
     ("masayakawamata/s6e8-catstr-aug16", "mk_"),
+    # beicicc —6 independent-model OOF artifacts (credited as pool backbone by adarsh/Diversity-Beats-Strength)
+    ("beicicc/s6e8-fixed-schedule-exact-value-catboost-artifacts", "bc_"),
+    ("beicicc/s6e8-fixed1500-xgb-identity-digit-artifacts", "bd_"),
+    ("beicicc/s6e8-fixed1500-xgb-screen-relation-artifacts", "be_"),
+    ("beicicc/s6e8-fixed-schedule-lookup-transformer-artifacts", "bf_"),
+    ("beicicc/s6e8-second-seed-fixed-schedule-lookup-artifacts", "bg_"),
+    ("beicicc/s6e8-fixed900-structural-lgbm-artifacts", "bh_"),
 ]
 
 members = {}
