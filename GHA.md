@@ -30,7 +30,7 @@ Last full check: 2026-08-31 11:20 UTC (Buffy — rank-gauss stack reproduced the
 
 | ID | Workflow | Run ID | Notes |
 |---|---|---|---|
-| EXP-133 cross-family GBDT (LGBM+XGB+CatBoost) | experiment-runner.yml | (push f22f1e4) | QUEUED: first cross-family test, TE m=10, 5-fold | compare member correlations |
+| EXP-133 cross-family GBDT (LGBM+XGB+CatBoost) | experiment-runner.yml | 33401295913 | **OOF 0.967993 REJECTED** (+0.000034; correlations 0.996-0.998, no diversity) | axis closed |
 
 
 | EXP-123 nested TE | 32899563848 | **OOF 0.967339 REJECTED** (-0.00062 vs plain TE; inner-OOF hurt our context) | exp-EXP-123-artifacts | pairs/budget must be retested on plain TE -> EXP-126 |
