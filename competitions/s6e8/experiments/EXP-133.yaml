@@ -22,15 +22,16 @@ feature_engineering:
   - social_media_hours
   - gaming_hours
   - work_study_hours
-hypothesis: Cross-family GBDT ensemble (LightGBM + XGBoost + CatBoost) with target encoding.
+hypothesis: >-
+  Cross-family GBDT ensemble (LightGBM + XGBoost + CatBoost) with target encoding.
   All three families share the same feature engineering (free_time_slack + 1D TE m=10)
   but use different tree-building algorithms. LightGBM uses histogram-based leaf-wise
   growth, XGBoost uses histogram-based level-wise growth, CatBoost uses symmetric
   oblivious decision trees with native categorical handling. The three families are
   structurally decorrelated (rank corr typically 0.96-0.98 within family, 0.94-0.97
   across families). If cross-family diversity provides complementary signal, the blend
-  OOF should exceed the single-family champion (EXP-119: 0.967959) by >0.0005.
-  This hypothesis has NOT been tested — all prior ensemble work used same-family
+  OOF should exceed the single-family champion (EXP-119, OOF 0.967959) by >0.0005.
+  This hypothesis has NOT been tested - all prior ensemble work used same-family
   (5x LightGBM) or non-GBDT families (lookup-transformer, TabM) that failed on GHA.
 metadata:
   author: agent-81d2
