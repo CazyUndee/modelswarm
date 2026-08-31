@@ -32,4 +32,9 @@ check LOCKED/RUNNING rows here. Update status as evidence lands.
 | EXP-129 | +weekend_slack | EXP-122 | GHA | DONE | **OOF 0.968225 REJECTED** (+0.000002, tied) | buffy |
 | EXP-130 | +clean raphdraft block (no pairs) | EXP-122 | GHA | DONE | **OOF 0.968583 KEEP** (+0.00036, below bar) | buffy |
 | EXP-131 | +digit family standalone | EXP-122 | GHA | DONE | **OOF 0.968236 REJECTED** (+0.000013, tied) | buffy |
-| EXP-132 | lookup-transformer (exact-value embeddings + transformer, 3 seeds) | EXP-130 | GHA | RUNNING (32980487428) | pending — Priority 1 frontier attack | orchestrator |
+| EXP-132 | lookup-transformer (exact-value embeddings + transformer, 3 seeds) | EXP-130 | GHA | CANCELLED (32980487428) @3h20m runner cap | **ZERO artifacts** — not viable on GHA | buffy |
+| ANALYSIS | tamerlan_plus_owned (public blend seed) | — | GHA | DONE 33337849843 | Tamerlan 0.969487; owned adds only +0.00008 | buffy |
+| ANALYSIS | rank_gauss_stack (reproduce RGS) | — | GHA | DONE 33384855096 | 241 members, stack OOF 0.970167 -> **LB 0.97130** (public ceiling) | buffy |
+| ANALYSIS | FT-Transformer screen | — | GHA | INFEASIBLE | 58 min in fold 1 @60-min cap; abandoned | buffy |
+| ANALYSIS | TabFM screen | — | GHA | OOM (exit 143) | fixed safetensors; rerun unqueued | buffy |
+| ANALYSIS | mlp_baseline | — | GHA | DONE 33333005011 | MLP OOF 0.9378, adds 0 to blends — axis closed | buffy |
