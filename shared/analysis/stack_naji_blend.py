@@ -27,7 +27,9 @@ print(f'Labels: {N} rows, positive rate={y.mean():.4f}')
 print('\n=== LOADING BOLTUZAMAKI LIBRARY ===')
 import kagglehub
 bolt_path = kagglehub.dataset_download('boltuzamaki/s6e8-oof-prediction-library')
-bolt_df = pd.read_parquet(os.path.join(bolt_path, 'oof_prediction_library.parquet'))
+bolt_files = [f for f in os.listdir(bolt_path) if f.endswith('.parquet')]
+print(f'Bolt files: {bolt_files}')
+bolt_df = pd.read_parquet(os.path.join(bolt_path, [f for f in bolt_files if 'oof' in f.lower()][0]))
 bolt_cols = [c for c in bolt_df.columns if c != 'id']
 print(f'Bolt library: {len(bolt_cols)} members, {len(bolt_df)} rows')
 
@@ -205,7 +207,7 @@ test_ids = test['id'].values
 # Build test stack
 print('Building test stack...')
 # Load bolt test
-bolt_test = pd.read_parquet(os.path.join(bolt_path, 'test_prediction_library.parquet'))
+bolt_test = pd.read_parquet(os.path.join(bolt_path, [f for f in bolt_files if 'test' in f.lower()][0]))
 test_members = []
 for col in bolt_cols:
     if col in bolt_test.columns:
